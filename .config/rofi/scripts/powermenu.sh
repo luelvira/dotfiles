@@ -16,7 +16,7 @@ else
     elif [ "$1" = "Suspend" ]; then
         systemctl suspend
     elif [ "$1" = "Lock" ]; then
-        i3lock --nofork
+        dm-tool lock
         #sudo ~/.local/bin/betterlockscreen -l blur
     elif [ "$1" = "Hibernate" ]; then
         sudo systemctl hibernate

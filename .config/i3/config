@@ -1,4 +1,3 @@
-
 set $mod Mod4
 set $rofi ~/.config/rofi/scripts/launch.sh
 
@@ -84,7 +83,8 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-bindsym $mod+a focus parent
+#bindsym $mod+a focus parent
+#bindsym $mod+d focus child
 bindsym --release $mod+Print exec shutter -s
 
 
@@ -211,7 +211,6 @@ bar {
 
 }
 
-client.focused #6092d9 #6092d9 #e3eaf3 #ffe570
 
 exec feh --bg-fill /home/lucas/Pictures/wallpapers/OsfFKJ0.jpg
 exec picom -b -f --experimental-backends
@@ -220,7 +219,7 @@ exec setxkbmap -layout us,es
 exec setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3status
 bindsym $mod1+Shift $refresh_i3status
 #exec /home/lucas/.config/polybar/launch.sh
-for_window [class="^.*"] border pixel 0
+#for_window [class="^.*"] border pixel 0
 
 workspace $ws1 output DP-1
 workspace $ws3 output DP-1
@@ -233,6 +232,7 @@ workspace $ws6 output HDMI-0
 workspace $ws8 output HDMI-0
 workspace $ws10 output HDMI-0
 
+for_window [class="Spotify"] move --no-auto-back-and-forth container to workspace $ws3
 # custom bindsym
 bindsym $mod+mod1+l exec dm-tool lock
 # bindsym $mod+Shift+f exec locate -i / | rofi -threads 0 -width 100 -dmenu -i -p "Find"
@@ -254,12 +254,16 @@ bindsym $mod+Shift+b exec --no-startup-id firefox-esr
 bindsym $mod+Shift+t exec --no-startup-id /opt/Telegram/Telegram
 bindsym $mod+F1 exec  --no-startup-id ~/.config/i3blocks/togle_bluetooth.sh
 bindsym $mod+F2 exec  --no-startup-id ~/.config/i3blocks/togle_bluetooth.sh
-# exit
 
+default_border pixel 1
+client.focused #343746 #343746 #F8F8F2 #343746 #5e637f
+client.focused_inactive #343746 #343746 #F8F8F2 #21222C #21222C
+client.unfocused #343746 #343746 #F8F8F2 #21222C #21222C
 
+# i3-gaps
 gaps inner 10
 gaps outer 0
 # gaps left 29
 # gaps right 29
-smart_gaps on
+#smart_gaps on
 

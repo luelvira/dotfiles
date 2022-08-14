@@ -23,27 +23,3 @@ fi
 case $BLOCK_BUTTON in
 	1) ~/.config/i3blocks/togle_bluetooth.sh
 esac
-exit
-
-
-
-
-
-bluetoothctl show | grep "Powered: " | awk -v label=$LABEL -v connected=$connected '
-{
-	power=$2
-	# full text
-	print label" "
- 	# short text
- 	print label
-}
-END {
-	if (power == "yes") {
- 	   if (connected == "yes") {
-			print "#66ffffff"
-		}
-	}
-	else {
-		print "#2193ff"
-	}
-}'
