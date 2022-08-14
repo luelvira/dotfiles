@@ -1,0 +1,91 @@
+configuration {
+	show-icons: true;
+	modi: "window,run,drun";
+	font: "Hack Nerd Font 15";
+}
+
+@theme "/dev/null"
+@import "colors.rasi"
+
+* {
+	selected-foreground: black;
+	background-color: @background;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	spacing: 0;
+}
+
+#window {
+	width: 45%;
+}
+
+#inputbar {
+	padding: 2%;
+	children: [prompt,textbox-prompt-colon, entry,num-filtered-rows]; 
+}
+
+#prompt {
+	spacing: 0;
+    text-color: @foreground;
+    background-color: rgba(0,0,0,0);
+}
+
+#entry {
+	spacing: 0;
+	text-color: @foreground;
+}
+
+#textbox-prompt-colon {
+    expand:     false;
+    str:        ":";
+    margin:     0px 0.3em 0em 0em ;
+    text-color: @foreground;
+    background-color: rgba(0,0,0,0);
+}
+
+#textbox {
+    text-color: @foreground;
+}
+
+#listview {
+	cycle: false;
+	lines: 10;
+	dynamic: true;
+	spacing: 10px;
+	background-color: transparent;
+	padding: 2%;
+}
+element {
+	border-radius: 10px;
+}
+
+#element.normal.normal, element.alternate.normal {
+	background-color: @unselected-background;
+	text-color: @foreground;
+}
+#element-icon {
+	size: 20px;
+	margin: 10px 20px;
+	background-color: transparent;
+}
+
+#element-text {
+    horizontal-align:               0.5;
+    vertical-align:                 0.5;
+	background-color: transparent;
+}
+
+#element.selected.normal {
+    background-color: @selected-background;
+    border-color: #d07ef2;
+    text-color: @selected-foreground;
+}
+
+element-text, element-icon {
+	background-color: inherit;
+	text-color: inherit;
+    horizontal-align:   0.5;
+    vertical-align:     0.5;
+}
+

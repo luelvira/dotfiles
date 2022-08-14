@@ -1,0 +1,15 @@
+* {
+    foreground:           #e3eaf3;
+    selected-foreground:  black;
+    
+    background:           #1f243a20;
+    background-solid:     #141929;
+    
+    selected-background: #6092d9;
+    selected-background-alt: #4d86d3;
+    unselected-background:  #0d1120;
+	active-background: #d2595d;
+    red: rgba(220, 50, 47, 100%);
+    blue: rgba(38, 139, 210, 100%);
+}
+

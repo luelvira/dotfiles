@@ -1,0 +1,11 @@
+--2022-07-18 13:18:33--  https://raw.githubusercontent.com/CallMeEchoCodes/dotfiles/main/main.i3config
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.109.133, 185.199.108.133, 185.199.111.133, ...
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.109.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1957 (1,9K) [text/plain]
+Saving to: ‘main.i3config’
+
+     0K .                                                     100% 61,4M=0s
+
+2022-07-18 13:18:33 (61,4 MB/s) - ‘main.i3config’ saved [1957/1957]
+

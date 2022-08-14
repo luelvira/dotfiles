@@ -1,0 +1,38 @@
+env:
+  TERM: xterm-256color
+window:
+  padding:
+    dynamic_padding: true
+    x: 5
+    y: 5
+  opacity: 0.85
+
+font:
+  normal:
+    family:
+      monospace
+  size: 10
+
+  offset:
+    x: 0
+    y: 0
+
+
+cursor:
+  style: Block
+  vi_mode_style: underline
+
+scrolling:
+  history: 10000
+  multiplier: 3
+
+
+key_bindings:
+  - { key: Return, mods: Super|Shift, action: SpawnNewInstance }
+
+colors:
+  primary:
+    background: '#141929'
+
+live_config_reload: true
+

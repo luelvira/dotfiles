@@ -1,0 +1,30 @@
+configuration {
+	show-icons: false;
+}
+@theme "default.rasi"
+
+#window {
+	width: 30%;
+}
+
+#inputbar {
+	text-color: @foreground;
+	children: [prompt,textbox-prompt-colon, entry];
+}
+
+#listview {
+	cycle: true;
+	columns: 4;
+	dynamic: false;
+	orientation: horizontal;	
+	lines: 1;
+}
+
+#element {
+	children: [element-text];
+	border-radius: 0;
+}
+#prompt, entry, textbox-prompt-colon {
+    text-color: @foreground;
+}
+

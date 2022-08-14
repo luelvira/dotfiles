@@ -1,0 +1,39 @@
+@theme "default.rasi"
+configuration {
+	font: "Hack Nerd Font 10";
+}
+
+#mainbox {
+	children: [listview];
+}
+#listview {
+	cycle: true;
+	columns: 5;
+	lines: 1;
+	background-color: transparent;
+}
+
+element {
+	orientation: vertical;	
+	padding: 10px;
+}
+
+element-icon {
+	size: 48px;
+}
+
+#element.normal.normal, element.alternate.normal {
+    background-color: @unselected-background;
+    text-color:       @foreground;
+    size: 0px;
+}
+
+#element.selected.normal {
+    background-color: @selected-background;
+    text-color:       @selected-foreground;
+    border-color: #d07ef2;
+}
+
+#element.normal.active {
+    background-color: @active-background;
+}
