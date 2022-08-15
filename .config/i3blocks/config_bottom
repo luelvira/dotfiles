@@ -28,8 +28,6 @@ label=♪
 interval=once
 signal=10
 
-[separator]
-color=#1ED760
 
 [bluetooth]
 command=/home/lucas/.config/i3blocks/bluetooth.sh

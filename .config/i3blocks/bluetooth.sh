@@ -14,9 +14,9 @@ echo $LABEL
 if [ $powered == "yes" ];then
 	if [ $connected == "yes" ]; then
 		conn=1
-		echo \#66ffffff
+		echo \#2193ff
 	else
-		echo \#2193ffff
+		echo \#334d66
 	fi
 fi
 

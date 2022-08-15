@@ -10,8 +10,8 @@ window:
 font:
   normal:
     family:
-      monospace
-  size: 10
+      HackNerd Font
+  size: 9
 
   offset:
     x: 0
@@ -19,7 +19,7 @@ font:
 
 
 cursor:
-  style: Block
+  style: beam
   vi_mode_style: underline
 
 scrolling:
