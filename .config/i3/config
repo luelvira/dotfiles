@@ -268,6 +268,7 @@ bindsym $mod+F2 exec  --no-startup-id ~/.config/i3blocks/togle_bluetooth.sh
 
 default_border pixel 1
 client.focused #343746 #343746 #F8F8F2 #343746 #5e637f
+client.focused #343746 #5e637f #F8F8F2 #343746
 client.focused_inactive #343746 #343746 #F8F8F2 #21222C #21222C
 client.unfocused #343746 #343746 #F8F8F2 #21222C #21222C
 

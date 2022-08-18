@@ -84,8 +84,12 @@ au BufNewFile,BufRead *.py
 	\ set tabstop=4 
 	\ softtabstop=4 
 	\ shiftwidth=4 
-	\ textwidth=79 
 	\ expandtab 
 	\ autoindent 
 	\ fileformat=unix 
+
+au BufNewFile,BufRead *.md
+	\ set textwidth=79
+	\ fileformat=unix
+	\ autoindent
 
