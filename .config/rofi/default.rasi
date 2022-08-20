@@ -35,7 +35,7 @@ configuration {
 	padding: 2%;
 	children: [prompt,entry];
 	border-radius: 5px;
-	background-color: @unselected-background;
+	background-color: @background;
 }
 
 #prompt {
@@ -67,7 +67,7 @@ configuration {
 	columns: 2;
 	dynamic: true;
 	spacing: 10px;
-	background-color: transparent;
+	background-color: @background;
 	padding: 2%;
 	margin: 20px 0px 0px 10px;
 }

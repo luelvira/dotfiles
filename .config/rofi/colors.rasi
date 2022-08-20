@@ -2,7 +2,7 @@
     foreground:           #e3eaf3;
     selected-foreground:  black;
     
-    background:           #1f243a20;
+    background:           #1f243a55;
     background-solid:     #141929;
     
     selected-background: #6092d9;

@@ -94,29 +94,28 @@ bindsym --release $mod+Print exec shutter -s
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 
-set $ws1    "1:  "
-set $ws2    "2:  "
-set $ws3    "3: "
-set $ws4    "4: "
-set $ws5    "5: "
-set $ws6    "6: "
-set $ws7    "7: "
-set $ws8    "8: "
-set $ws9    "9: "
-set $ws10   "10: "
-set $ws11   "_"
-
-#set $ws1    "1"
-#set $ws2    "2"
-#set $ws3    "3"
-#set $ws4    "4"
-#set $ws5    "5"
-#set $ws6    "6"
-#set $ws7    "7"
-#set $ws8    "8"
-#set $ws9    "9"
-#set $ws10   "10"
+#set $ws1    "1: "
+#set $ws2    "2: "
+#set $ws3    "3:"
+#set $ws4    "4:"
+#set $ws5    "5:"
+#set $ws6    "6:"
+#set $ws7    "7:"
+#set $ws8    "8:"
+#set $ws9    "9:"
+#set $ws10   "10:"
 #set $ws11   "_"
+
+set $ws1    "1"
+set $ws2    "2"
+set $ws3    "3"
+set $ws4    "4"
+set $ws5    "5"
+set $ws6    "6"
+set $ws7    "7"
+set $ws8    "8"
+set $ws9    "9"
+set $ws10   "10"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -183,52 +182,53 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 # custom config
 
-bar {
-	position top
-    status_command i3blocks
-	height 30
-	font pango: FontAwesome, 10
-	workspace_buttons       yes
-	strip_workspace_numbers yes
-	colors {
-        background  #141929
-        statusline  #dddddd
-        separator   #666666
-#        # class             border  backgr. text
-        focused_workspace   #d2595d #d2595d #e3eaf3
-        active_workspace    #141929 #141929 #e3eaf3
-        inactive_workspace  #141929 #141929 #86888c
-        urgent_workspace    #d64e4e #d64e4e #ffffff
-        binding_mode        #229c56 #229c56 #ffffff
-	}
-}
-bar {
-	position bottom
-    status_command i3blocks -c ~/.config/i3blocks/config_bottom
-	height 30
-	font pango: FontAwesome, 10
-	workspace_buttons no
-	colors {
-        background  #141929
-        statusline  #dddddd
-        separator   #666666
-	}
-	tray_output none
-
-}
-
 #bar {
-#        mode invisible
-#        tray_output none
+#	position top
+#    status_command i3blocks
+#	height 30
+#	font pango: FontAwesome, 10
+#	workspace_buttons       yes
+#	strip_workspace_numbers yes
+#	colors {
+#        background  #141929
+#        statusline  #dddddd
+#        separator   #666666
+##        # class             border  backgr. text
+#        focused_workspace   #d2595d #d2595d #e3eaf3
+#        active_workspace    #141929 #141929 #e3eaf3
+#        inactive_workspace  #141929 #141929 #86888c
+#        urgent_workspace    #d64e4e #d64e4e #ffffff
+#        binding_mode        #229c56 #229c56 #ffffff
+#	}
 #}
+#bar {
+#	position bottom
+#    status_command i3blocks -c ~/.config/i3blocks/config_bottom
+#	height 30
+#	font pango: FontAwesome, 10
+#	workspace_buttons no
+#	colors {
+#        background  #141929
+#        statusline  #dddddd
+#        separator   #666666
+#	}
+#	tray_output none
+#
+#}
+
+bar {
+        mode invisible
+        tray_output none
+}
 
 
 exec feh --bg-fill /home/lucas/Pictures/wallpapers/OsfFKJ0.jpg
 exec picom -b -f --experimental-backends
 exec xrandr --output HDMI-0 --auto --right-of DP-1
 exec setxkbmap -layout us,es
-exec setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3status
-bindsym $mod1+Shift $refresh_i3status
+exec setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3status ; polybar-msg action "#keyboard.hook.0"
+exec ~/.config/polybar/launch.sh
+bindsym $mod1+Shift exec $refresh_i3status 
 #exec /home/lucas/.config/polybar/launch.sh
 #for_window [class="^.*"] border pixel 0
 
@@ -244,6 +244,9 @@ workspace $ws8 output HDMI-0
 workspace $ws10 output HDMI-0
 
 for_window [class="Spotify"] move --no-auto-back-and-forth container to workspace $ws3
+assign [class="Firefox-esr"] $ws2
+assign [class="TelegramDesktop"] $ws4
+for_window [class="obsidian"] move --no-auto-back-and-forth container to workspace $ws5
 # custom bindsym
 bindsym $mod+mod1+l exec dm-tool lock
 # bindsym $mod+Shift+f exec locate -i / | rofi -threads 0 -width 100 -dmenu -i -p "Find"

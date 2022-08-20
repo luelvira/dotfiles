@@ -16,4 +16,4 @@ fi
 alias ggraph='git log --all --decorate --oneline --graph'
 alias vi=nvim
 alias mkdir='mkdir -p'
-alias mkcd='mkdir && cd $_'
+function mkcd () { mkdir $1 && cd $_ }
