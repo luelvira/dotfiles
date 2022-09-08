@@ -15,9 +15,6 @@ set cmdheight=1
 
 set nowrap
 
-" highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-" highlight OverLength ctermbg=red ctermfg=white guibg=#ff0000
-" match OverLength /\%81v.\+/
 
 
 inoremap <left> <nop>
@@ -63,33 +60,51 @@ set softtabstop=0
 set tabstop=4
 set shiftwidth=4
 
+"set cursorline
+"set cursorlineopt=number
 
 call plug#begin()
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'preservim/nerdtree'
 call plug#end()
 
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 
+" nerdtree
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Open the existing NERDTree on each new tab.
+autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
+nnoremap <C-n> :NERDTreeToggle<CR>
 
 " style mode
 set cc=80
 set title
 
 set incsearch
+set autoindent 
 
 au BufNewFile,BufRead *.py 
 	\ set tabstop=4 
 	\ softtabstop=4 
 	\ shiftwidth=4 
 	\ expandtab 
-	\ autoindent 
 	\ fileformat=unix 
 
 au BufNewFile,BufRead *.md
 	\ set textwidth=79
 	\ fileformat=unix
 	\ autoindent
+au BufNewFile,BufRead *.html,*.css,*.scss,*.js
+	\ set tabstop=2
+	\ softtabstop=2
+	\ shiftwidth=2
+	\ expandtab
 
+
+colorschem custom

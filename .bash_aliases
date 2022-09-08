@@ -6,6 +6,10 @@ if [ -f /usr/bin/batcat ]; then
 	alias cat=batcat
 fi
 
+if [ -f /usr/bin/nvim ]; then
+	alias vi=nvim
+fi
+
 if [ -f /usr/bin/lsd ]; then
 	alias ls='lsd --group-dirs=first -F'
 	alias ll='ls -al'
@@ -14,7 +18,16 @@ if [ -f /usr/bin/lsd ]; then
 fi
 
 alias ggraph='git log --all --decorate --oneline --graph'
-alias vi=nvim
 alias mkdir='mkdir -p'
-function mkcd () { mkdir $1 && cd $_ }
-function ginit() { mkdir $1 && cd $_ && git init }
+tmptouch (){
+	stamp=$(date +'%Y%m%d%H%M%s')
+	touch "$1$stamp"
+}
+mkcd () {
+	mkdir $1 && cd $_
+}
+ginit() {
+	mkdir $1 && cd $_
+	git init
+}
+

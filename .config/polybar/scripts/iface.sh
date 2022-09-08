@@ -5,7 +5,9 @@
 # [ $nips -eq 2 ]  && awk '{printf (NR%2==0) ? $2 : $2" | "}' <<< $ips || awk '{printf $2 }' <<< $ips
 
 ips=$(ip a | grep 'wlp6s0\|tun0'  | grep -Eo 'inet[[:space:]]([0-9]{1,3}\.?){4}')
-if [ $(wc -l <<< $ips ) -eq 2 ];then
+if [ -z "$ips" ]; then
+	echo -e "%{U#cb5760} :("
+elif [ $(wc -l <<< $ips ) -eq 2 ]; then
 	connected=1
 	ips_format=$(awk '{printf (NR%2==0) ? $2 : $2" | "}' <<< $ips)
 	echo -e "%{F#999f63}%{U#999f63}$ips_format"

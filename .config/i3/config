@@ -116,6 +116,7 @@ set $ws7    "7"
 set $ws8    "8"
 set $ws9    "9"
 set $ws10   "10"
+set $ws11	scratchpad
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -128,7 +129,7 @@ bindsym $mod+7 workspace $ws7
 bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
-bindsym $mod+minus workspace $ws11
+bindsym $mod+minus $ws11 show
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace $ws1
@@ -141,8 +142,10 @@ bindsym $mod+Shift+7 move container to workspace $ws7
 bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
-bindsym $mod+Shift+minus move container to workspace $ws11
+bindsym $mod+Shift+minus move $Ws11
 
+#show the sub-mail scratchpad window
+bindsym $mod+g [title="^Sup ::"] $ws11 show
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -222,12 +225,14 @@ bar {
 }
 
 
-exec feh --bg-fill /home/lucas/Pictures/wallpapers/OsfFKJ0.jpg
-exec picom -b -f --experimental-backends
-exec xrandr --output HDMI-0 --auto --right-of DP-1
-exec setxkbmap -layout us,es
-exec setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3status ; polybar-msg action "#keyboard.hook.0"
-exec ~/.config/polybar/launch.sh
+exec --no-startup-id feh --bg-fill /home/lucas/Pictures/wallpapers/OsfFKJ0.jpg
+exec --no-startup-id picom -b -f --experimental-backends
+exec --no-startup-id xrandr --output HDMI-0 --auto --right-of DP-1
+exec --no-startup-id setxkbmap -layout us,es
+exec --no-startup-id setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3status ; polybar-msg action "#keyboard.hook.0"
+exec --no-startup-id ~/.config/polybar/launch.sh
+exec --no-startup-id ~/.config/conky/minimal_conky/start.sh
+exec --no-startup-id redshift -l 40.59:-3.712
 bindsym $mod1+Shift exec $refresh_i3status 
 #exec /home/lucas/.config/polybar/launch.sh
 #for_window [class="^.*"] border pixel 0
@@ -252,10 +257,10 @@ bindsym $mod+mod1+l exec dm-tool lock
 # bindsym $mod+Shift+f exec locate -i / | rofi -threads 0 -width 100 -dmenu -i -p "Find"
 
 #rofi
-bindsym $mod+d exec $rofi appmenu
-bindsym $mod+Shift+d exec $rofi tabmenu
-bindsym $mod+Shift+e exec $rofi powermenu 
-bindsym $mod+t exec $rofi run 
+bindsym $mod+d exec --no-startup-id $rofi appmenu
+bindsym $mod+Shift+d exec --no-startup-id $rofi tabmenu
+bindsym $mod+Shift+e exec --no-startup-id $rofi powermenu 
+bindsym $mod+t exec --no-startup-id $rofi run 
 
 
 # bindsym $mod+d exec rofi -no-lazy-grab -drun-display-format {name} -show drun -modi drun -theme ~/.config/rofi/themes/launcher.rasi
@@ -269,6 +274,7 @@ bindsym $mod+Shift+t exec --no-startup-id /opt/Telegram/Telegram
 bindsym $mod+F1 exec  --no-startup-id ~/.config/i3blocks/togle_bluetooth.sh
 bindsym $mod+F2 exec  --no-startup-id ~/.config/i3blocks/togle_bluetooth.sh
 
+
 default_border pixel 1
 client.focused #343746 #343746 #F8F8F2 #343746 #5e637f
 client.focused #343746 #5e637f #F8F8F2 #343746
@@ -280,5 +286,5 @@ gaps inner 10
 gaps outer 0
 # gaps left 29
 # gaps right 29
-#smart_gaps on
+smart_gaps on
 

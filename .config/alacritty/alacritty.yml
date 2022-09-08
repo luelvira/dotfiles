@@ -10,7 +10,7 @@ window:
 font:
   normal:
     family:
-      HackNerd Font
+     Fira Code
   size: 9
 
   offset:
