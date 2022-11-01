@@ -1,7 +1,7 @@
 set $mod Mod4
 set $rofi ~/.config/rofi/scripts/launch.sh
 
-font pango:monospace 8
+font pango:"Nimbus Sans" 8
 
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
@@ -233,6 +233,8 @@ exec --no-startup-id setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3stat
 exec --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id ~/.config/conky/minimal_conky/start.sh
 exec --no-startup-id redshift -l 40.59:-3.712
+#exec --no-startup-id rclone --vfs-cache-mode writes mount "drive":  /home/lucas/Documents/Master/apuntes/drive
+
 bindsym $mod1+Shift exec $refresh_i3status 
 #exec /home/lucas/.config/polybar/launch.sh
 #for_window [class="^.*"] border pixel 0

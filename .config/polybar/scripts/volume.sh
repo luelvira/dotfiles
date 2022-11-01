@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CARD="${1:-1}"
+CARD="${1:-2}"
 MIXER="${2:-default}" # use pulse for pulseaudio, default is alsa
 
 
