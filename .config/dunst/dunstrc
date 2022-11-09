@@ -8,10 +8,11 @@
     # Follow monitor with mouse
     follow = mouse
 
-    width = (0,400)
+    #width = (0,400)
     # height = 260
     origin = top-right
     offset = 35x55
+    geometry = "300x5-35+55"
 
     progress_bar = true
     progress_bar_height = 10
@@ -43,7 +44,6 @@
 
     # Sort messages by urgency.
     sort = no
-
     # Disable idle time
     idle_threshold = 0
 

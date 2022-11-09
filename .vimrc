@@ -107,4 +107,3 @@ au BufNewFile,BufRead *.html,*.css,*.scss,*.js
 	\ expandtab
 
 
-colorschem custom

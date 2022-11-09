@@ -6,9 +6,9 @@ if [ -f /usr/bin/batcat ]; then
 	alias cat=batcat
 fi
 
-if [ -f /usr/bin/nvim ]; then
-	alias vi=nvim
-fi
+#if [ -f /usr/bin/nvim ]; then
+	#alias vi=nvim
+#fi
 
 if [ -f /usr/bin/lsd ]; then
 	alias ls='lsd --group-dirs=first -F'
