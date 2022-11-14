@@ -5,7 +5,7 @@ set updatetime=1000
 
 set number
 set nowrap
-"set cc=80
+set cc=80
 
 set foldenable
 set foldmethod=syntax
@@ -42,7 +42,7 @@ vnoremap <F5> :set spell!<CR>:set spelllang=es<CR>
 " plugins
 call plug#begin()
 Plug 'preservim/nerdcommenter'
-"Plug 'neoclide/coc.nvim'
+Plug 'neoclide/coc.nvim'
 Plug 'ap/vim-css-color'
 Plug 'sheerun/vim-polyglot'
 
@@ -52,6 +52,10 @@ Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/nerdtree'
 Plug 'neovim/nvim-lspconfig'
 Plug 'norcalli/nvim-colorizer.lua'
+
+Plug 'aklt/plantuml-syntax'
+Plug 'weirongxu/plantuml-previewer.vim'
+Plug 'tyru/open-browser.vim'
 call plug#end()
 
 
