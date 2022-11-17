@@ -115,4 +115,6 @@ if [ -f ~/.bash_functions ]; then
 fi
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/.local/bin/scripts
+if [ -d  "$HOME/.cargo/env" ]; then
 . "$HOME/.cargo/env"
+fi

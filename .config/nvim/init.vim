@@ -52,6 +52,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/nerdtree'
 Plug 'neovim/nvim-lspconfig'
 Plug 'norcalli/nvim-colorizer.lua'
+Plug 'miyakogi/conoline.vim'
 call plug#end()
 
 
