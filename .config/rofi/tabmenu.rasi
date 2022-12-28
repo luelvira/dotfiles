@@ -1,7 +1,7 @@
-@theme "default.rasi"
 configuration {
 	font: "Hack Nerd Font 10";
 }
+@theme "default.rasi"
 
 #mainbox {
 	children: [listview];

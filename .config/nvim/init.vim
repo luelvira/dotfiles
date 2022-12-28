@@ -36,27 +36,33 @@ nnoremap <F4> :set list!<CR>
 inoremap <F4> :set list!<CR>
 vnoremap <F4> :set list!<CR>
 nnoremap <F5> :set spell!<CR>:set spelllang=es<CR>
-inoremap <F5> :set spell!<CR>:set spelllang=es<CR>
-vnoremap <F5> :set spell!<CR>:set spelllang=es<CR>
+nnoremap <F6> :set spell!<CR>:set spelllang=en<CR>
+" turn a snake into a camel
+nnoremap <Leader>+ mmviw:s/\%V_\(.\)/\U\1/g<CR>:nohlsearch<CR>`m
+" turn a camel into a snake
+nnoremap <Leader>_ mmviw:s/\%V\(\u\)/_\L\1/g<CR>:nohlsearch<CR>`m
 
 " plugins
 call plug#begin()
 Plug 'preservim/nerdcommenter'
-Plug 'neoclide/coc.nvim'
 Plug 'ap/vim-css-color'
 Plug 'sheerun/vim-polyglot'
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'tpope/vim-fugitive'
+"Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/nerdtree'
 Plug 'neovim/nvim-lspconfig'
-Plug 'norcalli/nvim-colorizer.lua'
 Plug 'miyakogi/conoline.vim'
 
 Plug 'aklt/plantuml-syntax'
-Plug 'weirongxu/plantuml-previewer.vim'
-Plug 'tyru/open-browser.vim'
+"Plug 'weirongxu/plantuml-previewer.vim'
+"Plug 'tyru/open-browser.vim'
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plug 'dracula/vim', { 'as': 'dracula' }
+
 call plug#end()
 
 
@@ -76,9 +82,12 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 
 
 
+
 au BufNewFile,BufRead *.md,*.tex
 	\ set textwidth=79
 	\ fileformat=unix
 	\ autoindent
 	\ wrap
 	
+colorscheme tokyonight-night
+"colorscheme dracula

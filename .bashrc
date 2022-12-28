@@ -118,3 +118,14 @@ export PATH=$PATH:~/.local/bin/scripts
 if [ -d  "$HOME/.cargo/env" ]; then
 . "$HOME/.cargo/env"
 fi
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
+
+#(/usr/bin/cat ~/.cache/wal/sequences &)
+if [ -f ~/.cache/wal/sequences ]; then
+    (/usr/bin/cat ~/.cache/wal/sequences &)
+fi
+if [ -f ~/.bash_completion ]; then
+    source ~/.bash_completion/alacritty
+fi
