@@ -31,7 +31,13 @@ fi
 alias ggraph='git log --all --decorate --oneline --graph'
 ginit() {
 	mkdir $1 && cd $_
+	echo "# $1" >> README.md
 	git init
+	git add README.md
+	git commit -m "first commit"
+	git branch -M main
+	git remote add origin "git@github.com:luelvira/$1.git"
+
 }
 
 # alias for custom functions
@@ -44,3 +50,7 @@ mkcd () {
 	mkdir $1 && cd $_
 }
 
+tmpmkdir() {
+	stamp=$(date +'%Y-%m-%d-%H.%M.%s')
+	mkdir "$1$stamp"
+}

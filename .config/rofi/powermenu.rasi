@@ -5,6 +5,8 @@ configuration {
 }
 
 
+
+@theme "/dev/null"
 @import "colors.rasi"
 
 

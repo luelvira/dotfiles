@@ -60,9 +60,10 @@ Plug 'aklt/plantuml-syntax'
 "Plug 'tyru/open-browser.vim'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
-Plug 'dracula/vim', { 'as': 'dracula' }
 
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'ryanoasis/vim-devicons' " always load this the last
 call plug#end()
 
 
@@ -89,5 +90,5 @@ au BufNewFile,BufRead *.md,*.tex
 	\ autoindent
 	\ wrap
 	
-colorscheme tokyonight-night
+"colorscheme tokyonight-night
 "colorscheme dracula

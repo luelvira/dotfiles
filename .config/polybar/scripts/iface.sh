@@ -19,8 +19,8 @@ fi
 
 case $1 in
 	1) if [ $connected -eq 0 ]; then
-			nmcli con up id UC3M_CON_CA passwd-file ~/Documents/openvpn/.passwordfile > /dev/null
+			nmcli con up id UC3M_CON_CA_PAS  > /dev/null
 		else
-			nmcli con down UC3M_CON_CA > /dev/null 
+			nmcli con down UC3M_CON_CA_PAS > /dev/null 
 		fi
 esac

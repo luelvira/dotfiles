@@ -229,7 +229,7 @@ exec --no-startup-id picom -b -f --experimental-backends
 exec --no-startup-id xrandr --output HDMI-0 --auto --right-of DP-1
 exec --no-startup-id setxkbmap -layout 'us,es'
 exec --no-startup-id setxkbmap -option 'grp:alt_shift_toggle' && $refresh_i3status ; polybar-msg action "#keyboard.hook.0"
-exec --no-startup-id ~/.config/polybar/launch.sh
+exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id ~/.config/conky/minimal_conky/start.sh
 exec --no-startup-id redshift -l 40.59:-3.712
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
@@ -263,6 +263,7 @@ bindsym $mod+d exec --no-startup-id $rofi appmenu
 bindsym $mod+Shift+d exec --no-startup-id $rofi tabmenu
 bindsym $mod+Shift+e exec --no-startup-id $rofi powermenu 
 bindsym $mod+t exec --no-startup-id $rofi run 
+bindsym $mod+b exec --no-startup-id $rofi search
 
 
 # bindsym $mod+d exec rofi -no-lazy-grab -drun-display-format {name} -show drun -modi drun -theme ~/.config/rofi/themes/launcher.rasi

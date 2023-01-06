@@ -267,3 +267,4 @@ fi
 
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/.local/bin/scripts
+ZSH_THEME=powerlevel10k/powerlevel10k
