@@ -54,3 +54,8 @@ tmpmkdir() {
 	stamp=$(date +'%Y-%m-%d-%H.%M.%s')
 	mkdir "$1$stamp"
 }
+
+gbackup() {
+    stamp=$(date '+%Y-%m-%dT%H:%m')
+    git commit -m $stamp
+}
