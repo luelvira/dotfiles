@@ -44,26 +44,26 @@ nnoremap <Leader>_ mmviw:s/\%V\(\u\)/_\L\1/g<CR>:nohlsearch<CR>`m
 
 " plugins
 call plug#begin()
-Plug 'preservim/nerdcommenter'
-Plug 'ap/vim-css-color'
-Plug 'sheerun/vim-polyglot'
-
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-"Plug 'tpope/vim-fugitive'
+Plug 'preservim/nerdcommenter'
 Plug 'scrooloose/nerdtree'
+
+Plug 'ap/vim-css-color'
+Plug 'sheerun/vim-polyglot'
 Plug 'neovim/nvim-lspconfig'
 Plug 'miyakogi/conoline.vim'
 
 Plug 'aklt/plantuml-syntax'
-"Plug 'weirongxu/plantuml-previewer.vim'
-"Plug 'tyru/open-browser.vim'
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'tpope/vim-surround'
 Plug 'ryanoasis/vim-devicons' " always load this the last
+" Plug 'ckunte/latex-snippets-vim', { 'tag': '*' }
+Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
 
@@ -74,12 +74,12 @@ let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 "
 " nerdtree
 " Exit Vim if NERDTree is the only window remaining in the only tab.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Close the tab if NERDTree is the only window remaining in it.
-autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Open the existing NERDTree on each new tab.
-autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
-nnoremap <C-n> :NERDTreeToggle<CR>
+" autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
+" nnoremap <C-n> :NERDTreeToggle<CR>
 
 
 
@@ -90,5 +90,12 @@ au BufNewFile,BufRead *.md,*.tex
 	\ autoindent
 	\ wrap
 	
-"colorscheme tokyonight-night
-"colorscheme dracula
+" colorscheme tokyonight-night
+" colorscheme dracula
+
+
+" set cursorline
+" hi cursorline cterm=none term=none
+" autocmd WinEnter * setlocal cursorline
+" autocmd WinLeave * setlocal nocursorline
+" highlight CursorLine guibg=#303000 ctermbg=234

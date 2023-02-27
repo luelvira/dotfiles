@@ -59,3 +59,7 @@ gbackup() {
     stamp=$(date '+%Y-%m-%dT%H:%m')
     git commit -m $stamp
 }
+
+# make an alias to prevent accidental rm -rf
+alias rm='rm -I'
+alias emacs='emacsclient --create-frame --alternate-editor=""'
