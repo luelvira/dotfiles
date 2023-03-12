@@ -36,23 +36,12 @@ set ruler
 
 
 
+
 " disable arrows keys in insert mode
 inoremap <left> <nop>
 inoremap <right> <nop>
 inoremap <up> <nop>
 inoremap <down> <nop>
-
-" disable arrows keys in normal mode
-nnoremap <left> <nop>
-nnoremap <right> <nop>
-nnoremap <up> <nop>
-nnoremap <down> <nop>
-
-" disable arrows keys in visual mode
-vnoremap <left> <nop>
-vnoremap <right> <nop>
-vnoremap <up> <nop>
-vnoremap <down> <nop>
 
 " custom mapping
 vnoremap <C-r> "hy:%s/<C-r>h//gc<Left><left><left>
@@ -69,7 +58,6 @@ call plug#begin()
 " snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'joegesualdo/jsdoc.vim'
 "Plug 'mattn/emmet-vim'
 " tpope
 Plug 'tpope/vim-surround'
@@ -78,26 +66,27 @@ Plug 'tpope/vim-repeat'
 
 " comments
 Plug 'scrooloose/nerdcommenter'
-
 " navigation
 Plug 'preservim/nerdtree'
 
 " lsp
-Plug 'dense-analysis/ale'
+"Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " languages
 Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
-Plug 'craigemery/vim-autotag'
+"Plug 'craigemery/vim-autotag'
+Plug 'davidhalter/jedi-vim'
 
 " git
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
 "color
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+"Plug 'vim-airline/vim-airline'
+"Plug 'vim-airline/vim-airline-themes'
 Plug 'dracula/vim', { 'as': 'dracula' }
 
+" local plugins
+Plug '/home/lucas/Documents/git/vim-todo'
 call plug#end()
 
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -173,4 +162,65 @@ autocm BufNewFile,BufRead *.md,*.tex set
 	\ spell
 	\ spelllang=es
 	\ wrap
+
+
+" TODO plugin (this should be in a separate file)
+
+let g:todo_file = '~/Documents/Obsidian_vault/TODO.md'
+function! TodoOpen()
+  let l:todo = expand(g:todo_file)
+  if filereadable(l:todo)
+    execute 'edit' l:todo
+  else
+    execute 'edit' l:todo
+    call append(0, ['# TODO'])
+  endif
+  normal! G
+  startinsert!
+endfunction
+
+function! TodoAdd()
+  let l:line = line('.')
+  let l:todo = getline('.')
+  " check if the line is empty
+  if l:todo == ''
+    call append(l:line, ['- [ ] '])
+  else
+    call append(l:line, ['- [ ] ' . l:todo])
+  endif
+  execute l:line .. 'delete'
+  call cursor(l:line+1, 0)
+  normal! $
+  startinsert!
+endfunction
+
+function! TodoDone()
+  let l:line = line('.')
+  let l:todo = getline('.')
+  " check if the line is empty
+  if l:todo == ''
+    return
+  elseif l:todo =~ '\[x\]'
+    call setline(l:line, substitute(l:todo, '\[x\]', '[ ]', ''))
+  else
+    call setline(l:line, substitute(l:todo, '\[ \]', '[x]', ''))
+  endif
+
+endfunction
+
+
+command! TodoOpen call TodoOpen()
+autocmd BufNewFile,BufRead TODO.md
+  \ command! TodoAdd call TodoAdd() |
+  \ command! TodoDone call TodoDone() |
+  \ nnoremap <leader>ta :TodoAdd<CR> |
+  \ nnoremap <leader>td :TodoDone<CR>
+
+augroup vim-colors-xcode
+    autocmd!
+augroup END
+
+autocmd vim-colors-xcode ColorScheme * hi Comment        cterm=italic gui=italic
+autocmd vim-colors-xcode ColorScheme * hi SpecialComment cterm=italic gui=italic
+
 
