@@ -1,20 +1,63 @@
+---
+tangle: .vimrc2
+Author: Lucas Elvira Martín
+date: 2023-04-02
+Description: My vim configuration
+---
+
+
+# My vim configuration
+This is my custom vim configuration writen in markdown and tangle to vimscript
+using vim-tangle plugin.
+
+## Set up common settings
+
+### Default values
+First we need to load the default vim because, if we don't do that, we will loss
+some of the default settings
+
+```vimscript
 source $VIMRUNTIME/defaults.vim
+```
+Next there is some of the global variables and mode
+
+```vimscript
 syntax on
 filetype on
 filetype plugin indent on
+```
 
-" general rules
+### Global rules
+
+This rules enable in this order:
+
+1. read the first of last line with vim setting for the current buffer
+2. Display numbers
+3. Disable mermant highlight after search something
+4. Allow incremental search
+5. Disable mouse
+6. Disable wrap lines
+7. Dispaly a line in the column number 80
+8. Add space to the hidden characters that can be displayed
+9. Display line and column on the bottom
+
+
+```vimscript
 set modelines=1
 set number
 set nohlsearch
 set incsearch
 set mouse=c
-set number
 set nowrap
 set cc=80
-set lcs+=space:·
+set listchars+=space:·,tab:»\ ,trail:~,extends:>,precedes:<,nbsp:·
+set ruler
+```
 
-" indent rules
+#### Indent and folding rules
+
+```vimscript
+" indent
 set expandtab
 set copyindent
 set preserveindent
@@ -28,58 +71,85 @@ set foldenable
 set foldmethod=syntax
 set foldlevel=99
 set foldnestmax=10
+```
 
-" display chars
-set listchars+=space:·,tab:»\ ,trail:~,extends:>,precedes:<,nbsp:·
 
+#### Disable status line 
+
+```vimscript
 " status bar
 set noshowmode
 set noshowcmd
 set laststatus=0
-set ruler
+```
 
 
+compatibility mode has some problems with new plugins
+```vimscript
 set nocompatible
+```
 
+### Custom mapping
 
-
+```vimscript
 " disable arrows keys in insert mode
 inoremap <left> <nop>
 inoremap <right> <nop>
 inoremap <up> <nop>
 inoremap <down> <nop>
+```
 
-" custom mapping
+```vimscript
 vnoremap <C-r> "hy:%s/<C-r>h//gc<Left><left><left>
-
-
 vnoremap <Leader>y y:call system("xclip -i -selection c", getreg("\""))<CR>
-
 nnoremap <F3> :set relativenumber!<CR>
-nnoremap <F4> :set list!<CR>
-nnoremap <F5> :set spell!<CR>:set spelllang=es<CR>
-nnoremap <F6> :set spell!<CR>:set spelllang=en<CR>
+nnoremap <F4> :setlocal list!<CR>
+nnoremap <F5> :setlocal spell<CR>:set spelllang=es<CR>
+nnoremap <F6> :setlocal spell<CR>:set spelllang=en<CR>
+```
 
+## Install plugins
+
+For the plugin managment I use Pluged. To install it for vim:
+
+```shell
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
+To install in neovim
+
+```shell
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+```
+
+### List of pluggins
+
+```vimscript
 call plug#begin()
+
 " snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 "Plug 'mattn/emmet-vim'
-" tpope
+
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 
 "git
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
+
 " comments
 Plug 'scrooloose/nerdcommenter'
+
 " navigation
 Plug 'preservim/nerdtree'
 
 " lsp
-" Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
 " languages
 Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
@@ -100,34 +170,60 @@ Plug 'junegunn/fzf.vim'
 " custom pluging
 Plug 'luelvira/vim-tangle'
 call plug#end()
+```
 
+### Configure UltiSnip
+```vimscript
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 let g:UltiSnipsListSnippets="<C-l>"
+```
 
+### Configure repeat
+This plugin allow to repeat command similar to surround
 
+```vimscript
 silent! call repeat#set("\<Plug>MyWonderfulMap", v:count)
+````
 
-" nerdtree
+### nerdtree
+Display a file manager on the left panel and allows navigation over it
+
+```vimscript
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Close the tab if NERDTree is the only window remaining in it.
 autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 "" Open the existing NERDTree on each new tab.
 autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
 nnoremap <C-n> :NERDTreeToggle<CR>
+```
 
 
-" vimtex
+### vimtex
+
+This plugin improves the experience of write in latex with vim
+
+```vimscript
 let g:vimtex_view_method = 'zathura'
 let g:vimtex_quickfix_mode = 0
 let g:tex_flavor = 'latex'
 " hidden latex code when the pointer is over it
 " set conceallevel=1
+```
 
+### jsdoc
+
+Plugin to make easy write javascript documentation
+```vimscript
 let g:javascript_plugin_jsdoc = 1
+```
 
-" coc
+### Coc
+Coc is a lsp plugin. It uses nodejs as backend and has its own package manager.
+To call it, you run `:CocInstall ` followed for the name of the package.
+
+```vimscript
 set encoding=utf-8
 " Some servers have issues with backup files, see #649
 set nobackup
@@ -156,24 +252,10 @@ function! ShowDocumentation()
     call feedkeys('K', 'in')
   endif
 endfunction
+```
+Coc has a problem with the color scheme if you don't use a theme
 
-" colors
-"colorscheme dracula
-
-" text mode
-autocm BufNewFile,BufRead *.md,*.tex set 
-	\ textwidth=80
-	\ fileformat=unix
-	\ autoindent
-	\ cc=80
-	\ spell
-	\ spelllang=es
-	\ wrap
-
-
-autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
-
-
+```vimscript
 " Colorscheme for coc
 func! s:my_colors_setup() abort
   highlight CocFloating ctermbg=Black " For background color
@@ -182,5 +264,29 @@ endfunc
 augroup colorscheme_coc_setup | au!
   au VimEnter * call s:my_colors_setup()
 augroup END
+
+```
+
+" colors
+" colorscheme dracula
+
+## Set local settings
+
+With autcm you can enable or disable some settings for the current buffer.
+
+```vimscript
+" text mode
+autocm BufNewFile,BufRead *.md,*.tex setlocal
+	\ textwidth=80
+	\ fileformat=unix
+	\ autoindent
+	\ cc=80
+	\ spell
+	\ spelllang=es
+	\ wrap
+autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
+```
+
+
 
 
