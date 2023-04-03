@@ -20,10 +20,11 @@ fi
 
 if [ -f /usr/bin/exa ]; then
 	alias ls='exa --group-directories-first -F'
-	alias ll='ls -al'
-	alias la='ls -A'
-	alias lha='ls -lhA'
 fi
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias lha='ls -lhA'
 
 
 # alias for git common commands
@@ -61,5 +62,5 @@ gbackup() {
 }
 
 # make an alias to prevent accidental rm -rf
-alias rm='rm -I'
+alias rm='rm -i'
 alias emacs='emacsclient --create-frame --alternate-editor=""'

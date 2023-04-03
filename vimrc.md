@@ -1,5 +1,5 @@
 ---
-tangle: .vimrc2
+tangle: .vimrc
 Author: Lucas Elvira Martín
 date: 2023-04-02
 Description: My vim configuration
@@ -91,6 +91,8 @@ set nocompatible
 
 ### Custom mapping
 
+I don't like to use arrows keys in insert mode because it is a reference of the mode I am in. So I disable them.
+
 ```vimscript
 " disable arrows keys in insert mode
 inoremap <left> <nop>
@@ -106,6 +108,9 @@ nnoremap <F3> :set relativenumber!<CR>
 nnoremap <F4> :setlocal list!<CR>
 nnoremap <F5> :setlocal spell<CR>:set spelllang=es<CR>
 nnoremap <F6> :setlocal spell<CR>:set spelllang=en<CR>
+
+nnoremap <C-b> :bnext<CR>
+nnoremap <C-S-b> :bprevious<CR>
 ```
 
 ## Install plugins
@@ -162,9 +167,9 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 " project management
 Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-obsession'
-Plug 'vim-ctrlspace/vim-ctrlspace'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+
+" ctags
+Plug 'ludovicchabant/vim-gutentags'
 
 
 " custom pluging
@@ -264,11 +269,21 @@ endfunc
 augroup colorscheme_coc_setup | au!
   au VimEnter * call s:my_colors_setup()
 augroup END
-
 ```
 
 " colors
 " colorscheme dracula
+
+### Gutentags
+This plugin allows to generate tags for the current project. It uses ctags and cscope.
+
+```vimscript
+let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
+let g:gutentags_cache_dir = '~/.cache/gutentags'
+let g:gutentags_ctags_tagfile = '.tags'
+let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
+let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin']
+```
 
 ## Set local settings
 
@@ -286,7 +301,3 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ wrap
 autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
 ```
-
-
-
-
