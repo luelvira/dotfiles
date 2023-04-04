@@ -97,6 +97,11 @@ certificate. This certificates should be in the same folder as the **realpath**
 of the scrpt, inside another folder named `ssl` and the names of the key and
 cert file should be `/ssl/key.pem` and `/ssl/cert.pem`
 
+#### Projects
+
+This script generate a interactive menu in bash to navigate from your currents
+projects. Do it has a lot of thinks to learn. See [[03_PERMANENT_NOTES/TOOLS_BASH_SCRIPTS_PROJECTS|Projects documentation]]
+
 
 
 

@@ -74,7 +74,13 @@ Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
 
+" themes
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'arcticicestudio/nord-vim'
+
+" fluzzy finder
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 " project management
 Plug 'mhinz/vim-startify'
@@ -140,6 +146,16 @@ endfunc
 augroup colorscheme_coc_setup | au!
   au VimEnter * call s:my_colors_setup()
 augroup END
+" colors
+" colorscheme dracula
+colorscheme nord
+" nord theme
+set cursorline
+let g:nord_cursor_line_number_background = 1
+let g:nord_bold = 1
+let g:nord_italic = 1
+" let g:nord_italic_comments = 1
+" let g:nord_underline = 1
 let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
 let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
@@ -154,4 +170,5 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ spell
 	\ spelllang=es
 	\ wrap
+au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
 autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md

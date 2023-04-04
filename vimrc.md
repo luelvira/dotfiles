@@ -5,7 +5,6 @@ date: 2023-04-02
 Description: My vim configuration
 ---
 
-
 # My vim configuration
 This is my custom vim configuration writen in markdown and tangle to vimscript
 using vim-tangle plugin.
@@ -31,9 +30,9 @@ filetype plugin indent on
 
 This rules enable in this order:
 
-1. read the first of last line with vim setting for the current buffer
+1. Read the first of last line with vim setting for the current buffer
 2. Display numbers
-3. Disable mermant highlight after search something
+3. Disable highlight after search something
 4. Allow incremental search
 5. Disable mouse
 6. Disable wrap lines
@@ -162,7 +161,13 @@ Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
 
+" themes
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'arcticicestudio/nord-vim'
+
+" fluzzy finder
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 " project management
 Plug 'mhinz/vim-startify'
@@ -203,7 +208,6 @@ autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTa
 autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
 nnoremap <C-n> :NERDTreeToggle<CR>
 ```
-
 
 ### vimtex
 
@@ -271,8 +275,28 @@ augroup colorscheme_coc_setup | au!
 augroup END
 ```
 
+## Set a custom theme
+
+The themes are installed with vim-plug. To set a theme, you need to add the
+following line to your vimrc with the name of the theme you want to use. I use
+nord theme.
+
+```vimscript
 " colors
 " colorscheme dracula
+colorscheme nord
+```
+
+### Configure the theme
+```vimscript
+" nord theme
+set cursorline
+let g:nord_cursor_line_number_background = 1
+let g:nord_bold = 1
+let g:nord_italic = 1
+" let g:nord_italic_comments = 1
+" let g:nord_underline = 1
+```
 
 ### Gutentags
 This plugin allows to generate tags for the current project. It uses ctags and cscope.
@@ -299,5 +323,8 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ spell
 	\ spelllang=es
 	\ wrap
+au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
 autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
 ```
+
+<!-- vim: set spelllang=en: filetype=markdown -->
