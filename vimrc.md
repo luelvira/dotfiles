@@ -160,6 +160,8 @@ Plug 'sheerun/vim-polyglot'
 "Plug 'craigemery/vim-autotag'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
+Plug 'godlygeek/tabular'
+Plug 'preservim/vim-markdown'
 
 " themes
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -175,6 +177,10 @@ Plug 'tpope/vim-obsession'
 
 " ctags
 Plug 'ludovicchabant/vim-gutentags'
+
+
+" vim-table-mode
+Plug 'dhruvasagar/vim-table-mode'
 
 
 " custom pluging
@@ -308,7 +314,10 @@ let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
 let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin']
 ```
+### vim table mode
+To start the table mode `leader+tm` (leader + table mode).  Then you need to write the header delimite each item with `|` The plugin is in charge of give a space between the pipe and the words. 
 
+Once you get the header and, without leaving Insert mode, enter `||` and a horizontal line will be displayed matched with the length of the table. Then you just need to write the content of your table
 ## Set local settings
 
 With autcm you can enable or disable some settings for the current buffer.

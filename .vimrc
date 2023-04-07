@@ -73,6 +73,8 @@ Plug 'sheerun/vim-polyglot'
 "Plug 'craigemery/vim-autotag'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
+Plug 'godlygeek/tabular'
+Plug 'preservim/vim-markdown'
 
 " themes
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -88,6 +90,10 @@ Plug 'tpope/vim-obsession'
 
 " ctags
 Plug 'ludovicchabant/vim-gutentags'
+
+
+" vim-table-mode
+Plug 'dhruvasagar/vim-table-mode'
 
 
 " custom pluging

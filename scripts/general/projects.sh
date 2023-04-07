@@ -102,17 +102,28 @@ function listProjects() {
 	selected=0
 	while true; do
 		local idx=0
+printf "________             ________           __________              \n"
+printf "___  __ \__________________(_)____________  /___(_)____________ \n"
+printf "__  /_/ /_  ___/  __ \____  /_  _ \  ___/  __/_  /_  __ \_  __ \\n"
+printf "_  ____/_  /   / /_/ /___  / /  __/ /__ / /_ _  / / /_/ /  / / /\n"
+printf "/_/     /_/    \____/___  /  \___/\___/ \__/ /_/  \____//_/ /_/ \n"
+printf "                     /___/                                      \n"
 		printf "Select a project:\n" 
 
 		for line in $menu; do
 			local name=$(echo $line | cut -d, -f1)
-			local path=$(echo $line | cut -d, -f2)
+			local path=$(echo $line | cut -d, -f2 | sed "s#$HOME#~#")
 			local time=$(echo $line | cut -d, -f3)
 			local count=$(echo $line | cut -d, -f4)
+			local length=$(echo $path | wc -c)
+			if [ $length -gt 40 ]; then
+				IFS='/' read -ra ADDR <<< "$path"
+				path="~/${ADDR[1]}/.../${ADDR[-2]}/${ADDR[-1]}"
+			fi
 			if [ $idx -eq $selected ]; then
-				printf '[ %d ] \033[1m %s \033[0m %s %s %s' $idx "$name" "$path" "$time" "$count"
+				printf '[%d] \033[1;32m%-20s\033[0m %-40s %s %s' $idx "$name" "$path" "$time" "$count"
 			else
-				printf '[ %d ] %s %s %s %s' $idx "$name" "$path" "$time" "$count"
+				printf '[%d] %-20s %-40s %s %s' $idx "$name" "$path" "$time" "$count"
 			fi
 			printf '\n'
 			idx=$((idx+1))
@@ -121,20 +132,29 @@ function listProjects() {
 			fi
 		done
 		printf '\n\n'
-		for ((i=0; i<80; i++)); do
+		for ((i=0; i<120; i++)); do
 			printf '-'
 		done
 		printf '\n'
 		printf 'Press [up] and [down] to change project\n'
-		printf 'Press [enter] to select project\n'
+		#printf 'Press [enter] to select project\n'
 		printf 'Press [t] to sort by time\n'
-		printf 'Press [f] to sort by frequency\n'
+		printf 'Press [f] to sort by frequency\n\n'
 		printf 'Press [q] to quit\n'
-		printf '\n\n'
+		# Action on key press
+		tput cup 
+
+
+
 		esc=$(printf "\033")
 		read -rsn1 read_reply # read one key
 		if [[ $read_reply == $esc ]]; then # if the key is esc then read the next two chars
 			read -rsn2 read_reply
+		fi
+		# check if the key is a number
+		if [[ $read_reply =~ ^[0-9]+$ ]]; then
+			selected=$read_reply
+			break
 		fi
 		case $read_reply in
 			'[A') # up
@@ -155,11 +175,11 @@ function listProjects() {
 			"") break;;
 			't')
 				PROJECT_SORT=time
-				menu=$(get_menu)
+				get_menu
 				;;
 			'f')
 				PROJECT_SORT=count
-				menu=$(get_menu)
+				get_menu
 				;;
 			'q')  
 				selected=-1
@@ -172,16 +192,13 @@ function listProjects() {
 	done
 
 	reset_terminal
-	if [ $selected -eq -1 ]; then
-		exit 0
-	else
+	if [ ! $selected -eq -1 ]; then
 		idx=0
 		for line in $menu; do
 			if [ $idx -eq $selected ]; then
 				local name=$(echo $line | cut -d, -f1)
 				local path=$(echo $line | cut -d, -f2)
 				cd $path
-				break
 			fi
 			idx=$((idx+1))
 		done
@@ -241,7 +258,7 @@ function get_menu() {
 	if [ "$PROJECT_SORT" == "time" ]; then
 		menu=$(sort -t, -k3 -r $PROJECT_FILE)
 	elif [ "$PROJECT_SORT" == "count" ]; then
-		menu=$(sort -t, -k4 -r $PROJECT_FILE)
+		menu=$(sort -t, -k4 -r -n $PROJECT_FILE)
 	else
 		menu=$(cat $PROJECT_FILE)
 	fi
