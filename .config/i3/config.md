@@ -102,9 +102,10 @@ bindsym XF86AudioPrev exec playerctl previous
 2.  Allow to make screenshoots
 
 ``` i3config
-bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/$(date)"
-bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/$(date)"
-bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/$(date)"
+bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/$(date +'%Y-%m-%d %H-%M-%S').png" && notify-send "Picture save in ~/Pictures/$(date +'%Y-%m-%d %H-%M-%S').png"
+bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/$(date +'%Y-%m-%d %H-%M-%S').png" && notify-send "Picture save in ~/Pictures/$(date +'%Y-%m-%d %H-%M-%S').png"
+bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/$(date +'%Y-%m-%d %H-%M-%S').png" && notify-send "Picture save in ~/Pictures/$(date +'%Y-%m-%d %H-%M-%S').png"
+
 
 ## Clipboard Screenshots
 bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png

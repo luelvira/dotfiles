@@ -62,9 +62,9 @@ gbackup() {
 }
 cd() {
 	builtin cd "$@"
-	~/.local/bin/projects -s
+	bash ~/.local/bin/_projects -s
 }
-alias projects='source ~/.local/bin/projects'
+alias projection='source ~/.local/bin/_projects'
 
 # make an alias to prevent accidental rm -rf
 alias rm='rm -i'
