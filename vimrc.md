@@ -288,20 +288,24 @@ following line to your vimrc with the name of the theme you want to use. I use
 nord theme.
 
 ```vimscript
+if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme dracula
 colorscheme nord
+endif
 ```
 
 ### Configure the theme
 ```vimscript
-" nord theme
-set cursorline
-let g:nord_cursor_line_number_background = 1
-let g:nord_bold = 1
-let g:nord_italic = 1
-" let g:nord_italic_comments = 1
-" let g:nord_underline = 1
+if exists("colors_name") && colors_name == "nord"
+    " nord theme
+    set cursorline
+    let g:nord_cursor_line_number_background = 1
+    let g:nord_bold = 1
+    let g:nord_italic = 1
+    " let g:nord_italic_comments = 1
+    " let g:nord_underline = 1
+endif
 ```
 
 ### Gutentags
@@ -318,6 +322,7 @@ let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules
 To start the table mode `leader+tm` (leader + table mode).  Then you need to write the header delimite each item with `|` The plugin is in charge of give a space between the pipe and the words. 
 
 Once you get the header and, without leaving Insert mode, enter `||` and a horizontal line will be displayed matched with the length of the table. Then you just need to write the content of your table
+
 ## Set local settings
 
 With autcm you can enable or disable some settings for the current buffer.

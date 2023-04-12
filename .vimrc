@@ -152,16 +152,20 @@ endfunc
 augroup colorscheme_coc_setup | au!
   au VimEnter * call s:my_colors_setup()
 augroup END
+if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme dracula
 colorscheme nord
-" nord theme
-set cursorline
-let g:nord_cursor_line_number_background = 1
-let g:nord_bold = 1
-let g:nord_italic = 1
-" let g:nord_italic_comments = 1
-" let g:nord_underline = 1
+endif
+if exists("colors_name") && colors_name == "nord"
+    " nord theme
+    set cursorline
+    let g:nord_cursor_line_number_background = 1
+    let g:nord_bold = 1
+    let g:nord_italic = 1
+    " let g:nord_italic_comments = 1
+    " let g:nord_underline = 1
+endif
 let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
 let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
