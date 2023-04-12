@@ -100,6 +100,7 @@ function listProjects() {
 	fi
 
 	selected=0
+	screen=0
 	while true; do
 		local idx=0
 printf "________             ________           __________              \n"
@@ -137,12 +138,18 @@ printf "                     /___/                                      \n"
 		done
 		printf '\n'
 		printf 'Press [up] and [down] to change project\n'
+		printf 'Press [left] and [right] to change screen\n'
 		#printf 'Press [enter] to select project\n'
-		printf 'Press [t] to sort by time\n'
-		printf 'Press [f] to sort by frequency\n\n'
+		if [ $screen -eq 0 ]; then
+			printf 'Press [t] to sort by time\n'
+			printf 'Press [f] to sort by frequency\n\n'
+		elif [ $screen -eq 1 ]; then
+			printf 'Press [f] to forget project\n'
+			printf 'Press [d] to delete project\n\n'
+		fi
+			
 		printf 'Press [q] to quit\n'
 		# Action on key press
-		tput cup 
 
 
 
@@ -169,6 +176,18 @@ printf "                     /___/                                      \n"
 					selected=0
 				fi
 				;;
+			'[C') # right
+				screen=$((screen+1))
+				if [ $screen -eq 2 ]; then
+					screen=1
+				fi
+				;;
+			'[D') # left
+				screen=$((screen-1))
+				if [ $screen -eq -1 ]; then
+					screen=0
+				fi
+				;;
 			$'\x0a') # enter
 				break
 				;;
@@ -178,8 +197,12 @@ printf "                     /___/                                      \n"
 				get_menu
 				;;
 			'f')
-				PROJECT_SORT=count
-				get_menu
+				if [ $screen -eq 0 ]; then
+					PROJECT_SORT=count
+					get_menu
+				elif [ $screen -eq 1 ]; then
+					forgetProject
+				fi
 				;;
 			'q')  
 				selected=-1
@@ -203,6 +226,20 @@ printf "                     /___/                                      \n"
 			idx=$((idx+1))
 		done
 	fi
+}
+
+function forgetProject() {
+	idx=0
+	for line in $menu; do
+		if [ $idx -eq $selected ]; then
+			local name=$(echo $line | cut -d, -f1)
+			local path=$(echo $line | cut -d, -f2)
+			sed -i "/$name/d" $PROJECT_FILE
+		fi
+		idx=$((idx+1))
+	done
+	get_menu
+	
 }
 function setup_terminal() {
 	# Setup the terminal for the tui

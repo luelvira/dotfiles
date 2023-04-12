@@ -36,7 +36,7 @@ inoremap <right> <nop>
 inoremap <up> <nop>
 inoremap <down> <nop>
 vnoremap <C-r> "hy:%s/<C-r>h//gc<Left><left><left>
-vnoremap <Leader>y y:call system("xclip -i -selection c", getreg("\""))<CR>
+vnoremap <silent> <Leader>y :w !xclip -i -sel c<CR>
 nnoremap <F3> :set relativenumber!<CR>
 nnoremap <F4> :setlocal list!<CR>
 nnoremap <F5> :setlocal spell<CR>:set spelllang=es<CR>
@@ -63,6 +63,7 @@ Plug 'scrooloose/nerdcommenter'
 
 " navigation
 Plug 'preservim/nerdtree'
+Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -178,3 +179,7 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ wrap
 au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
 autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
+" if exists('$TMUX')
+" let &t_ZH="\e[3m"
+" let &t_ZR="\e[23m"
+" endif
