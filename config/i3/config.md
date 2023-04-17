@@ -321,20 +321,24 @@ bindsym $mod+Shift+r restart
 
 ### Launch custom programs
 
-| action                 | shortcuts    |
-|------------------------|--------------|
-| launch terminal        | $mod+return  |
-| Launch firefox         | $mod+shift+b |
-| Launch telegram        | $mod+shift+t |
-| Connect headphones     | $mod+F1      |
-| Change keyboard layout | alt+shift    |
-| Connect UC3M vpn       | $mod+F2      |
-|------------------------|--------------|
+| action                     | shortcuts    |
+|----------------------------|--------------|
+| launch terminal            | $mod+return  |
+| Launch firefox             | $mod+shift+b |
+| Launch telegram            | $mod+shift+t |
+| Connect headphones         | $mod+F1      |
+| Change keyboard layout     | alt+shift    |
+| Connect UC3M vpn           | $mod+F2      |
+| open wiki.vim home         | $mod+alt+w   |
+| open wiki.vim journal home | $mod+alt+j   |
+|----------------------------|--------------|
 
 ``` i3config
 bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+b exec --no-startup-id firefox
 bindsym $mod+Shift+t exec --no-startup-id telegram-desktop
+bindsym $mod+mod1+w exec --no-startup-id i3-sensible-terminal -e vi +WikiIndex
+bindsym $mod+mod1+j exec --no-startup-id i3-sensible-terminal -e vi +WikiJournal
 
 exec_always "setxkbmap -option 'grp:alt_shift_toggle' -layout us,es"
 bindsym $mod+F1 exec  --no-startup-id ~/.local/bin/bluetooth.sh
@@ -412,5 +416,18 @@ exec --no-startup-id picom -b -f --experimental-backends
 exec --no-startup-id xrandr --output HDMI-0 --auto --right-of DP-1
 exec --no-startup-id redshift -l 40.59:-3.712
 exec --no-startup-id /home/lucas/.config/polybar/launch.sh
+exec --no-startup-id /home/lucas/.local/bin/aw-qt
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 ```
+
+# i3 gaps
+
+I3 gaps us a variant of i3 that allows to separate windows
+
+``` i3config
+smart_gaps on
+gaps inner 2px
+gaps outer 2px
+```
+
+<!-- vim: set spelllang=en: -->

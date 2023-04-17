@@ -5,6 +5,30 @@ date: 2023-04-02
 Description: My vim configuration
 ---
 
+*Contents*
+* [My vim configuration](#My vim configuration)
+    * [Set up common settings](#My vim configuration#Set up common settings)
+        * [Default values](#My vim configuration#Set up common settings#Default values)
+        * [Global rules](#My vim configuration#Set up common settings#Global rules)
+            * [Indent and folding rules](#My vim configuration#Set up common settings#Global rules#Indent and folding rules)
+            * [Disable status line ](#My vim configuration#Set up common settings#Global rules#Disable status line )
+        * [Custom mapping](#My vim configuration#Set up common settings#Custom mapping)
+    * [Install plugins](#My vim configuration#Install plugins)
+        * [List of pluggins](#My vim configuration#Install plugins#List of pluggins)
+        * [Configure UltiSnip](#My vim configuration#Install plugins#Configure UltiSnip)
+        * [Configure repeat](#My vim configuration#Install plugins#Configure repeat)
+        * [nerdtree](#My vim configuration#Install plugins#nerdtree)
+        * [vimtex](#My vim configuration#Install plugins#vimtex)
+        * [jsdoc](#My vim configuration#Install plugins#jsdoc)
+        * [Coc](#My vim configuration#Install plugins#Coc)
+    * [Set a custom theme](#My vim configuration#Set a custom theme)
+        * [Configure the theme](#My vim configuration#Set a custom theme#Configure the theme)
+        * [Gutentags](#My vim configuration#Set a custom theme#Gutentags)
+        * [vim table mode](#My vim configuration#Set a custom theme#vim table mode)
+        * [vim wiki](#My vim configuration#Set a custom theme#vim wiki)
+            * [Setup the wiki folder](#My vim configuration#Set a custom theme#vim wiki#Setup the wiki folder)
+    * [Set local settings](#My vim configuration#Set local settings)
+
 # My vim configuration
 This is my custom vim configuration writen in markdown and tangle to vimscript
 using vim-tangle plugin.
@@ -82,8 +106,8 @@ set noshowcmd
 set laststatus=0
 ```
 
+Compatibility mode has some problems with new plugins
 
-compatibility mode has some problems with new plugins
 ```vimscript
 set nocompatible
 ```
@@ -150,19 +174,28 @@ Plug 'scrooloose/nerdcommenter'
 
 " navigation
 Plug 'preservim/nerdtree'
-Plug 'christoomey/vim-tmux-navigator'
+" Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'dense-analysis/ale'
 
 " languages
 Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
-"Plug 'craigemery/vim-autotag'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
-Plug 'godlygeek/tabular'
-Plug 'preservim/vim-markdown'
+Plug 'jupyter-vim/jupyter-vim'
+
+
+" Personal wiki
+" Plug 'lervag/wiki.vim'
+" Plug 'lervag/lists.vim'
+Plug 'blindFS/vim-taskwarrior'
+
+
+" Time managment
+Plug 'ActivityWatch/aw-watcher-vim'
 
 " themes
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -183,6 +216,9 @@ Plug 'ludovicchabant/vim-gutentags'
 " vim-table-mode
 Plug 'dhruvasagar/vim-table-mode'
 
+
+" time tracker
+Plug 'wakatime/vim-wakatime'
 
 " custom pluging
 Plug 'luelvira/vim-tangle'
@@ -288,6 +324,13 @@ The themes are installed with vim-plug. To set a theme, you need to add the
 following line to your vimrc with the name of the theme you want to use. I use
 nord theme.
 
+` colorscheme themename`
+
+**IMPORTANT**
+
+Most of themes in terminal have some problems with some kind of fonts like
+italic. To prevent it, *before* set the it is necessary to setup some vars
+
 ```vimscript
 if $HOSTNAME == "fedora-pc"
 " colors
@@ -304,8 +347,10 @@ if exists("colors_name") && colors_name == "nord"
     let g:nord_cursor_line_number_background = 1
     let g:nord_bold = 1
     let g:nord_italic = 1
-    " let g:nord_italic_comments = 1
-    " let g:nord_underline = 1
+    let g:nord_italic_comments = 1
+    let g:nord_underline = 1
+    " reload the theme to apply settings
+    colorscheme nord
 endif
 ```
 
@@ -324,6 +369,41 @@ To start the table mode `leader+tm` (leader + table mode).  Then you need to wri
 
 Once you get the header and, without leaving Insert mode, enter `||` and a horizontal line will be displayed matched with the length of the table. Then you just need to write the content of your table
 
+### vim wiki
+
+#### Setup the wiki folder
+
+The first is to customize the root folder and the journal folder
+```vimscript
+" let g:wiki_root = '~/Documents/Obsidian_vault'
+" let g:wiki_journal = { 'name': '05_DAILY_NOTES', 'root': '', 'frequency': 'daily'}
+```
+
+Now we will setup some custom keybinding
+
+```vimscript
+ " nnoremap <leader>ww :WikiIndex<CR>
+ " nnoremap <leader>wj :WikiJournal<CR>
+ " nnoremap <leader>ff :WikiPages<CR>
+ " nnoremap <leader>fo :WikiOpen<CR>
+```
+
+Also could be interesting get a function which generate a unique ID as prefix
+for the file. To do it, the file must be open with `WikiOpen`
+
+```vimscript
+" let g:wiki_map_create_page = 'AddDateAsPrefix'
+" 
+" function AddDateAsPrefix(name) abort
+"     let l:name = wiki#get_root . '/' . a:name
+" 
+"     " If the tile is new, then append the current date
+"     return filereadable(l:name) ? a:name : strftime(%Y%m%d%H%M%S') . '_' .  a:name
+" endfunction
+```
+
+**Need to be completed this part**
+
 ## Set local settings
 
 With autcm you can enable or disable some settings for the current buffer.
@@ -338,22 +418,9 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ spell
 	\ spelllang=es
 	\ wrap
-au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
-autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
-```
-### VIM ITALICS
 
-There is a problem with italic letters in vim when using vim together tmux. The
-espape character of *italics* are not well escaping. It is necessary to change it
-
-```vimscript
-" if exists('$TMUX')
-" let &t_ZH="\e[3m"
-" let &t_ZR="\e[23m"
-" endif
+" au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
+" autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
 ```
 
-Can not make it works
-
-
-<!-- vim: set spelllang=en: filetype=markdown -->
+<!-- vim: set spelllang=en: -->

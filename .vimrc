@@ -63,19 +63,28 @@ Plug 'scrooloose/nerdcommenter'
 
 " navigation
 Plug 'preservim/nerdtree'
-Plug 'christoomey/vim-tmux-navigator'
+" Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'dense-analysis/ale'
 
 " languages
 Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
-"Plug 'craigemery/vim-autotag'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
-Plug 'godlygeek/tabular'
-Plug 'preservim/vim-markdown'
+Plug 'jupyter-vim/jupyter-vim'
+
+
+" Personal wiki
+" Plug 'lervag/wiki.vim'
+" Plug 'lervag/lists.vim'
+Plug 'blindFS/vim-taskwarrior'
+
+
+" Time managment
+Plug 'ActivityWatch/aw-watcher-vim'
 
 " themes
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -96,6 +105,9 @@ Plug 'ludovicchabant/vim-gutentags'
 " vim-table-mode
 Plug 'dhruvasagar/vim-table-mode'
 
+
+" time tracker
+Plug 'wakatime/vim-wakatime'
 
 " custom pluging
 Plug 'luelvira/vim-tangle'
@@ -164,14 +176,30 @@ if exists("colors_name") && colors_name == "nord"
     let g:nord_cursor_line_number_background = 1
     let g:nord_bold = 1
     let g:nord_italic = 1
-    " let g:nord_italic_comments = 1
-    " let g:nord_underline = 1
+    let g:nord_italic_comments = 1
+    let g:nord_underline = 1
+    " reload the theme to apply settings
+    colorscheme nord
 endif
 let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
 let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
 let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin']
+" let g:wiki_root = '~/Documents/Obsidian_vault'
+" let g:wiki_journal = { 'name': '05_DAILY_NOTES', 'root': '', 'frequency': 'daily'}
+ " nnoremap <leader>ww :WikiIndex<CR>
+ " nnoremap <leader>wj :WikiJournal<CR>
+ " nnoremap <leader>ff :WikiPages<CR>
+ " nnoremap <leader>fo :WikiOpen<CR>
+" let g:wiki_map_create_page = 'AddDateAsPrefix'
+" 
+" function AddDateAsPrefix(name) abort
+"     let l:name = wiki#get_root . '/' . a:name
+" 
+"     " If the tile is new, then append the current date
+"     return filereadable(l:name) ? a:name : strftime(%Y%m%d%H%M%S') . '_' .  a:name
+" endfunction
 " text mode
 autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ textwidth=80
@@ -181,9 +209,6 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ spell
 	\ spelllang=es
 	\ wrap
-au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
-autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
-" if exists('$TMUX')
-" let &t_ZH="\e[3m"
-" let &t_ZR="\e[23m"
-" endif
+
+" au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
+" autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
