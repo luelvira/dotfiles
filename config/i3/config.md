@@ -420,7 +420,6 @@ exec --no-startup-id /home/lucas/.local/bin/aw-qt
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 ```
 
-# i3 gaps
 
 I3 gaps us a variant of i3 that allows to separate windows
 

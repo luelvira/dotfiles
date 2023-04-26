@@ -30,16 +30,19 @@ alias lha='ls -lhA'
 # alias for git common commands
 
 alias ggraph='git log --all --decorate --oneline --graph'
-ginit() {
-	mkdir $1 && cd $_
-	echo "# $1" >> README.md
-	git init
-	git add README.md
-	git commit -m "first commit"
-	git branch -M main
-	git remote add origin "git@github.com:luelvira/$1.git"
+	ginit() {
+		mkdir $1 && cd $_
+		echo "# $1" >> README.md
+		git init
+		git add README.md
+		git commit -m "first commit"
+		git branch -M main
+		git remote add origin "git@github.com:luelvira/$1.git"
 
-}
+	}
+alias gsh='git push -u origin'
+alias gl='git pull origin'
+alias gss='git status'
 
 # alias for custom functions
 alias mkdir='mkdir -p'
@@ -68,4 +71,6 @@ alias projection='source ~/.local/bin/_projects'
 
 # make an alias to prevent accidental rm -rf
 alias rm='rm -i'
-alias emacs='emacsclient --create-frame --alternate-editor=""'
+alias mv='mv -i'
+alias cp='cp -i'
+# alias emacs='emacsclient --create-frame --alternate-editor=""'

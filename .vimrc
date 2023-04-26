@@ -28,7 +28,7 @@ set foldnestmax=10
 " status bar
 set noshowmode
 set noshowcmd
-set laststatus=0
+set laststatus=2
 set nocompatible
 " disable arrows keys in insert mode
 inoremap <left> <nop>
@@ -59,7 +59,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
 " comments
-Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-commentary'
 
 " navigation
 Plug 'preservim/nerdtree'
@@ -67,7 +67,7 @@ Plug 'preservim/nerdtree'
 
 " lsp
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
 
 " languages
 Plug 'lervag/vimtex'
@@ -78,17 +78,19 @@ Plug 'jupyter-vim/jupyter-vim'
 
 
 " Personal wiki
-" Plug 'lervag/wiki.vim'
-" Plug 'lervag/lists.vim'
+Plug 'lervag/wiki.vim'
+Plug 'lervag/lists.vim'
+" Plug 'vimwiki/vimwiki'
 Plug 'blindFS/vim-taskwarrior'
+Plug 'tools-life/taskwiki'
 
 
 " Time managment
-Plug 'ActivityWatch/aw-watcher-vim'
 
 " themes
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'arcticicestudio/nord-vim'
+Plug 'morhetz/gruvbox'
 
 " fluzzy finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -167,27 +169,43 @@ augroup colorscheme_coc_setup | au!
 augroup END
 if $HOSTNAME == "fedora-pc"
 " colors
-" colorscheme dracula
-colorscheme nord
+colorscheme gruvbox
 endif
-if exists("colors_name") && colors_name == "nord"
-    " nord theme
-    set cursorline
-    let g:nord_cursor_line_number_background = 1
-    let g:nord_bold = 1
-    let g:nord_italic = 1
-    let g:nord_italic_comments = 1
-    let g:nord_underline = 1
-    " reload the theme to apply settings
-    colorscheme nord
+if exists("colors_name")
+    if colors_name == "nord"
+        " nord theme
+        set cursorline
+        let g:nord_cursor_line_number_background = 1
+        let g:nord_bold = 1
+        let g:nord_italic = 1
+        let g:nord_italic_comments = 1
+        let g:nord_underline = 1
+        " reload the theme to apply settings
+        colorscheme nord
+    elseif colors_name == "gruvbox"
+        set background=dark
+        set cursorline
+        let g:gruvbox_cursor_line_number_background = 1
+        let g:gruvbox_bold = 1
+        let g:gruvbox_italic = 1
+        let g:gruvbox_italic_comments = 1
+        let g:gruvbox_underline = 1
+    endif
 endif
 let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
 let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
 let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin']
-" let g:wiki_root = '~/Documents/Obsidian_vault'
-" let g:wiki_journal = { 'name': '05_DAILY_NOTES', 'root': '', 'frequency': 'daily'}
+" for vimwiki
+" let g:vimwiki_list = [{'path': '~/Documents/Obsidian_vault/',
+"                      \ 'syntax': 'markdown', 'ext': '.md'}]
+" let g:vimwiki_global_ext = 0
+" let g:vimwiki_table_mappings=0
+let g:wiki_root = '~/Documents/Obsidian_vault'
+let g:wiki_journal = { 'name': '05_DAILY_NOTES', 'root': '', 'frequency': 'daily'}
+let g:vimwiki_key_mappings = { 'table_mappings': 0, }
+
  " nnoremap <leader>ww :WikiIndex<CR>
  " nnoremap <leader>wj :WikiJournal<CR>
  " nnoremap <leader>ff :WikiPages<CR>
@@ -204,7 +222,6 @@ let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules
 autocm BufNewFile,BufRead *.md,*.tex setlocal
 	\ textwidth=80
 	\ fileformat=unix
-	\ autoindent
 	\ cc=80
 	\ spell
 	\ spelllang=es

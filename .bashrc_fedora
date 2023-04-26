@@ -25,12 +25,12 @@ if [ -d ~/.bashrc.d ]; then
 fi
 
 unset rc
-PS1='`if [ $? -eq 0 ]; then echo "\[\033[01;32m\]✔"; else echo "\[\033[01;31m\]✘"; fi` \[\033[00;37m\]\A\[\033[00;32m\]-(\[\033[00;036m\]\u@\h\[\033[00;32m\])-[\[\033[00;0m\]\w\[\033[00;32m\]]\n\[\033[00;32m\](\[\033[00;036m\]`git branch 2> /dev/null | grep "^*" | colrm 1 2`\[\033[00;32m\])\[\033[00;37m\] \$ \[\033[00m\]'
+    PS1='`if [ $? -eq 0 ]; then echo "\[\033[01;32m\]✔"; else echo "\[\033[01;31m\]✘"; fi` \[\033[00;37m\]\A\[\033[00;32m\]-(\[\033[00;036m\]\u@\h\[\033[00;32m\])-[\[\033[00;0m\]\w\[\033[00;32m\]]\n\[\033[00;32m\](\[\033[00;036m\]`git branch 2> /dev/null | grep "^*" | colrm 1 2`\[\033[00;32m\])\[\033[00;37m\] \$ \[\033[00m\]'
 
 
-# some colored alias
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    # some colored alias
+    if [ -x /usr/bin/dircolors ]; then
+        test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
@@ -53,3 +53,6 @@ fi
 . ~/.bash_aliases
 export EDITOR=vim
 export VISUAL=vim
+export HISTCONTROL=ignoreboth
+export TERM=xterm-256color
+. "$HOME/.cargo/env"

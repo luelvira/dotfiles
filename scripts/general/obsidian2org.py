@@ -22,7 +22,7 @@ def main():
                 with open(os.path.join(root, file), 'r') as f:
                     content = f.read()
                 with open(os.path.join(root, file), 'w') as f:
-                    text = ":PROPERTIES:\n:ID:\t" + str(abs(hash(file[:-4]))) + "\n:END:\n"
+                    text = ":PROPERTIES:\n:ID:\t" + str(abs(hash(str(file[:-4])))) + "\n:END:\n"
                     text += "#+TITLE: " + file[:-4].replace("_", " ").title() + "\n"
                     text += "#+AUTHOR: Lucas Elvira Martín\n"
                     text += "#+ROAM_KEY: " + file[:-4] + "\n"
