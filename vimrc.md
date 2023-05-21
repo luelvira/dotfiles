@@ -3,9 +3,10 @@ tangle: .vimrc
 Author: Lucas Elvira Martín
 date: 2023-04-02
 Description: My vim configuration
+tags: CS/TOOLS/SW/TEXT_EDITOR
 ---
 
-*Contents*
+Contents
 * [My vim configuration](#My vim configuration)
     * [Set up common settings](#My vim configuration#Set up common settings)
         * [Default values](#My vim configuration#Set up common settings#Default values)
@@ -30,7 +31,7 @@ Description: My vim configuration
     * [Set local settings](#My vim configuration#Set local settings)
 
 # My vim configuration
-This is my custom vim configuration writen in markdown and tangle to vimscript
+This is my custom vim configuration written in markdown and tangle to vimscript
 using vim-tangle plugin.
 
 ## Set up common settings
@@ -60,7 +61,7 @@ This rules enable in this order:
 4. Allow incremental search
 5. Disable mouse
 6. Disable wrap lines
-7. Dispaly a line in the column number 80
+7. Display a line in the column number 80
 8. Add space to the hidden characters that can be displayed
 9. Display line and column on the bottom
 
@@ -103,7 +104,7 @@ set foldnestmax=10
 " status bar
 set noshowmode
 set noshowcmd
-set laststatus=2
+set laststatus=0
 ```
 
 Compatibility mode has some problems with new plugins
@@ -127,18 +128,16 @@ inoremap <down> <nop>
 ```vim
 vnoremap <C-r> "hy:%s/<C-r>h//gc<Left><left><left>
 vnoremap <silent> <Leader>y :w !xclip -i -sel c<CR>
-nnoremap <F3> :set relativenumber!<CR>
+nnoremap <F3> :setlocal relativenumber!<CR>
 nnoremap <F4> :setlocal list!<CR>
 nnoremap <F5> :setlocal spell<CR>:set spelllang=es<CR>
 nnoremap <F6> :setlocal spell<CR>:set spelllang=en<CR>
-
-nnoremap <C-b> :bnext<CR>
-nnoremap <C-S-b> :bprevious<CR>
+nnoremap <F7> :setlocal spell!<CR>
 ```
 
 ## Install plugins
 
-For the plugin managment I use Pluged. To install it for vim:
+For the plugin management I use Pluged. To install it for vim:
 
 ```shell
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -169,8 +168,6 @@ Plug 'tpope/vim-repeat'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
-" comments
-Plug 'tpope/vim-commentary'
 
 " navigation
 Plug 'preservim/nerdtree'
@@ -185,7 +182,6 @@ Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
-Plug 'jupyter-vim/jupyter-vim'
 
 
 " Personal wiki
@@ -193,7 +189,7 @@ Plug 'lervag/wiki.vim'
 Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
 Plug 'blindFS/vim-taskwarrior'
-Plug 'tools-life/taskwiki'
+" Plug 'tools-life/taskwiki'
 
 
 " Time managment
@@ -218,9 +214,6 @@ Plug 'ludovicchabant/vim-gutentags'
 " vim-table-mode
 Plug 'dhruvasagar/vim-table-mode'
 
-
-" time tracker
-Plug 'wakatime/vim-wakatime'
 
 " custom pluging
 Plug 'luelvira/vim-tangle'
@@ -274,6 +267,9 @@ let g:javascript_plugin_jsdoc = 1
 ```
 
 ### Coc
+
+**Disclaimer:** This plugin make the computer a lot more slowly
+
 Coc is a lsp plugin. It uses nodejs as backend and has its own package manager.
 To call it, you run `:CocInstall ` followed for the name of the package.
 
@@ -334,9 +330,11 @@ Most of themes in terminal have some problems with some kind of fonts like
 italic. To prevent it, *before* set the it is necessary to setup some vars
 
 ```vim
+set termguicolors
 if $HOSTNAME == "fedora-pc"
 " colors
-colorscheme gruvbox
+" colorscheme gruvbox
+colorscheme nord
 endif
 ```
 
@@ -351,6 +349,7 @@ if exists("colors_name")
         let g:nord_italic = 1
         let g:nord_italic_comments = 1
         let g:nord_underline = 1
+        set background=dark
         " reload the theme to apply settings
         colorscheme nord
     elseif colors_name == "gruvbox"
@@ -366,7 +365,9 @@ endif
 ```
 
 ### Gutentags
-This plugin allows to generate tags for the current project. It uses ctags and cscope.
+
+This plugin allows to generate tags for the current project. It uses ctags and
+cscope.
 
 ```vim
 let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
@@ -439,9 +440,14 @@ for the file. To do it, the file must be open with `WikiOpen`
 
 **Need to be completed this part**
 
+### vim-taskwarrior
+
+This plugin is an interface to the [[task warrior]] program. In order to view
+the pending task: `:TW`. More info in [vim-taskwarrior](https://github.com/blindFS/vim-taskwarrior)
+
 ## Set local settings
 
-With autcm you can enable or disable some settings for the current buffer.
+With autocm you can enable or disable some settings for the current buffer.
 
 ```vim
 " text mode
@@ -455,6 +461,9 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 
 " au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
 " autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
+
+" spell check for gitcommit
+autocmd FileType gitcommit setlocal spell spelllang=en_us
 ```
 
 
