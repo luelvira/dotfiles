@@ -416,7 +416,7 @@ exec --no-startup-id picom -b -f --experimental-backends
 exec --no-startup-id xrandr --output HDMI-0 --auto --right-of DP-1
 exec --no-startup-id redshift -l 40.59:-3.712
 exec --no-startup-id /home/lucas/.config/polybar/launch.sh
-exec --no-startup-id /home/lucas/.local/bin/aw-qt
+exec --no-startup-id i3-sensible-terminal
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 ```
 

@@ -28,7 +28,7 @@ set foldnestmax=10
 " status bar
 set noshowmode
 set noshowcmd
-set laststatus=2
+set laststatus=0
 set nocompatible
 " disable arrows keys in insert mode
 inoremap <left> <nop>
@@ -37,13 +37,11 @@ inoremap <up> <nop>
 inoremap <down> <nop>
 vnoremap <C-r> "hy:%s/<C-r>h//gc<Left><left><left>
 vnoremap <silent> <Leader>y :w !xclip -i -sel c<CR>
-nnoremap <F3> :set relativenumber!<CR>
+nnoremap <F3> :setlocal relativenumber!<CR>
 nnoremap <F4> :setlocal list!<CR>
 nnoremap <F5> :setlocal spell<CR>:set spelllang=es<CR>
 nnoremap <F6> :setlocal spell<CR>:set spelllang=en<CR>
-
-nnoremap <C-b> :bnext<CR>
-nnoremap <C-S-b> :bprevious<CR>
+nnoremap <F7> :setlocal spell!<CR>
 call plug#begin()
 
 " snippets
@@ -74,10 +72,10 @@ Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-" Plug 'lervag/wiki.vim'
-" Plug 'lervag/lists.vim'
-" " Plug 'vimwiki/vimwiki'
-" Plug 'blindFS/vim-taskwarrior'
+Plug 'lervag/wiki.vim'
+Plug 'lervag/lists.vim'
+" Plug 'vimwiki/vimwiki'
+Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
 
@@ -160,9 +158,11 @@ endfunc
 augroup colorscheme_coc_setup | au!
   au VimEnter * call s:my_colors_setup()
 augroup END
+set termguicolors
 if $HOSTNAME == "fedora-pc"
 " colors
-colorscheme gruvbox
+" colorscheme gruvbox
+colorscheme nord
 endif
 if exists("colors_name")
     if colors_name == "nord"
@@ -173,6 +173,7 @@ if exists("colors_name")
         let g:nord_italic = 1
         let g:nord_italic_comments = 1
         let g:nord_underline = 1
+        set background=dark
         " reload the theme to apply settings
         colorscheme nord
     elseif colors_name == "gruvbox"
@@ -222,3 +223,6 @@ autocm BufNewFile,BufRead *.md,*.tex setlocal
 
 " au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
 " autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
+
+" spell check for gitcommit
+autocmd FileType gitcommit setlocal spell spelllang=en_us
