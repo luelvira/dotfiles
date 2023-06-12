@@ -58,11 +58,8 @@ Plug 'tpope/vim-repeat'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
-" comments
-Plug 'tpope/vim-commentary'
-
 " navigation
-Plug 'preservim/nerdtree'
+" Plug 'preservim/nerdtree'
 " Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
@@ -74,15 +71,14 @@ Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
-Plug 'jupyter-vim/jupyter-vim'
 
 
 " Personal wiki
-Plug 'lervag/wiki.vim'
-Plug 'lervag/lists.vim'
-" Plug 'vimwiki/vimwiki'
-Plug 'blindFS/vim-taskwarrior'
-Plug 'tools-life/taskwiki'
+" Plug 'lervag/wiki.vim'
+" Plug 'lervag/lists.vim'
+" " Plug 'vimwiki/vimwiki'
+" Plug 'blindFS/vim-taskwarrior'
+" Plug 'tools-life/taskwiki'
 
 
 " Time managment
@@ -108,9 +104,6 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'dhruvasagar/vim-table-mode'
 
 
-" time tracker
-Plug 'wakatime/vim-wakatime'
-
 " custom pluging
 Plug 'luelvira/vim-tangle'
 call plug#end()
@@ -119,12 +112,12 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 let g:UltiSnipsListSnippets="<C-l>"
 silent! call repeat#set("\<Plug>MyWonderfulMap", v:count)
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-" Close the tab if NERDTree is the only window remaining in it.
-autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-"" Open the existing NERDTree on each new tab.
-autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
-nnoremap <C-n> :NERDTreeToggle<CR>
+" autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" " Close the tab if NERDTree is the only window remaining in it.
+" autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" "" Open the existing NERDTree on each new tab.
+" autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
+" nnoremap <C-n> :NERDTreeToggle<CR>
 let g:vimtex_view_method = 'zathura'
 let g:vimtex_quickfix_mode = 0
 let g:tex_flavor = 'latex'
