@@ -89,17 +89,17 @@ minimal and modern.
 ** Font configuration
 
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil
-                      :font "Fira Code"
-                      :height 100
-                      :weight 'regular)
-  ;; Makes commented text and keywords italics.
-  ;; This is working in emacsclient but not emacs.
-  ;; Your font must have an italic face available.
-  (set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
-  (set-face-attribute 'font-lock-keyword-face nil
-  :slant 'italic)
+;;  (set-face-attribute 'default nil
+;;                      :font "Fira Code"
+;;                      :height 100
+;;                      :weight 'regular)
+;;  ;; Makes commented text and keywords italics.
+;;  ;; This is working in emacsclient but not emacs.
+;;  ;; Your font must have an italic face available.
+;;  (set-face-attribute 'font-lock-comment-face nil
+;;  :slant 'italic)
+;;  (set-face-attribute 'font-lock-keyword-face nil
+;;  :slant 'italic)
 #+end_src
 
 * Keybinding configuration
@@ -387,7 +387,7 @@ Check the time to load the configuration
 
 * Org mode
 
-The main rason why I changes to emacs
+The main reason why I changes to emacs
 
  - To toggle the view of the outlines use ~S+tab~
  - Move a line up or down: ~meta+up/down~
@@ -438,13 +438,13 @@ The main rason why I changes to emacs
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1))))
 
-;;  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-;;  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-;;  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-;;  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-;;  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-;;  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-;;  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
   ;; Wrap the text in a custom column size
   (defun lucas/org-mode-visual-fill ()
@@ -468,7 +468,7 @@ The next setting are,
 - Org-log-into-drawer hidden the log
 
  We can get a repeat item ading to the deadline the period of time to
-  be repeteat, for example a birthday that is repeat each year (see
+  be repeat, for example a birthday that is repeat each year (see
   the agenda file)
 
 #+begin_src emacs-lisp
@@ -476,8 +476,8 @@ The next setting are,
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
     (setq org-agenda-files
-          '("~/Documents/Org_EFS/Tasks.org"
-            "~/Documents/Org_EFS/Habits.org"))
+          '("~/Documents/Org/Tasks.org"
+            "~/Documents/Org/Habits.org"))
 
 #+end_src
 
