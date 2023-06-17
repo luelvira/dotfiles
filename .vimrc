@@ -72,10 +72,10 @@ Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-Plug 'lervag/wiki.vim'
-Plug 'lervag/lists.vim'
+" Plug 'lervag/wiki.vim'
+"Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
-Plug 'blindFS/vim-taskwarrior'
+" Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
 
@@ -163,6 +163,8 @@ if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme gruvbox
 colorscheme nord
+else
+  colorscheme gruvbox
 endif
 if exists("colors_name")
     if colors_name == "nord"
