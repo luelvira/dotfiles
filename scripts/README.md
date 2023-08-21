@@ -106,6 +106,4 @@ projects. Do it has a lot of thinks to learn. See [[TOOLS_BASH_SCRIPTS_PROJECTS|
 
 
 
-
-
 <!-- vim: set spelllang=en: -->

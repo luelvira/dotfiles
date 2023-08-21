@@ -379,7 +379,7 @@
   :after org-roam
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
-  (require 'org-ref))[[id:baab2141-e5d6-4154-adce-2ecdc86b37c4][New Generation Model of Word Vector Representation Based on CBOW or Skip-Gram]]
+  (require 'org-ref))
 
 
 (use-package sqlite3)
@@ -401,9 +401,9 @@
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 
 (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
-(setq dashboard-startup-banner official)
+(setq dashboard-startup-banner 'official)
 (setq dashboard-center-content t)
-(setq dashboard-projects-backend projectile)
+(setq dashboard-projects-backend 'projectile)
 (setq dashboard-items '((recents  . 5)
                         (bookmarks . 5)
                         (projects . 5)
@@ -418,3 +418,16 @@
 
 
 (server-start)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(org-roam-ui which-key visual-fill-column use-package sqlite3 rainbow-delimiters org-roam-bibtex org-ref org-make-toc org-bullets ivy-rich ivy-bibtex helpful general forge doom-themes doom-modeline dashboard counsel-projectile command-log-mode all-the-icons)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
