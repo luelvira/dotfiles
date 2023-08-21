@@ -135,7 +135,7 @@
          :empty-lines 1)
 	("jm" "Meeting" entry
          (file+olp+datetree "~/Documents/OrgFiles/Journal.org")
-         "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+         "* %<%I:%M %p> :meetings:\n\n%?\n\n"
          :clock-in :clock-resume
          :empty-lines 1)
 

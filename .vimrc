@@ -61,7 +61,7 @@ Plug 'tpope/vim-fugitive'
 " Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'dense-analysis/ale'
 
 " languages
@@ -72,8 +72,8 @@ Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-Plug 'lervag/wiki.vim'
-Plug 'lervag/lists.vim'
+" Plug 'lervag/wiki.vim'
+"Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
 "Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
@@ -96,7 +96,7 @@ Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-obsession'
 
 " ctags
-Plug 'ludovicchabant/vim-gutentags'
+" Plug 'ludovicchabant/vim-gutentags'
 
 
 " vim-table-mode
@@ -137,36 +137,42 @@ function! CheckBackspace() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gy <Plug>(coc-type-definition)
+" nmap <silent> gi <Plug>(coc-implementation)
+" nmap <silent> gr <Plug>(coc-references)
 
-nnoremap <silent> K :call ShowDocumentation()<CR>
-
-function! ShowDocumentation()
-  if CocAction('hasProvider', 'hover')
-    call CocActionAsync('doHover')
-  else
-    call feedkeys('K', 'in')
-  endif
-endfunction
-" Colorscheme for coc
-func! s:my_colors_setup() abort
-  highlight CocFloating ctermbg=Black " For background color
-endfunc
-
-augroup colorscheme_coc_setup | au!
-  au VimEnter * call s:my_colors_setup()
-augroup END
+" nnoremap <silent> K :call ShowDocumentation()<CR>
+" 
+" function! ShowDocumentation()
+"   if CocAction('hasProvider', 'hover')
+"     call CocActionAsync('doHover')
+"   else
+"     call feedkeys('K', 'in')
+"   endif
+" endfunction
+" " Colorscheme for coc
+" func! s:my_colors_setup() abort
+"   highlight CocFloating ctermbg=Black " For background color
+" endfunc
+" 
+" augroup colorscheme_coc_setup | au!
+"   au VimEnter * call s:my_colors_setup()
+" augroup END
 set termguicolors
 if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme gruvbox
 colorscheme nord
+<<<<<<< HEAD
 else
 "    colorscheme gruvbox
 colorscheme nord
+||||||| parent of 97ebacf (2023-08-21T11:08)
+else
+  colorscheme gruvbox
+=======
+>>>>>>> 97ebacf (2023-08-21T11:08)
 endif
 if exists("colors_name")
     if colors_name == "nord"
@@ -195,6 +201,11 @@ let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
 let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
+""let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
+""let g:gutentags_cache_dir = '~/.cache/gutentags'
+""let g:gutentags_ctags_tagfile = '.tags'
+""let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
+""let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md']
 " for vimwiki
 " let g:vimwiki_list = [{'path': '~/Documents/Obsidian_vault/',
 "                      \ 'syntax': 'markdown', 'ext': '.md'}]

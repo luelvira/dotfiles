@@ -184,10 +184,10 @@ Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-Plug 'lervag/wiki.vim'
-Plug 'lervag/lists.vim'
+" Plug 'lervag/wiki.vim'
+" Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
-"Plug 'blindFS/vim-taskwarrior'
+Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
 "Plug 'vimwiki/vimwiki'
