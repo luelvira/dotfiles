@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -jar /opt/plantuml-1.2023.4.jar -tsvg $@
+java -jar /opt/plantuml-1.2023.9.jar -tsvg $@

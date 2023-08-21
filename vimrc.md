@@ -187,9 +187,10 @@ Plug 'aklt/plantuml-syntax'
 Plug 'lervag/wiki.vim'
 Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
-Plug 'blindFS/vim-taskwarrior'
+"Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
+"Plug 'vimwiki/vimwiki'
 
 " Time managment
 
@@ -334,6 +335,9 @@ if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme gruvbox
 colorscheme nord
+else
+"    colorscheme gruvbox
+colorscheme nord
 endif
 ```
 
@@ -373,7 +377,7 @@ let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
 let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
-let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin']
+let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
 ```
 ### vim table mode
 To start the table mode `leader+tm` (leader + table mode).  Then you need to
@@ -420,11 +424,10 @@ Now we will setup some custom keybinding
 
 ```vim
 let g:vimwiki_key_mappings = { 'table_mappings': 0, }
-
- " nnoremap <leader>ww :WikiIndex<CR>
- " nnoremap <leader>wj :WikiJournal<CR>
- " nnoremap <leader>ff :WikiPages<CR>
- " nnoremap <leader>fo :WikiOpen<CR>
+nnoremap <leader>ww :WikiIndex<CR>
+nnoremap <leader>wj :WikiJournal<CR>
+nnoremap <leader>ff :WikiPages<CR>
+nnoremap <leader>fo :WikiOpen<CR>
 ```
 
 Also could be interesting get a function which generate a unique ID as prefix
@@ -483,5 +486,14 @@ autocmd BufNewFile <pattern> 0r <path of the file>
 - `BufNewFile`: Vim's new file events
 - `0r` read into the buffer starting at line 0
 source: [vim templates](https://vimtricks.com/p/vim-file-templates/)
+
+
+## Custom function
+
+Each time I want to write in vim in English, I need to change the spelllang
+option. This command will automatically at it to the last line
+
+```vim
+```
 
 <!-- vim: set spelllang=en: -->

@@ -1,10 +1,12 @@
 ---
 Author: Lucas Elvira Martín
 date: 2023-04-03
-Alias: Bash Scrips
+alias: Bash Scrips
+tag: CS/TOOLS/LANGUAGE
 ---
+area:: [[../04_INDEX_NOTES/PROGRAMMING_LANGUAGES|programming languages]]
 
-# Scripts
+# Bash Scripts
 
 This folder contains a list of custom script. To make them work, you need to add
 the folder to your path. For example, if you store them in ~/.local/bin/, you
@@ -100,7 +102,7 @@ cert file should be `/ssl/key.pem` and `/ssl/cert.pem`
 #### Projects
 
 This script generate a interactive menu in bash to navigate from your currents
-projects. Do it has a lot of thinks to learn. See [[03_PERMANENT_NOTES/TOOLS_BASH_SCRIPTS_PROJECTS|Projects documentation]]
+projects. Do it has a lot of thinks to learn. See [[TOOLS_BASH_SCRIPTS_PROJECTS|Projects documentation]]
 
 
 

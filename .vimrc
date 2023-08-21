@@ -72,12 +72,13 @@ Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-" Plug 'lervag/wiki.vim'
-"Plug 'lervag/lists.vim'
+Plug 'lervag/wiki.vim'
+Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
-" Plug 'blindFS/vim-taskwarrior'
+"Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
+"Plug 'vimwiki/vimwiki'
 
 " Time managment
 
@@ -164,7 +165,8 @@ if $HOSTNAME == "fedora-pc"
 " colorscheme gruvbox
 colorscheme nord
 else
-  colorscheme gruvbox
+"    colorscheme gruvbox
+colorscheme nord
 endif
 if exists("colors_name")
     if colors_name == "nord"
@@ -192,7 +194,7 @@ let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
 let g:gutentags_cache_dir = '~/.cache/gutentags'
 let g:gutentags_ctags_tagfile = '.tags'
 let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
-let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin']
+let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
 " for vimwiki
 " let g:vimwiki_list = [{'path': '~/Documents/Obsidian_vault/',
 "                      \ 'syntax': 'markdown', 'ext': '.md'}]
@@ -201,11 +203,10 @@ let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules
 let g:wiki_root = '~/Documents/Obsidian_vault'
 let g:wiki_journal = { 'name': '05_DAILY_NOTES', 'root': '', 'frequency': 'daily'}
 let g:vimwiki_key_mappings = { 'table_mappings': 0, }
-
- " nnoremap <leader>ww :WikiIndex<CR>
- " nnoremap <leader>wj :WikiJournal<CR>
- " nnoremap <leader>ff :WikiPages<CR>
- " nnoremap <leader>fo :WikiOpen<CR>
+nnoremap <leader>ww :WikiIndex<CR>
+nnoremap <leader>wj :WikiJournal<CR>
+nnoremap <leader>ff :WikiPages<CR>
+nnoremap <leader>fo :WikiOpen<CR>
 " let g:wiki_map_create_page = 'AddDateAsPrefix'
 " 
 " function AddDateAsPrefix(name) abort
