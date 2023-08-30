@@ -1,8 +1,48 @@
-#+AUTHOR: Lucas Elvira
-#+DATE 2023-03-19
-#+EXPORTS_FILE_NAME: config.html
-#+STARTUP: showeverything
 #+TITLE: My emacs configuration
+#+DATE:  <2023-08-29 Tue>
+#+AUTHOR:  Lucas Elvira Martín
+
+* Table of content :TOC:
+- [[#put-this-in-your-initel][PUT THIS IN YOUR init.el]]
+- [[#autorun][AUTORUN]]
+  - [[#emacs-as-server][Emacs as server]]
+- [[#package-system-setup][Package system setup]]
+- [[#ui][UI]]
+  - [[#font-configuration][Font configuration]]
+  - [[#collor-theme][Collor Theme]]
+  - [[#better-modeline][Better Modeline]]
+- [[#control-and-behaviur][Control and behaviur]]
+  - [[#keybinding-configuration][Keybinding configuration]]
+  - [[#recent-files][Recent files]]
+  - [[#which-key][Which Key]]
+  - [[#ivy-and-counsel][ivy and counsel]]
+  - [[#helpul][helpul]]
+  - [[#text-scaling][Text Scaling]]
+  - [[#keep-it-clean][Keep it clean]]
+  - [[#projectile-and-magit][Projectile and magit]]
+  - [[#terminal-emulators][Terminal emulators]]
+-  [[#writing][Writing]]
+  - [[#configure-flyspell][Configure flyspell]]
+- [[#dired][Dired]]
+  - [[#open-dired][Open dired]]
+  - [[#keybinding-within-dired][Keybinding within dired]]
+  - [[#keybinding-for-peep-dired-mode][Keybinding for peep-dired-mode]]
+  - [[#no-littering][No littering]]
+- [[#dashboard][DASHBOARD]]
+  - [[#launch-dashboard-by-default-when-launch-emacs][Launch dashboard by default when launch emacs]]
+  - [[#startup-performance][Startup performance]]
+- [[#disable-mouse][Disable mouse]]
+- [[#display-language-modes][Display language modes]]
+  - [[#cdlatex][cdlatex]]
+  - [[#text-mode][text mode]]
+- [[#build-your-own-ide-with-lsp-mode][Build your own IDE with lsp-mode]]
+  - [[#initial-configuration][Initial configuration]]
+  -  [[#better-completion-options-with-company-mode][Better completion options with company-mode]]
+  - [[#more-ui-enhancements-lsp-ui-mode][More UI Enhancements lsp-ui-mode]]
+  - [[#lsp-treemacs][lsp-treemacs]]
+  - [[#minor-modes][Minor modes]]
+- [[#org-mode][Org mode]]
+- [[#org-roam-the-good-part][Org Roam, the good part]]
 
 * PUT THIS IN YOUR init.el
 
@@ -58,7 +98,7 @@ configuration of everything else we use.
     (setq use-package-always-ensure t)
 #+end_src
 
-* Basic UI configuration
+* UI
 
 This section configures basic UI settings that remove unneded elements to make Emacs look a lot more
 minimal and modern.
@@ -89,68 +129,19 @@ minimal and modern.
 ** Font configuration
 
 #+begin_src emacs-lisp
-;;  (set-face-attribute 'default nil
-;;                      :font "Fira Code"
-;;                      :height 100
-;;                      :weight 'regular)
-;;  ;; Makes commented text and keywords italics.
-;;  ;; This is working in emacsclient but not emacs.
-;;  ;; Your font must have an italic face available.
-;;  (set-face-attribute 'font-lock-comment-face nil
-;;  :slant 'italic)
-;;  (set-face-attribute 'font-lock-keyword-face nil
-;;  :slant 'italic)
+;  (set-face-attribute 'default nil
+;			:font "Fira Code"
+;			:height 100
+;			:weight 'regular)
+    ;; Makes commented text and keywords italics.
+    ;; This is working in emacsclient but not emacs.
+    ;; Your font must have an italic face available.
+;    (set-face-attribute 'font-lock-comment-face nil
+;    :slant 'italic)
+;    (set-face-attribute 'font-lock-keyword-face nil
+;   :slant 'italic)
 #+end_src
 
-* Keybinding configuration
-
-This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.  [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
-
-  
-#+begin_src emacs-lisp
-  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-  ;; Set the fixed pitch face
-  (use-package general
-    :config
-    (general-create-definer lucas/leader-keys
-      :keymaps '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC"))
-
-  (lucas/leader-keys
-   "t"  '(:ignore t :which-key "toggles"))
-
- (use-package evil
-        :init
-        (setq evil-want-integration t)
-        (setq evil-want-keybinding nil)
-        (setq evil-want-C-u-scroll t)
-        (setq evil-want-C-i-jump nil)
-        :config
-      (evil-mode 1)
-      (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-      (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-      ;; Use visual line motions even outside of visual-line-mode buffers
-      (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-      (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-      (evil-set-initial-state 'messages-buffer-mode 'normal)
-      (evil-set-initial-state 'dashboard-mode 'normal))
-
-    (use-package evil-collection
-      :after evil
-      :config
-      (evil-collection-init))
-
-  (use-package evil-numbers)
-  (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
-
-
-#+end_src
-
-* UI configuratoin
 
 ** Collor Theme
 
@@ -177,6 +168,140 @@ also run =M-x counsel-load-theme= to choose between them easily.
     :custom ((doom-modeline-height 15)))
 #+end_src
 
+* Control and behaviur
+
+** Keybinding configuration
+
+This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.  [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
+
+  
+#+begin_src emacs-lisp
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+  ;; Set the fixed pitch face
+  (use-package general
+   :config
+   (general-evil-setup t)
+   (general-create-definer lucas/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC"))
+
+  (lucas/leader-keys
+    "t"  '(:ignore t :which-key "toggles"))
+#+end_src
+
+		    
+*** Evil mode
+
+**** Try to fix the mayor mode of evil when there isn't a editor
+#+begin_src emacs-lisp
+  (defun lem/evil-hook ()
+  (dolist (mode '(custom-mode
+  eshell-mode
+  git-rebase-mode
+  erc-mode
+  circe-server-mode
+  circe-chat-mode
+  circe-query-mode
+  sauron-mode
+  term-mode))
+  (add-to-list 'evil-emacs-state-modes mode)))
+
+#+end_src
+
+The above code does not work, so i try another way
+#+begin_src emacs-lisp
+  (defun lem/custom-emacs-state () 
+  (dolist (p '((minibuffer-inactive-mode . emacs)
+               (calendar-mode . emacs)
+               (term-mode . emacs)
+               (w3m-mode . emacs)
+               (eshell-mode . emacs)
+               (shell-mode . emacs)
+               ;;(message-mode . emacs)
+               (compilation-mode . emacs)
+               (speedbar-mode . emacs)
+               (ivy-occur-mode . emacs)
+               (ffip-file-mode . emacs)
+               (ivy-occur-grep-mode . normal)
+               ))
+    (evil-set-initial-state (car p) (cdr p))))
+#+end_src
+
+#+begin_src emacs-lisp
+
+    (use-package evil
+      :init
+      (setq evil-want-integration t)
+      (setq evil-want-keybinding nil)
+      (setq evil-want-C-u-scroll t)
+      (setq evil-want-C-i-jump nil)
+      :config
+     (add-hook 'evil-mode-hook 'lem/custom-emacs-state)
+      (evil-mode 1)
+      (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+      (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+                         (evil-set-initial-state 'messages-buffer-mode 'normal)
+                         (evil-set-initial-state 'dashboard-mode 'normal)
+                         :bind (
+                                :map evil-insert-state-map
+                                     ("<right>" . 'nope)
+                                     ("<left>" . 'nope)
+                                     ("<up>" . 'nope)
+                                     ("<down>" . 'nope)
+                                     ("<down-mouse-1>" . nil)
+                                     ("<mouse-1>" . nil)
+                                     ("<down-mouse-3>" . nil)
+                                     ("<mouse-3>" . nil)
+                                     :map evil-normal-state-map
+                                     ("<down-mouse-1>" . nil)
+                                     ("<mouse-1>" . nil)
+                                     ("<down-mouse-3>" . nil)
+                                     ("<mouse-3>" . nil)
+                                     :map    evil-motion-state-map
+                                     ("<down-mouse-1>" . nil)
+                                     ("<mouse-1>" . nil)
+                                     ("<down-mouse-3>" . nil)
+                                     ("<mouse-3>" . nil)))
+
+    (use-package evil-collection
+      :after evil
+      :config
+      (evil-collection-init))
+
+    (use-package evil-numbers)
+    (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
+    (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
+
+    (use-package evil-surround
+      :ensure t
+      :config
+      (global-evil-surround-mode 1))
+
+  (lem/custom-emacs-state)
+#+end_src
+
+
+**** Configure evil collection
+#+begin_src emacs-lisp
+(defun rune/dont-arrow-me-bro ()
+(interactive)
+(message "Arrow keys are bad, you know?"))
+
+;; Disable arrow keys in insert mode
+(define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
+(define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
+(define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
+(define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro)
+
+
+#+end_src
+
+** Recent files
+To use the recent file, we can create a keybinding which call the ~recentf-open-files~ function
+#+begin_src emacs-lisp
+(global-set-key "\C-x\ \C-r" 'counsel-recentf)
+#+end_src
 ** Which Key
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to
@@ -207,6 +332,19 @@ useful commands for each of the default completion commands.
 [[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each
 item.
 
+*** Counsel
+Counsel need to be installed before ivy. Also, Counsel provides ivy and swipper
+as dependencies, but I will install ivy manually
+
+#+begin_src emacs-lisp
+    (use-package counsel
+      :bind (("C-M-j" . 'counsel-switch-buffer)
+             :map minibuffer-local-map
+             ("C-r" . 'counsel-minibuffer-history))
+      :config
+      (counsel-mode 1))
+#+end_src
+
 
 #+begin_src emacs-lisp
 (use-package ivy
@@ -231,6 +369,7 @@ item.
 This are some keybining for changes between buffers
 
 *** Disable '^' of M-x
+
 The following line removes the annoying ‘^’ in things like counsel-M-x and
 other ivy/counsel prompts.  The default ‘^’ string means that if you type
 something immediately after this string only completion candidates that begin
@@ -239,6 +378,15 @@ without knowing what it begins with though.
 
 #+begin_src emacs-lisp
 (setq ivy-initial-inputs-alist nil)
+#+end_src
+
+*** Install Smex
+
+Smex is a package that makes M-x remember out history
+
+#+begin_src emacs-lisp
+(use-package smex)
+(smex-initialize)
 #+end_src
 
 *** Ivy Rich
@@ -251,24 +399,6 @@ Is an interface for Ivy that provides more information about the commands
     :init
     (ivy-rich-mode 1)
 )
-#+end_src
-
-*** Counser
-
-#+begin_src emacs-lisp
-;;   (use-package counsel
-;;     :bind (("M-x" . counsel-M-x)
-;;            ("C-x b" . counsel-ibuffer)
-;;            ("C-x C-f" . counsel-find-file)
-;;            :map minibuffer-local-map
-;;            ("C-r" . 'counsel-minibuffer-history)))
-;; 
-    (use-package counsel
-      :bind (("C-M-j" . 'counsel-switch-buffer)
-             :map minibuffer-local-map
-             ("C-r" . 'counsel-minibuffer-history))
-      :config
-      (counsel-mode 1))
 #+end_src
 
 
@@ -292,11 +422,10 @@ Emacs configuration.  It is very useful for figuring out how things work in Emac
   ([remap describe-key] . helpful-key))
 #+end_src
 
-
 ** Text Scaling
 
-This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to design a transient key binding for quickly adjusting the scale
-of the text on screen.  We define a hydra that is bound to =C-s t s= and, once activated, =j= and
+This is an example of using [[https://github.com/abo-abo/hydra][Hyda]] to design a transient key binding for quickly adjusting the scale
+of the text on screen.  We define a hydra that is bound to =SPACE t s= and, once activated, =j= and
 =k= increase and decrease the text scale.  You can press any other key (or =f= specifically) to exit
 the transient key map.
 
@@ -315,15 +444,199 @@ the transient key map.
 
 #+end_src
 
-* Initital menu
+** Keep it clean
+#+begin_src emacs-lisp
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
+  backup-by-copying t    ; Don't delink hardlinks
+  version-control t      ; Use version numbers on backups
+  delete-old-versions t  ; Automatically delete excess backups
+  kept-new-versions 20   ; how many of the newest versions to keep
+  kept-old-versions 5    ; and how many of the old
+  )
+#+end_src
+** Projectile and magit
+*** Projectile
 
-For the initial screen, I will use a dashboard which contains a resume with the last sessions
-** DASHBOARD
-Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items
-and an Emacs banner.
+#+begin_src emacs-lisp
+  (use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Documents/git")
+    (setq projectile-project-search-path '("~/Documents/git")))
+  (setq projectile-switch-project-action #'projectile-dired))
+#+end_src
+*** Counsel-projectile
+[[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] on github
 
-*** Launch dashboard by default when launch emacs
+#+begin_src emacs-lisp
+  (use-package counsel-projectile
+  :after projectile
+  :config (counsel-projectile-mode 1))
+#+end_src
+*** Magit
+#+begin_src emacs-lisp
 
+(use-package magit
+:commands (magit-status magit-get-current-branch)
+:custom
+(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+#+end_src
+** Terminal emulators
+*** term-mode
+#+begin_src emacs-lisp
+  (use-package term
+  :config
+  ;;(setq explicit-zsh-args '())
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
+;; improve colors
+  (use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode)) 
+#+end_src
+*** Shell-mode
+Run a shell program on your computer. Does not operate as a terminal emulaor
+- ~C-c C-p~ / ~C-c C-n~ Go back / forwards in the buffer's prompts
+- ~M-p~ / ~M-n~ Go back / forward in the input history
+- ~C-c C-u~ delete the current input string backwards up to the current cursor
+- ~counsel-shell-history~ - A searchable history of commands typed into the shell
+
+#+begin_src emacs-lisp
+  (setq comint-output-filter-functions
+        (remove 'ansi-color-process-output comint-output-filter-functions))
+
+  (add-hook 'shell-mode-hook
+            (lambda ()
+              ;; Disable font-locking in this buffer to improve performance
+              (font-lock-mode -1)
+              ;; Prevent font-locking from being re-enabled in this buffer
+              (make-local-variable 'font-lock-function)
+              (setq font-lock-function (lambda (_) nil))
+              (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
+#+end_src
+*** Eshell-mode
+#+begin_src emacs-lisp
+(defun lem/configure-eshell ()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  ;; Bind some useful keys for evil-mode
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell
+  :hook (eshell-first-time-mode . lem/configure-eshell))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package eshell-git-prompt
+
+:config
+(eshell-git-prompt-use-theme 'powerline))
+#+end_src
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'esh-opt
+  (setq eshell-destroy-buffer-when-process-dies t)
+  (setq eshell-visual-commands '("htop" "zsh" "vim")))
+#+end_src
+
+*  Writing
+** Configure flyspell
+
+Fly spell is a mode that allows you to see typing errors. By default it is disable, but can be
+configure to be used on different kinds of situations.
+
+#+begin_src emacs-lisp
+  (use-package flyspell
+      :config
+      (setq ispell-program-name "hunspell"
+            ispell-default-dictionary "en_US")
+      :hook (text-mode . flyspell-mode)
+      :bind (("M-<f7>" . flyspell-buffer)
+             ("<f7>" . flyspell-word)
+             ("C-;" . flyspell-auto-correct-previous-word)))
+#+end_src
+
+* Dired
+** Open dired
+
+| Command    | Description                     | KEYBINDING |
+| dired      | open dired                      | SPC d d    |
+| dired-jump | open dired at current directory | SPC d j    |
+
+** Keybinding within dired
+
+| Command            | Description           | KEYBINDING |
+| dired-view-file    | view files in dired   | SPC d v    |
+| dired-up-directory | go up one dir         | h          |
+| dired-find-file    | go down one directory | l          |
+
+** Keybinding for peep-dired-mode
+
+| Command              | Description    | KEYBINDING |
+| peep-dired           | Toggle preview | SPC d p    |
+| peep-dired-next-file | Next file      | n          |
+| peep-dired-prev-file | Previous file  | p          |
+
+
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired)
+(use-package dired-open)
+(use-package peep-dired)
+(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC"
+                "d d" '(dired :which-key "Open dired")
+                "d j" '(dired-jump :which-key "Dired jump to current")
+                "d p" '(peep-dired :which-key "Peep-dired"))
+
+(with-eval-after-load 'dired
+(define-key dired-mode-map (kbd "M-p") 'peep-dired)
+(evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+(evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
+(evil-define-key 'normal peep-dired-mode-map (kbd "n") 'peep-dired-next-file)
+(evil-define-key 'normal peep-dired-mode-map (kbd "p") 'peep-dired-prev-file))
+
+(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
+;; Get file icons in dired
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+;; With dired-open plugin, you can launch external programs for certain extensions
+;; For example, I set all .png files to open in 'sxiv' and all .mp4 files to open in 'mpv'
+(setq dired-open-extensions '(("gif" . "sxiv")
+                            ("jpg" . "sxiv")
+                            ("png" . "sxiv")
+                            ("mkv" . "mpv")
+                            ("mp4" . "mpv")
+                            ("pdf" . "evince")))
+#+end_src
+
+** TODO No littering
+
+#+begin_src emacs-lisp
+(use-package no-littering)
+
+;; no-littering doesn't set this by default so we must place
+;; auto save files in the same path as it uses for sessions
+(setq auto-save-file-name-transforms
+    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))   
+
+#+end_src
+
+* DASHBOARD
+Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
+
+** Launch dashboard by default when launch emacs
 #+begin_src emacs-lisp
 (use-package all-the-icons)
 
@@ -335,25 +648,22 @@ and an Emacs banner.
     (setq dashboard-set-file-icons t)
     (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
     ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-    (setq dashboard-startup-banner "~/.emacs.d/emacs-dash.png")  ;; use custom image as banner
+    ;;(setq dashboard-startup-banner "~/.emacs.d/emacs-dash.png")  ;; use custom image as banner
     (setq dashboard-center-content nil) ;; set to 't' for centered content
+    (setq dashboard-icon-type 'all-the-icons)
     (setq dashboard-items '((recents . 5)
 			    (agenda . 5 )
 			    (bookmarks . 3)
-			    (projects . 3)
+			    (projects . 5)
 			    (registers . 3)))
     :config
     (dashboard-setup-startup-hook)
     (dashboard-modify-heading-icons '((recents . "file-text")
-
 				      (bookmarks . "book"))))
   ; ensure emacs open in dashboard
   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 #+end_src
-
 ** Startup performance
-
-Check the time to load the configuration
 
 #+begin_src emacs-lisp
 (use-package gcmh
@@ -374,14 +684,170 @@ Check the time to load the configuration
 
 (setq gc-cons-threshold (* 50 1000 1000))
 
-(defun efs/display-startup-time ()
+(defun lem/display-startup-time ()
 (message "Emacs loaded in %s with %d garbage collections."
         (format "%.2f seconds"
                 (float-time
                     (time-subtract after-init-time before-init-time)))
         gcs-done))
 
-(add-hook 'emacs-startup-hook #'efs/display-startup-time)
+(add-hook 'emacs-startup-hook #'lem/display-startup-time)
+
+#+end_src
+* Disable mouse
+
+#+begin_src emacs-lisp
+(dolist (k '([mouse-1] [down-mouse-1] [drag-mouse-1] [double-mouse-1] [triple-mouse-1]  
+             [mouse-2] [down-mouse-2] [drag-mouse-2] [double-mouse-2] [triple-mouse-2]
+             [mouse-3] [down-mouse-3] [drag-mouse-3] [double-mouse-3] [triple-mouse-3]
+             [mouse-4] [down-mouse-4] [drag-mouse-4] [double-mouse-4] [triple-mouse-4]
+             [mouse-5] [down-mouse-5] [drag-mouse-5] [double-mouse-5] [triple-mouse-5]))
+  (global-unset-key k))
+
+#+end_src
+
+* Display language modes
+** cdlatex
+
+cdlatex is a package that allows to display inline math expressions in latex
+with the cdlatex mode
+#+begin_src emacs-lisp
+(use-package cdlatex)
+(add-hook 'org-mode-hook #'turn-on-org-cdlatex)
+#+end_src
+
+** text mode
+#+begin_src emacs-lisp
+  (defun lem/text-mode-setup ()
+    "test hook"
+    (variable-pitch-mode nil)
+    (auto-fill-mode 1)
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1)
+    (setq evil-auto-indent nil))
+
+  (add-hook 'tex-mode-hook 'lem/text-mode-setup)
+#+end_src
+
+**** Latex
+
+Latex is a markup language bast used to write text without warning about the
+format. One very important advantage of this language is that you could define
+the style after write  the text and the resulting PDF will be the same,
+independent the OS you are using. This not happen when you work with visual editors
+
+***** Configure image and math preview
+
+#+begin_src emacs-lisp
+  (setq org-preview-latex-default-process 'dvisvgm)
+    (setq org-preview-latex-process-alist
+	  '((dvipng :programs
+		    ("latex" "dvipng")
+		    :description "dvi > png" :message "you need to install the programs: latex and dvipng." :image-input-type "dvi" :image-output-type "png" :image-size-adjust
+		    (1.0 . 1.0)
+		    :latex-compiler
+		    ("latex -interaction nonstopmode -output-directory %o %f")
+		    :image-converter
+		    ("dvipng -D %D -T tight -bg Transparent -o %O %f"))
+	    (dvisvgm :programs
+		     ("latex" "dvisvgm")
+		     :description "dvi > svg" :message "you need to install the programs: latex and dvisvgm." :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
+		     (1.7 . 1.5)
+		     :latex-compiler
+		     ("latex -interaction nonstopmode -output-directory %o %f")
+		     :image-converter
+		     ("dvisvgm %f -e -n -b min -c %S -o %O"))
+	    (imagemagick :programs
+			 ("latex" "convert")
+			 :description "pdf > png" :message "you need to install the programs: latex and imagemagick." :image-input-type "pdf" :image-output-type "png" :image-size-adjust
+			 (1.0 . 1.0)
+			 :latex-compiler
+		 ("pdflatex -interaction nonstopmode -output-directory %o %f")
+			 :image-converter
+			 ("convert -density %D -trim -antialias %f -quality 100 %O"))))
+#+end_src
+
+***** Configure custom class
+Also you could include your own class. This will be address on the [[*Export to latex][Org  section]]
+
+
+* Build your own IDE with lsp-mode
+** Initial configuration
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (lsp-enable-which-key-integration t))
+#+end_src
+
+*** Basic completions
+- ~completion-at-point~ for completions
+- Signatures when writing methods (~C-n~ or ~C-p~ to cycle)
+
+*** Hover
+
+*** Find definitions and references
+ - ~lsp-find-definition~: ~C-c l g r~
+ - ~lsp-find-references~: ~C-c l g g~
+*** Rename symbol
+- ~lsp-rename~: ~C-c l r r~
+*** Diagnostics
+- ~flymake-show-diagnostics-buffer~ to show diagnostics
+*** Code Formatting
+
+- ~lsp-format-buffer~: ~C-c l == =~
+Configure formatting options for some languages with =lsp-<language>-format-= variables 
+
+**  Better completion options with company-mode
+
+Company is a Modular text completion framework for emacs
+
+#+begin_src emacs-lisp
+  (use-package company
+  :after lsp-mode
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+              ("<tab>" . company-complete-selection))
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+#+end_src
+** More UI Enhancements lsp-ui-mode
+
+#+begin_src emacs-lisp
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (setq lsp-ui-doc-position 'bottom)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-hover nil)
+#+end_src
+** lsp-treemacs
+
+Provides an even nicer UI on top of lsp-mode using Treemacs
+
+- ~lsp-treemacs-symbols~ - Show a tree view of the symbols in the current file
+- ~lsp-treemacs-references~ - Show a tree view for the references of the symbol under the cursor
+- ~lsp-treemacs-error-list~ - Show a tree view for the diagnostic messages in the project
+
+  #+begin_src emacs-lisp
+        (use-package lsp-treemacs
+          :after lsp)
+
+    ; Quicker symbol search with lsp-ivy
+    (use-package lsp-ivy)
+  #+end_src
+** Minor modes
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
 
@@ -393,21 +859,20 @@ The main reason why I changes to emacs
  - Move a line up or down: ~meta+up/down~
  - [X] Change a list to checklist
 
-*** TODO Insert heading!
+*** Insert heading!
 
  - ~Ctrl+c Ctr+t~ to toggle TODO state
- - You can change the state with Shift+leftright
-   
+ - You can change the state with Shift+left/rigth
 
-*** Configure Org mode
+*** Configure view
 
 #+begin_src emacs-lisp
 
-  (defun lucas/org-mode-setup ()
+  (defun lem/org-mode-setup ()
     (org-indent-mode)
-    (variable-pitch-mode 0)
+    (variable-pitch-mode nil)
     (auto-fill-mode 1)
-    (visual-line-mode 0)
+    (visual-line-mode 1)
     (setq evil-auto-indent nil))
 
   (defun lucas/org-font-setup ()
@@ -417,9 +882,10 @@ The main reason why I changes to emacs
                                (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 
   (use-package org
-    :hook (org-mode . lucas/org-mode-setup)
+    :hook (org-mode . lem/org-mode-setup)
     :config
-    (setq org-ellipsis " ▾")
+    (setq org-ellipsis " ▾"
+          org-directory (file-truename "~/Documents/Org/"))
     (lucas/org-font-setup))
 
 
@@ -448,15 +914,18 @@ The main reason why I changes to emacs
 
   ;; Wrap the text in a custom column size
   (defun lucas/org-mode-visual-fill ()
-    (setq visual-fill-column-width 120
-          fill-column 100
+    (setq visual-fill-column-width 100
+          fill-column 80
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1))
+
   (use-package visual-fill-column
     :hook (org-mode . lucas/org-mode-visual-fill))
+
 #+end_src
 
-*** Org agenda
+*** Set up org-agenda
+
 Org agenda is a mode of emacs that allows you to view the task for the week
 
 You can shcedule the todos with org-shedule command or due time with org-deadline. To move arrownd
@@ -476,23 +945,27 @@ The next setting are,
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
     (setq org-agenda-files
-          '("~/Documents/Org/Tasks.org"
-            "~/Documents/Org/Habits.org"))
+          '("Tasks.org"
+            "Habits.org"))
 
 #+end_src
 
-**** Enable more modes in TODO LIST
-By default there is only 2 modes, TODO and DONE. With the following
-lines we are enable a new sequence of states
+*** Multiple  keyword sets in one file
+From the [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]], sometimes you want to use different sets of TODO keywords in parallel. For
+example a set for task that could be =DONE= or =TODO=, other task that could depends on other and
+include the keyword =WAITING= and so on.
+
+*IMPORTANT* You can only use set at time, so you need first to select the correct workflow. The
+shortcut to select them is: =C-u C-u C-c C-t=;  =C-s-RIGHT=;  =C-s-LEFT=
+
 #+begin_src emacs-lisp
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-          (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        (sequence "WAIT(w@)" "REVIEW(v)" "READY(r)" "INBOX(i)" "|" "DONE(d!)" "(CANCEL(k@)")))
 #+end_src
 
-**** Now we go to setup the agenda view
-
 #+begin_src emacs-lisp
+
   (setq org-agenda-custom-commands
      '(("d" "Dashboard"
        ((agenda "" ((org-deadline-warning-days 7)))
@@ -504,7 +977,9 @@ lines we are enable a new sequence of states
        ((todo "NEXT"
           ((org-agenda-overriding-header "Next Tasks")))))
 
-      ("W" "Work Tasks" tags-todo "+work-email")
+      ("W" "Work Tasks" tags-todo "+UC3M")
+      ("D" "PHD Tasks" tags-todo "+PHD")
+      ("U" "UI Tasks" tags-todo "+UI")
 
       ;; Low-effort next actions
       ("e" tags-todo "+Effort<15&+Effort>0"
@@ -512,7 +987,6 @@ lines we are enable a new sequence of states
         (org-agenda-max-todos 20)
         (org-agenda-files org-agenda-files)))
 
-;; This is a custom workflow states. You can change it to addapt to your workflow
       ("w" "Workflow Status"
        ((todo "WAIT"
               ((org-agenda-overriding-header "Waiting on External")
@@ -540,12 +1014,11 @@ lines we are enable a new sequence of states
         (todo "CANC"
               ((org-agenda-overriding-header "Cancelled Projects")
                (org-agenda-files org-agenda-files)))))))
-
 #+end_src
 
-To add a tag to a task, use ~counsel-org-tag~
+Sometimes we want to use muttualy exclusive tags. To do it, we can use command ~org-tag-alist
+startgroup~. Then, to use it, we use the ~counsel-org-tag~ command
 
-Add some predefine tags
 #+begin_src emacs-lisp
   (setq org-tag-alist
     '((:startgroup)
@@ -563,73 +1036,58 @@ Add some predefine tags
 
 #+end_src
 
-Refill is the ability to move some text to other file when some action
-happen or event is trigger.  On the following section, we go to setup
-some triggers for the agenda mode. This allows as to archive the task
-that are done
+Refill is the ability to move some text to other file when some action happen or event is trigger.  On the following section, we go to setup some triggers for the agenda mode. This allows as to archive the task that are done.
 
 #+begin_src emacs-lisp
-  (setq org-refile-targets
-    '(("Archive.org" :maxlevel . 1)
-      ("Tasks.org" :maxlevel . 1)))
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
 
   ; Save Org buffers after refiling!
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
 #+end_src
+
 *** Capture template
 
 #+begin_src emacs-lisp
 
-  (setq org-capture-templates
-      `(("t" "Tasks / Projects")
-        ("tt" "Task" entry (file+olp "~/Documents/Org_EFS/Tasks.org" "Inbox")
-             "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+      (setq org-capture-templates
+          `(("t" "Tasks / Projects")
+            ("tl" "Task with link" entry (file+olp "~/Documents/Org/Tasks.org" "INBOX")
+                 "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+            ("tt" "Task" entry (file+olp "~/Documents/Org/Tasks.org" "INBOX")
+                 "* TODO %?\n  %U\n  %i" :empty-lines 1)
+            ("j" "Journal Entries")
+            ("jj" "Journal" entry
+                 (file+olp+datetree "~/Documents/Org/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+                 ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+                 :empty-lines 1
+                 :prepend t)
+            ("jm" "Meeting" entry
+                 (file+olp+datetree "~/Documents/Org/Journal.org")
+                 "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+                 :clock-in :clock-resume
+                 :empty-lines 1)
 
-        ("j" "Journal Entries")
-        ("jj" "Journal" entry
-             (file+olp+datetree "~/Documents/Org_EFS/Journal.org")
-             "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-             ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-             :clock-in :clock-resume
-             :empty-lines 1)
-        ("jm" "Meeting" entry
-             (file+olp+datetree "~/Documents/Org_EFS/Journal.org")
-             "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-             :clock-in :clock-resume
-             :empty-lines 1)
+  ;          ("w" "Workflows")
+  ;	  ("we" "Checking Email" entry (file+olp+datetree "~/Documents/Org/Journal.org")
+  ;	       "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
-        ("w" "Workflows")
-        ("we" "Checking Email" entry (file+olp+datetree "~/Documents/Org_EFS/Journal.org")
-             "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
-
-        ("m" "Metrics Capture")
-        ("mw" "Weight" table-line (file+headline "~/Documents/Org_EFS/Metrics.org" "Weight")
-         "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
-
-#+end_src
-
-Also, we can define some binding to open captures
-
-#+begin_src emacs-lisp
-  (define-key global-map (kbd "C-c j")
-    (lambda () (interactive) (org-capture nil "jj")))
-#+end_src
-
-But is preffer to assing a keybinding to org-capure
-
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-c c") 'org-capture)
+  ;	  ("m" "Metrics Capture")
+  ;	  ("mw" "Weight" table-line (file+headline "~/Documents/Org/Metrics.org" "Weight")
+  ;	   "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)
+            ))
+  (global-set-key (kbd "C-c c") 'org-capture)
 #+end_src
 
 **** Org habit
+
 #+begin_src emacs-lisp
  (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60)
 #+end_src
 
-The habits are task with a repeat periods. You can see the task into the agenda-dashboard and
-remember you to do and what times you skip it.
+The habits are task with a repeat periods. You can see the task into the agenda-dashboard and remember you to do and what times you skip it.
 
 *** Org links
 
@@ -643,7 +1101,6 @@ remember you to do and what times you skip it.
           ("wiki" . "https://en.wikipedia.org/wiki/")))
 #+end_src
 
-
 *** Configure Babel languages
 
 To execute or export code in org-mode code blocks, you’ll need to set up org-babel-load-languages
@@ -651,35 +1108,112 @@ for each language you’d like to use. [[https:orgmode.org/worg/org-contrib/babe
 org-babel.
 
 #+begin_src emacs-lisp
-(org-babel-do-load-languages
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-    (python . t)))
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (python . t)
+      (js . t)
+      (shell . t)
+      ))
 
-(push '("conf-unix" . conf-unix) org-src-lang-modes)
+  (push '("conf-unix" . conf-unix) org-src-lang-modes)
 #+end_src
 
-** Org toc
+*** Org toc
+
 #+begin_src emacs-lisp
 (use-package toc-org
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
-** Org export manpage
+*** Org export
+
+**** Export manpage
 #+begin_src emacs-lisp
 (use-package ox-man
   :ensure nil)
 #+end_src
 
-*** Org export to markdown
+**** Org export to markdown
 #+begin_src emacs-lisp
 (use-package ox-gfm)
 #+end_src
 
+**** Export html projects
+
+**** Export to latex
+#+begin_src emacs-lisp
+
+  (eval-after-load "ox-latex"
+
+    ;; update the list of LaTeX classes and associated header (encoding, etc.)
+    ;; and structure
+    '(add-to-list 'org-latex-classes
+                  `("beamer"
+                    ,(concat "\\documentclass[presentation]{beamer}\n"
+                             "[DEFAULT-PACKAGES]"
+                             "[PACKAGES]"
+                             "[EXTRA]\n")
+                    ("\\section{%s}" . "\\section*{%s}")
+                    ("\\subsection{%s}" . "\\subsection*{%s}")
+                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+  (setq org-latex-listings t)
+
+
+#+end_src
+
+****  Create presentations
+
+To create presentation there is a program called org-tree-slide
+#+begin_src emacs-lisp
+
+(use-package hide-mode-line)
+
+(defun lem/presentation-setup ()
+  ;; Hide the mode line
+  (hide-mode-line-mode 1)
+  ;; Display images inline
+  (org-display-inline-images) ;; Can also use org-startup-with-inline-images
+
+  ;; Scale the text.  The next line is for basic scaling:
+  (setq text-scale-mode-amount 3)
+  (text-scale-mode 1))
+
+  ;; This option is more advanced, allows you to scale other faces too
+  ;; (setq-local face-remapping-alist '((default (:height 2.0) variable-pitch)
+  ;;                                    (org-verbatim (:height 1.75) org-verbatim)
+  ;;                                    (org-block (:height 1.25) org-block))))
+
+(defun lem/presentation-end ()
+  ;; Show the mode line again
+  (hide-mode-line-mode 0)
+
+  ;; Turn off text scale mode (or use the next line if you didn't use text-scale-mode)
+  ;; (text-scale-mode 0))
+
+  ;; If you use face-remapping-alist, this clears the scaling:
+  (setq-local face-remapping-alist '((default variable-pitch default))))
+
+(use-package org-tree-slide
+  :hook ((org-tree-slide-play . lem/presentation-setup)
+         (org-tree-slide-stop . lem/presentation-end))
+  :custom
+  (org-tree-slide-slide-in-effect t)
+  (org-tree-slide-activate-message "Presentation started!")
+  (org-tree-slide-deactivate-message "Presentation finished!")
+  (org-tree-slide-header t)
+  (org-tree-slide-breadcrumbs " > ")
+  (org-image-actual-width nil))
+
+#+end_src
+
 *** Structure templates
 
-Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files in combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and then press =TAB=.  For example, to insert an empty =emacs-lisp= block below, you can type =<el= and press =TAB= to expand into such a block.
+Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files
+in combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and
+then press =TAB=.  For example, to insert an empty =emacs-lisp= block below, you can type =<el= and
+press =TAB= to expand into such a block. 
 
 You can add more =src= block templates below by copying one of the lines and changing the two strings at the end, the first to be the template name and the second to contain the name of the language [[https://orgmode.org/worg/org-contrib/babel/languages.html][as it is known by Org Babel]].
 
@@ -693,16 +1227,44 @@ You can add more =src= block templates below by copying one of the lines and cha
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 #+end_src
+*** Publish projects
 
-** Org Roam
+#+begin_src emacs-lisp
+  (use-package simple-httpd
+    :ensure t)
+  (use-package htmlize)
+#+end_src
+* Org Roam, the good part
+
 Org-roam is a tool for networked thought. It reproduces some of the Roam Research's key features
 within Org-mode
 
 *** Instalation
 The instalation process use the melpa or melpa stable package manager from emacs. 
 
-#+begin_src 
-(use-package org-roam)
+#+begin_src emacs-lisp
+    (use-package org-roam
+       :ensure t
+       :demand t
+       :init
+       (setq org-roam-v2-ack t)
+       :custom
+       (org-roam-completion-everywhere t)
+       (org-roam-directory (file-truename "~/Documents/Org/roam"))
+       :bind (("C-c n l" . org-roam-buffer-toggle)
+              ("C-c n f" . org-roam-node-find)
+              ("C-c n i" . org-roam-node-insert)
+              :map org-mode-map
+              ("C-M-i" . completion-at-point)
+              :map org-roam-dailies-map
+              ("Y" . org-roam-dailies-capture-yesterday)
+              ("T" . org-roam-dailies-capture-tomorrow))
+    :bind-keymap
+    ("C-c n d" . org-roam-dailies-map)
+    :config
+    (require 'org-roam-dailies) ;; Ensure the keymap is available
+    (org-roam-db-autosync-mode))
+  
 #+end_src
 
 Some dependencies are:
@@ -714,6 +1276,39 @@ Some dependencies are:
 - emacsql-sqlite
 - magit-section
 
+*** Org roam capture
+#+begin_src emacs-lisp
+            ;;    (defun my/org-roam-capture-inbox ()
+            ;;      (interactive)
+            ;;      (org-roam-capture- :node (org-roam-node-create)
+            ;;                         :templates '(("i" "inbox" plain "* %?"
+            ;;                                      :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+            ;;
+            ;;    (global-set-key (kbd "C-c n b") #'my/org-roam-capture-inbox)
+            ;;
+            ;;
+            ;;    (defun my/org-roam-capture-task ()
+            ;;    (interactive)
+            ;;    ;; Add the project file to the agenda after capture is finished
+            ;;    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+            ;;
+            ;;    ;; Capture the new task, creating the project file if necessary
+            ;;    (org-roam-capture- :node (org-roam-node-read
+            ;;                              nil
+            ;;                              (my/org-roam-filter-by-tag "Project"))
+            ;;                       :templates '(("p" "project" plain "* TODO %?"
+            ;;                                     :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+            ;;                                                            "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+            ;;                                                            ("Tasks"))))))
+            ;;
+            ;;  (global-set-key (kbd "C-c n t") #'my/org-roam-capture-task)
+          (setq org-roam-capture-templates
+                '(("d" "default" plain "%?"
+                  :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n#+author: %n\n")
+                  :unnarrowed t))
+                )
+
+#+end_src
   
 *** Setting up Org-roam
 
@@ -721,13 +1316,14 @@ Org-roam’s capabilities stem from its aggressive caching: it crawls all files 
 org-roam-directory, and maintains a cache of all links and nodes.
 
 #+begin_src emacs-lisp
-(setq org-roam-directory "~/Documents/Org-roam")
+; (setq org-roam-directory (file-truename "~/Documents/Org/roam")) ;; This setting was moved to the package instalation because, there are modules that need it before they are loaded
 #+end_src
 
-Autosync mode allows to keep track and cache all changes to maintain cache consistency
+Autosync mode allows to keep track and cache all changes to maintain cache consistency. Also this
+configuration parameter was moved to the package declaration
 
 #+begin_src emacs-lisp
-(org-roam-db-autosync-mode)
+; (org-roam-db-autosync-mode) 
 #+end_src
 
 If you're using a vertical completion framework, such as Ivy, Org-roam supports the generation of an
@@ -750,283 +1346,88 @@ One can exclude some nodes, for example, to exclude all the headlines with the A
         (not (member "ATTACH" (org-get-tags)))))
 #+end_src
 
-* Development
-** Languages
-
-*** IDE Features with lsp-mode
-
-**** lsp-mode
-
-We use the excellent [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] to enable IDE-like functionality for many different programming languages via "language servers" that speak the [[https://microsoft.github.io/language-server-protocol/][Language Server Protocol]].  Before trying to set up =lsp-mode= for a particular language, check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][documentation for your language]] so that you can learn which language servers are available and how to install them.
-
-The =lsp-keymap-prefix= setting enables you to define a prefix for where =lsp-mode='s default keybindings will be added.  I *highly recommend* using the prefix to find out what you can do with =lsp-mode= in a buffer.
-
-The =which-key= integration adds helpful descriptions of the various keys so you should be able to learn a lot just by pressing =C-c l= in a =lsp-mode= buffer and trying different things that you find there.
+*** Add some vars
 
 #+begin_src emacs-lisp
-
-  (defun efs/lsp-mode-setup ()
-    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    (lsp-headerline-breadcrumb-mode))
-
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :hook (lsp-mode . efs/lsp-mode-setup)
-    :init
-    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-    :config
-    (lsp-enable-which-key-integration t))
+  (setq user-full-name "Lucas Elvira Martín"
+        user-mail-address "lucaselvira96@gmail.com")
 
 #+end_src
 
-**** lsp-ui
+*** Org roam ui
 
-[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage (linked at the beginning of this paragraph) to see examples of what it can do.
-
+This package create a website with D3.JS displays the org roam system in a graph-view like obsidian does.
 #+begin_src emacs-lisp
-
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-doc-position 'bottom))
-
-#+end_src
-
-**** lsp-treemacs
-
-[[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] provides nice tree views for different aspects of your code like symbols in a file, references of a symbol, or diagnostic messages (errors and warnings) that are found in your code.
-
-Try these commands with =M-x=:
-
-- =lsp-treemacs-symbols= - Show a tree view of the symbols in the current file
-- =lsp-treemacs-references= - Show a tree view for the references of the symbol under the cursor
-- =lsp-treemacs-error-list= - Show a tree view for the diagnostic messages in the project
-
-This package is built on the [[https://github.com/Alexander-Miller/treemacs][treemacs]] package which might be of some interest to you if you like to have a file browser at the left side of your screen in your editor.
-
-#+begin_src emacs-lisp
-
-  (use-package lsp-treemacs
-    :after lsp)
-
-#+end_src
-
-**** lsp-ivy
-
-[[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] integrates Ivy with =lsp-mode= to make it easy to search for things by name in your code.  When you run these commands, a prompt will appear in the minibuffer allowing you to type part of the name of a symbol in your code.  Results will be populated in the minibuffer so that you can find what you're looking for and jump to that location in the code upon selecting the result.
-
-Try these commands with =M-x=:
-
-- =lsp-ivy-workspace-symbol= - Search for a symbol name in the current project workspace
-- =lsp-ivy-global-workspace-symbol= - Search for a symbol name in all active project workspaces
-
-#+begin_src emacs-lisp
-
-  (use-package lsp-ivy)
-
+(use-package org-roam-ui)
 #+end_src
 
 
-*** TypeScript
+*** Org roam configuration hacks
 
-This is a basic configuration for the TypeScript language so that =.ts= files activate =typescript-mode= when opened.  We're also adding a hook to =typescript-mode-hook= to call =lsp-deferred= so that we activate =lsp-mode= to get LSP features every time we edit TypeScript code.
+This section is disable until I finally understand How it works.
 
-#+begin_src emacs-lisp
+#+begin_example emacs-lisp
 
-  (use-package typescript-mode
-    :mode "\\.ts\\'"
-    :hook (typescript-mode . lsp-deferred)
-    :config
-    (setq typescript-indent-level 4))
+(defun my/org-roam-filter-by-tag (tag-name)
+  (lambda (node)
+    (member tag-name (org-roam-node-tags node))))
 
-#+end_src
+(defun my/org-roam-list-notes-by-tag (tag-name)
+  (mapcar #'org-roam-node-file
+          (seq-filter
+           (my/org-roam-filter-by-tag tag-name)
+           (org-roam-node-list))))
 
-*Important note!*  For =lsp-mode= to work with TypeScript (and JavaScript) you will need to install a language server on your machine.  If you have Node.js installed, the easiest way to do that is by running the following command:
+(defun my/org-roam-refresh-agenda-list ()
+  (interactive)
+  (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
 
-#+begin_src shell :tangle no
+;; Build the agenda list the first time for the session
+(my/org-roam-refresh-agenda-list)
 
-npm install -g typescript-language-server typescript
+(defun my/org-roam-project-finalize-hook ()
+  "Adds the captured project file to `org-agenda-files' if the
+capture was not aborted."
+  ;; Remove the hook since it was added temporarily
+  (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-#+end_src
+  ;; Add project file to the agenda list if the capture was confirmed
+  (unless org-note-abort
+    (with-current-buffer (org-capture-get :buffer)
+      (add-to-list 'org-agenda-files (buffer-file-name)))))
 
-This will install the [[https://github.com/theia-ide/typescript-language-server][typescript-language-server]] and the TypeScript compiler package.
+(defun my/org-roam-find-project ()
+  (interactive)
+  ;; Add the project file to the agenda after capture is finished
+  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-** Company Mode
+  ;; Select a project file to open, creating it if necessary
+  (org-roam-node-find
+   nil
+   nil
+   (my/org-roam-filter-by-tag "Project")
+   :templates
+   '(("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
+      :unnarrowed t))))
 
-[[http://company-mode.github.io/][Company Mode]] provides a nicer in-buffer completion interface than =completion-at-point= which is
-more reminiscent of what you would expect from an IDE.  We add a simple configuration to make the
-keybindings a little more useful (=TAB= now completes the selection and initiates completion at the
-current location if needed).
+(defun my/org-roam-capture-inbox ()
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("i" "inbox" plain "* %?"
+                                  :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
 
-We also use [[https://github.com/sebastiencs/company-box][company-box]] to further enhance the look of the completions with icons and better overall presentation.
+(defun my/org-roam-capture-task ()
+  (interactive)
+  ;; Add the project file to the agenda after capture is finished
+  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-#+begin_src emacs-lisp
-
-  (use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-           ("<tab>" . company-complete-selection))
-          (:map lsp-mode-map
-           ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
-
-#+end_src
-
-** Projectile
-
-Projectile is a package aims to allows you manage your projets. In the
-next cell you are install the package, change the completion system,
-setting the folder where most of your projects are stored
-
-#+begin_src emacs-lisp
-  (use-package projectile
-    :diminish projectile-mode
-    :config (projectile-mode)
-    :custom ((projectile-completion-system 'ivy))
-    :bind-keymap
-    ("C-c p" . projectile-command-map))
-    (setq projectile-switch-project-action #'projectile-dired)
-
-  (use-package counsel-projectile
-    :config (counsel-projectile-mode))
-
-#+end_src
-
-Something very interesant from projectile is that, it allows you to
-setup some variables from specific projects when a buffer of this
-project is loaded. To do it you need should press "C-c p e" 
-
-Also you can make a recursive search in the project with different
-search engienieere with ~counsel-projectile-rg~ <-> ~C-c p e r~
-
-** Magit
-[[https://github.com/magit/magit][magit github]]
-
-#+begin_src emacs-lisp
-(use-package magit
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-#+end_src
-
-*** Operations
-
-Run ~magit-status~ in buffer from Git repo, press ~?~ for command pannel
-
-Refresh buffer with ~g r~
-
- - Diffs
- - Commit log
- - Blame
- - Stashes
- - Branches
- - Rebase
- - Pull/push
-
-To activate the git command, just press ~g~
-
-You can add changes to a previous push, stashing the changes, go to the commit
-and apply there
-
-*** Forge
-
-Forge allows you to interact with github inside emacs
-
-#+begin_src emacs-lisp
-    (use-package forge
-      :after magit)
-#+end_src
-
-** Copilot
-To enable copilot, first I need to isntall straight, an emacs package
-that allows you to run code from at the download moment
-
-*** Straight
-
-Straight is a package aims to allow download any kind of repo from trusted and unstrasted sources
-and run some code while the instlation
-
-#+begin_src emacs-lisp
-      (defvar bootstrap-version)
-      (let ((bootstrap-file
-             (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-            (bootstrap-version 6))
-        (unless (file-exists-p bootstrap-file)
-          (with-current-buffer
-              (url-retrieve-synchronously
-               "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-               'silent 'inhibit-cookies)
-            (goto-char (point-max))
-            (eval-print-last-sexp)))
-        (load bootstrap-file nil 'nomessage))
-
-#+end_src
-
-Now, I can install copilo
-
-*** Install copilot
-
-Emacs does not have an official copilot repo, so there are some alternatives. [[https:zerlfx/copilot.el][This repo]] clone the
-functionlities from the vim copilot script from github.
-
-#+begin_src emacs-lisp
-
-  (use-package copilot
-    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "copilot.el")) :ensure t)
-
-  (add-hook 'prog-mode-hook 'copilot-mode)
-
-#+end_src
-
-*** Uso copilot with company
-
-#+begin_src emacs-lisp
-(with-eval-after-load 'company
-  ;; disable inline previews
-  (delq 'company-preview-if-just-one-frontend company-frontends))
-  
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-
-#+end_src
-
-** Rainbow-delimeters
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-:hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-** Key binding
-
-To create a keybinding there are a lot of ways to do that. One is just used allowing escape quit with the <scape> key. Also the package general, allows you to set up in more verbose way the keybinding
-
-#+begin_src example
-  (use-package general)
-  (general-define-key
-     "C-M-j" 'counsel-switch-buffer)
-#+end_src
-
-With general-create-definer, the package create a function to setup a prefix for your keybinding. 
-
-
-
-* Writting
-** Configure flyspell
-Fly spell is a mode that allows you to see typing errors. By default it is disable, but can be
-configure to be used on different kinds of situations.
-
-#+begin_src emacs-lisp
-(use-package flyspell
-    :config
-    (setq ispell-program-name "hunspell"
-          ispell-default-dictionary "en_US")
-    :hook (text-mode . flyspell-mode)
-    :bind (("M-<f7>" . flyspell-buffer)
-           ("<f7>" . flyspell-word)
-           ("C-;" . flyspell-auto-correct-previous-word)))
-#+end_src
+  ;; Capture the new task, creating the project file if necessary
+  (org-roam-capture- :node (org-roam-node-read
+                            nil
+                            (my/org-roam-filter-by-tag "Project"))
+                     :templates '(("p" "project" plain "** TODO %?"
+                                   :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                          "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+                                                          ("Tasks"))))))
+#+end_example

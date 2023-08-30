@@ -173,21 +173,21 @@ Plug 'tpope/vim-fugitive'
 " Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'dense-analysis/ale'
 
 " languages
-Plug 'lervag/vimtex'
+" Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-" Plug 'lervag/wiki.vim'
+Plug 'lervag/wiki.vim'
 " Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
-Plug 'blindFS/vim-taskwarrior'
+" Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
 "Plug 'vimwiki/vimwiki'
@@ -208,7 +208,7 @@ Plug 'mhinz/vim-startify'
 Plug 'tpope/vim-obsession'
 
 " ctags
-Plug 'ludovicchabant/vim-gutentags'
+" Plug 'ludovicchabant/vim-gutentags'
 
 
 " vim-table-mode
@@ -252,9 +252,9 @@ Display a file manager on the left panel and allows navigation over it
 This plugin improves the experience of write in latex with vim
 
 ```vim
-let g:vimtex_view_method = 'zathura'
-let g:vimtex_quickfix_mode = 0
-let g:tex_flavor = 'latex'
+"let g:vimtex_view_method = 'zathura'
+"let g:vimtex_quickfix_mode = 0
+"let g:tex_flavor = 'latex'
 " hidden latex code when the pointer is over it
 " set conceallevel=1
 ```
@@ -273,7 +273,7 @@ let g:javascript_plugin_jsdoc = 1
 Coc is a lsp plugin. It uses nodejs as backend and has its own package manager.
 To call it, you run `:CocInstall ` followed for the name of the package.
 
-```vim
+```vim_no_tangle
 set encoding=utf-8
 " Some servers have issues with backup files, see #649
 set nobackup
@@ -373,11 +373,11 @@ This plugin allows to generate tags for the current project. It uses ctags and
 cscope.
 
 ```vim
-let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
-let g:gutentags_cache_dir = '~/.cache/gutentags'
-let g:gutentags_ctags_tagfile = '.tags'
-let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
-let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
+"let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
+"let g:gutentags_cache_dir = '~/.cache/gutentags'
+"let g:gutentags_ctags_tagfile = '.tags'
+"let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
+"let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
 ```
 ### vim table mode
 To start the table mode `leader+tm` (leader + table mode).  Then you need to
@@ -457,7 +457,7 @@ With autocm you can enable or disable some settings for the current buffer.
 
 ```vim
 " text mode
-autocm BufNewFile,BufRead *.md,*.tex setlocal
+autocm BufNewFile,BufRead *.md,*.tex,*.org setlocal
 	\ textwidth=80
 	\ fileformat=unix
 	\ cc=80
@@ -493,7 +493,5 @@ source: [vim templates](https://vimtricks.com/p/vim-file-templates/)
 Each time I want to write in vim in English, I need to change the spelllang
 option. This command will automatically at it to the last line
 
-```vim
-```
 
 <!-- vim: set spelllang=en: -->

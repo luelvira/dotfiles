@@ -65,17 +65,17 @@ Plug 'tpope/vim-fugitive'
 " Plug 'dense-analysis/ale'
 
 " languages
-Plug 'lervag/vimtex'
+" Plug 'lervag/vimtex'
 Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
 
 
 " Personal wiki
-" Plug 'lervag/wiki.vim'
-"Plug 'lervag/lists.vim'
+Plug 'lervag/wiki.vim'
+" Plug 'lervag/lists.vim'
 " Plug 'vimwiki/vimwiki'
-"Plug 'blindFS/vim-taskwarrior'
+" Plug 'blindFS/vim-taskwarrior'
 " Plug 'tools-life/taskwiki'
 
 "Plug 'vimwiki/vimwiki'
@@ -117,62 +117,28 @@ silent! call repeat#set("\<Plug>MyWonderfulMap", v:count)
 " "" Open the existing NERDTree on each new tab.
 " autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
 " nnoremap <C-n> :NERDTreeToggle<CR>
-let g:vimtex_view_method = 'zathura'
-let g:vimtex_quickfix_mode = 0
-let g:tex_flavor = 'latex'
+"let g:vimtex_view_method = 'zathura'
+"let g:vimtex_quickfix_mode = 0
+"let g:tex_flavor = 'latex'
 " hidden latex code when the pointer is over it
 " set conceallevel=1
 let g:javascript_plugin_jsdoc = 1
-set encoding=utf-8
-" Some servers have issues with backup files, see #649
-set nobackup
-set nowritebackup
+" Colorscheme for coc
+func! s:my_colors_setup() abort
+  highlight CocFloating ctermbg=Black " For background color
+endfunc
 
-set updatetime=300
-set signcolumn=yes
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-" nmap <silent> gi <Plug>(coc-implementation)
-" nmap <silent> gr <Plug>(coc-references)
-
-" nnoremap <silent> K :call ShowDocumentation()<CR>
-" 
-" function! ShowDocumentation()
-"   if CocAction('hasProvider', 'hover')
-"     call CocActionAsync('doHover')
-"   else
-"     call feedkeys('K', 'in')
-"   endif
-" endfunction
-" " Colorscheme for coc
-" func! s:my_colors_setup() abort
-"   highlight CocFloating ctermbg=Black " For background color
-" endfunc
-" 
-" augroup colorscheme_coc_setup | au!
-"   au VimEnter * call s:my_colors_setup()
-" augroup END
+augroup colorscheme_coc_setup | au!
+  au VimEnter * call s:my_colors_setup()
+augroup END
 set termguicolors
 if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme gruvbox
 colorscheme nord
-<<<<<<< HEAD
 else
 "    colorscheme gruvbox
 colorscheme nord
-||||||| parent of 97ebacf (2023-08-21T11:08)
-else
-  colorscheme gruvbox
-=======
->>>>>>> 97ebacf (2023-08-21T11:08)
 endif
 if exists("colors_name")
     if colors_name == "nord"
@@ -196,16 +162,11 @@ if exists("colors_name")
         let g:gruvbox_underline = 1
     endif
 endif
-let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
-let g:gutentags_cache_dir = '~/.cache/gutentags'
-let g:gutentags_ctags_tagfile = '.tags'
-let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
-let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
-""let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
-""let g:gutentags_cache_dir = '~/.cache/gutentags'
-""let g:gutentags_ctags_tagfile = '.tags'
-""let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
-""let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md']
+"let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
+"let g:gutentags_cache_dir = '~/.cache/gutentags'
+"let g:gutentags_ctags_tagfile = '.tags'
+"let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
+"let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
 " for vimwiki
 " let g:vimwiki_list = [{'path': '~/Documents/Obsidian_vault/',
 "                      \ 'syntax': 'markdown', 'ext': '.md'}]
@@ -227,7 +188,7 @@ nnoremap <leader>fo :WikiOpen<CR>
 "     return filereadable(l:name) ? a:name : strftime(%Y%m%d%H%M%S') . '_' .  a:name
 " endfunction
 " text mode
-autocm BufNewFile,BufRead *.md,*.tex setlocal
+autocm BufNewFile,BufRead *.md,*.tex,*.org setlocal
 	\ textwidth=80
 	\ fileformat=unix
 	\ cc=80
