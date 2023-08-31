@@ -135,10 +135,10 @@ set termguicolors
 if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme gruvbox
-colorscheme nord
+    colorscheme nord
 else
-"    colorscheme gruvbox
-colorscheme nord
+    colorscheme gruvbox
+"    colorscheme nord
 endif
 if exists("colors_name")
     if colors_name == "nord"
