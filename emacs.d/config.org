@@ -1125,7 +1125,6 @@ The main reason why I changes to emacs
 
     (setq org-refile-targets '((nil :maxlevel . 1)
                                org-agenda-files :maxlevel . 1))
-
     (setq org-outline-path-complete-in-steps nil)
     (setq org-refile-use-outline-path t)
 
@@ -1237,17 +1236,15 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
 
 *** Set up org-agenda
 
-
-
-Refill is the ability to move some text to other file when some action happen or event is trigger.  On the following section, we go to setup some triggers for the agenda mode. This allows as to archive the task that are done.
+Refill is the ability to move some text to other file when some action happen or
+event is trigger.  On the following section, we go to setup some triggers for
+the agenda mode. This allows as to archive the task that are done.
 
 #+begin_src emacs-lisp
 
   ; Save Org buffers after refiling!
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
 #+end_src
-
-
 
 **** Org habit
 
