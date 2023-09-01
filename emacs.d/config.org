@@ -1,24 +1,36 @@
 #+TITLE: My emacs configuration
 #+DATE:  <2023-08-29 Tue>
 #+AUTHOR:  Lucas Elvira Martín
+
 * Table of content  :TOC:
 - [[#put-this-in-your-initel][PUT THIS IN YOUR init.el]]
 - [[#autorun][AUTORUN]]
   - [[#emacs-as-server][Emacs as server]]
+- [[#startup-performance][Startup Performance]]
 - [[#package-system-setup][Package system setup]]
+  - [[#enable-straight][Enable straight]]
+  - [[#keep-it-clean][Keep it clean]]
 - [[#custom-library][Custom library]]
+- [[#set-encoding-by-default][Set encoding by default]]
+- [[#keyboard-binding][Keyboard binding]]
+  - [[#esc-as-c-g][ESC as C-g]]
+  - [[#set-up-evil-mode][Set up evil mode]]
+  - [[#which-key][Which Key]]
+  - [[#keybinding-configuration][Keybinding configuration]]
 - [[#ui][UI]]
+  - [[#reduce-distraction][Reduce distraction]]
   - [[#collor-theme][Collor Theme]]
+  - [[#fonts][Fonts]]
   - [[#better-modeline][Better Modeline]]
+  - [[#auto-revert-buffer][Auto revert buffer]]
+  - [[#toggle-display-white-space][Toggle display white space]]
+  - [[#highlight-matching-parentheses][Highlight matching parentheses]]
   - [[#visual-fill-configuration][Visual fill configuration]]
 - [[#control-and-behavior][Control and behavior]]
-  - [[#keybinding-configuration][Keybinding configuration]]
   - [[#recent-files][Recent files]]
-  - [[#which-key][Which Key]]
   - [[#ivy-and-counsel][ivy and counsel]]
   - [[#helpul][helpul]]
   - [[#text-scaling][Text Scaling]]
-  - [[#keep-it-clean][Keep it clean]]
   - [[#terminal-emulators][Terminal emulators]]
 -  [[#writing][Writing]]
   - [[#configure-flyspell][Configure flyspell]]
@@ -28,7 +40,7 @@
   - [[#keybinding-for-peep-dired-mode][Keybinding for peep-dired-mode]]
 - [[#dashboard][DASHBOARD]]
   - [[#launch-dashboard-by-default-when-launch-emacs][Launch dashboard by default when launch emacs]]
-  - [[#startup-performance][Startup performance]]
+  - [[#startup-performance-1][Startup performance]]
 - [[#disable-mouse][Disable mouse]]
 - [[#display-language-modes][Display language modes]]
   - [[#cdlatex][cdlatex]]
@@ -44,7 +56,7 @@
   - [[#insert-heading][Insert heading!]]
   - [[#configure-view][Configure view]]
 - [[#org-roam-the-good-part][Org Roam, the good part]]
-  
+
 * PUT THIS IN YOUR init.el
 
 #+begin_example
@@ -257,6 +269,16 @@ Evil mode is a mayor mode that allow to use vim keybindings in emacs
    ))
 #+end_src
 
+*** Setup undo-tree
+
+View the documentation: [[https://www.dr-qubit.org/undo-tree/undo-tree.txt][undo-tree]]
+
+#+begin_src emacs-lisp
+(define-key evil-normal-state-map (kbd "u") 'undo-tree-undo)
+(define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+(setq undo-tree-auto-save-history nil)
+#+end_src
+
 *** Disable arrows keys
 
 I don't like to use the arrows in insert mode, so I disable it. This has a
@@ -303,7 +325,7 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 #+end_src
 
 ** Which Key
-
+  
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to
 offer you all possible completions for the prefix.  For example, if you press =C-c= (hold control
 and press the letter =c=), a panel will appear at the bottom of the frame displaying all of the
@@ -338,9 +360,6 @@ modes with Vi-like keybindings for evil-mode.
 
   (general-create-definer lem/ctrl-c-keys
     :prefix "C-c"))
-
-
-
 #+end_src
 
 * UI
@@ -407,9 +426,9 @@ also run =M-x counsel-load-theme= to choose between them easily.
 
 #+begin_src emacs-lisp
 ;; Set the font
-(set-face-attribute 'default nil :font "Fira Code" :height 110)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 110 :weight 'regular)
+(set-face-attribute 'default nil :font "Fira Code" )
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 150)
+(set-face-attribute 'variable-pitch nil :font "Noto Sans"  :weight 'regular)
 (set-face-attribute 'font-lock-comment-face nil
   :slant 'italic)
 #+end_src
