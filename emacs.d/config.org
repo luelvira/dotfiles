@@ -1423,7 +1423,7 @@ Org publish allows you to convert your org file into html, pdf, markdown and oth
 I have a script which try to keep sync with a repository on [[https://codeberg.org/luelvira/Org][codeberg]]. This repo contains the org files only, and it is named sync
 
 #+begin_src emacs-lisp
-  (defun lem//sync ()
+  (defun lem/sync ()
   "Sync the Org foler with an external script"
   (when (and (eq major-mode 'org-mode)
              (s-prefix? (expand-file-name org-directory)
