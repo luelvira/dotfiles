@@ -6,7 +6,6 @@
 - [[#put-this-in-your-initel][PUT THIS IN YOUR init.el]]
 - [[#autorun][AUTORUN]]
   - [[#emacs-as-server][Emacs as server]]
-- [[#startup-performance][Startup Performance]]
 - [[#package-system-setup][Package system setup]]
   - [[#enable-straight][Enable straight]]
   - [[#keep-it-clean][Keep it clean]]
@@ -40,7 +39,7 @@
   - [[#keybinding-for-peep-dired-mode][Keybinding for peep-dired-mode]]
 - [[#dashboard][DASHBOARD]]
   - [[#launch-dashboard-by-default-when-launch-emacs][Launch dashboard by default when launch emacs]]
-  - [[#startup-performance-1][Startup performance]]
+  - [[#startup-performance][Startup performance]]
 - [[#disable-mouse][Disable mouse]]
 - [[#display-language-modes][Display language modes]]
   - [[#cdlatex][cdlatex]]
@@ -48,9 +47,6 @@
 - [[#development][Development]]
   - [[#projectile-and-magit][Projectile and magit]]
   - [[#languages][Languages]]
-  -  [[#better-completion-options-with-company-mode][Better completion options with company-mode]]
-  - [[#more-ui-enhancements-lsp-ui-mode][More UI Enhancements lsp-ui-mode]]
-  - [[#lsp-treemacs][lsp-treemacs]]
   - [[#minor-modes][Minor modes]]
 - [[#org-mode][Org mode]]
   - [[#insert-heading][Insert heading!]]
@@ -95,28 +91,6 @@ export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
 export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 #+end_example
 
-
-* Startup Performance
-Make startup faster by reducing the frequency of garbage collection and then use
-a hook to measure Emacs startup time.
-
-Also, turn on lexical-binding for the init file!
-#+begin_src emacs-lisp 
-
-;; -*- lexical-binding: t; -*-
-
-;; The default is 800 kilobytes.  Measured in bytes.
-(setq gc-cons-threshold (* 50 1000 1000))
-
-;; Profile emacs startup
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
-#+end_src
 
 * Package system setup
 
@@ -315,13 +289,13 @@ Evil collection is a package that provide evil keybindings for a lot of modes
  :config
  (evil-collection-init))
 
-(defun lem/evil-mode-number-hook ()
- (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
- (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt))
 
 (use-package evil-numbers
    :after evil
    :hook 'lem/evil-mode-number-hook)
+
+(define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
+(define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
 
 (use-package evil-surround
  :ensure t
@@ -532,6 +506,8 @@ also run =M-x counsel-load-theme= to choose between them easily.
                (ivy-occur-grep-mode . normal)
                ))
     (evil-set-initial-state (car p) (cdr p))))
+
+  (lem/custom-emacs-state)
 #+end_src
 
 ** Recent files
@@ -610,11 +586,17 @@ without knowing what it begins with though.
 Is an interface for Ivy that provides more information about the commands
 
 #+begin_src emacs-lisp
-
   (use-package ivy-rich
     :init
-    (ivy-rich-mode 1)
-)
+    (ivy-rich-mode 1))
+#+end_src
+*** Install Smex
+
+Smex is a package that makes M-x remember out history
+
+#+begin_src emacs-lisp
+(use-package smex)
+(smex-initialize)
 #+end_src
 
 ** helpul
@@ -640,8 +622,8 @@ Emacs configuration.  It is very useful for figuring out how things work in Emac
 ** Text Scaling
 
 I use the default command to text scale:
-- =C-c C-+=  text-scale-increate
-- =C-c C--=  text-scale-decrease
+- =C-v C-+=  text-scale-increate
+- =C-v C--=  text-scale-decrease
 
 ** Terminal emulators
 *** term-mode
@@ -728,6 +710,19 @@ configure to be used on different kinds of situations.
              ("<f7>" . flyspell-word)
              ("C-;" . flyspell-auto-correct-previous-word)))
 #+end_src
+*** Toggle dictionaries
+
+#+begin_src emacs-lisp
+  (defun lem/switch-dictionary()
+  (interactive)
+  (let* ((dic ispell-current-dictionary)
+     (change (if (string= dic "en_US") "es_ES" "en_US")))
+    (ispell-change-dictionary change)
+    (message "Dictionary switched from %s to %s" dic change)
+    ))
+
+  (global-set-key (kbd "<f8>")   'lem/switch-dictionary)
+#+end_src
 
 * Dired
 ** Open dired
@@ -753,55 +748,48 @@ configure to be used on different kinds of situations.
 
 
 #+begin_src emacs-lisp
-     (use-package all-the-icons-dired)
-     ;;(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC" "d d" '(dired :which-key "Open dired") "d j" '(dired-jump :which-key "Dired jump to current") "d p" '(peep-dired :which-key "Peep-dired"))
+       (use-package all-the-icons-dired)
+       ;;(nvmap :states '(normal visual) :keymaps 'override :prefix "SPC" "d d" '(dired :which-key "Open dired") "d j" '(dired-jump :which-key "Dired jump to current") "d p" '(peep-dired :which-key "Peep-dired"))
 
-     (use-package dired
-       :ensure nil
-       :defer 1
-       :config
-       (setq dired-listing-swithces "--group-directories-first"
-             dired-omit-files "^\\.[^.].*"
-             delete-by-moving-to-trash t)
-       (autoload 'dired-omit-mode "dired-x")
-    (add-hook 'dired-load-hook
-               (lambda ()
-                 (interactive)
-                 (dired-collapse)))
-    (add-hook 'dired-mode-hook
-              (lambda () (interactive)
-                (dired-omit-mode 1)
-                (dired-hide-details-mode 1)
-                (all-the-icons-dired-mode 1)))
+       (use-package dired
+         :ensure nil
+         :defer 1
+         :config
+         (setq dired-listing-swithces "--group-directories-first"
+               dired-omit-files "^\\.[^.].*"
+               delete-by-moving-to-trash t)
+         (autoload 'dired-omit-mode "dired-x")
+         (add-hook 'dired-load-hook
+                   (lambda ()
+                     (interactive)
+                   (dired-collapse)))
+         (add-hook 'dired-mode-hook
+                (lambda () (interactive)
+                  (dired-omit-mode 1)
+                  (dired-hide-details-mode 1)
+                  (all-the-icons-dired-mode 1)))
 
-     (use-package dired-single :defer t)
-     (use-package dired-ranger :defer t)
-     (use-package dired-collapse :defer t)
-  (evil-collection-define-key 'normal 'dired-mode-map
-      "h" 'dired-single-up-directory
-      "H" 'dired-omit-mode
-      "l" 'dired-single-buffer
-      "y" 'dired-ranger-copy
-      "X" 'dired-ranger-move
-      "p" 'dired-ranger-paste))
-;; (use-package dired-open)
-;  (setq dired-open-extensions '(("gif" . "sxiv")
-;                                ("jpg" . "sxiv")
-;                                ("png" . "sxiv")
-;                                 ("mkv" . "mpv")
-;                                 ("mp4" . "mpv")
-;                                 ("pdf" . "evince")))
-#+end_src
+       (use-package dired-single :defer t)
+       (use-package dired-ranger :defer t)
+       (use-package dired-collapse :defer t)
+    (evil-collection-define-key 'normal 'dired-mode-map
+        "h" 'dired-single-up-directory
+        "H" 'dired-omit-mode
+        "l" 'dired-single-buffer
+        "y" 'dired-ranger-copy
+        "X" 'dired-ranger-move
+        "p" 'dired-ranger-paste))
+  #+end_src
 
 *** Open files Externally
 
 #+begin_src emacs-lisp
-    (use-package openwith
+  (use-package openwith
     :config
     (setq openwith-associations
           (list
            (list (openwith-make-extension-regexp '("pdf" )) "evince" '(file)))))
-(openwith-mode 1)
+  (openwith-mode 1)
 
 #+end_src
 
@@ -838,14 +826,18 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 #+end_src
 ** Startup performance
 
+Make startup faster by reducing the frequency of garbage collection and then use
+a hook to measure Emacs startup time.
+
+Also, turn on lexical-binding for the init file!
+
 #+begin_src emacs-lisp
 (use-package gcmh
 :config
 (gcmh-mode 1))
 ;; Setting garbage collection threshold
-(setq gc-cons-threshold 402653184
+(setq gc-cons-threshold (* 50 1000 1000)
     gc-cons-percentage 0.6)
-
 ;; Profile emacs startup
 (add-hook 'emacs-startup-hook
         (lambda ()
@@ -854,17 +846,6 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
                             (float-time
                             (time-subtract after-init-time before-init-time)))
                     gcs-done)))
-
-(setq gc-cons-threshold (* 50 1000 1000))
-
-(defun lem/display-startup-time ()
-(message "Emacs loaded in %s with %d garbage collections."
-        (format "%.2f seconds"
-                (float-time
-                    (time-subtract after-init-time before-init-time)))
-        gcs-done))
-
-(add-hook 'emacs-startup-hook #'lem/display-startup-time)
 
 #+end_src
 * Disable mouse
@@ -893,7 +874,7 @@ with the cdlatex mode
 #+begin_src emacs-lisp
   (defun lem/text-mode-setup ()
     "test hook"
-    (variable-pitch-mode nil)
+    (variable-pitch-mode 1)
     (auto-fill-mode 1)
     (visual-line-mode 1)
     (visual-fill-column-mode 1)
@@ -996,7 +977,7 @@ This extension display all the comments with the word TODO inside the project
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands lsp
-    :hook ((typescript-mode js2-mode web-mode) . lsp)
+    :hook (prog-mode-hook . lsp)
     :bind (:map lsp-mode-map
                 ("TAB" . completion-at-point))
   :custom (lsp-headerline-breadcrub-enable t))
@@ -1013,13 +994,29 @@ This extension display all the comments with the word TODO inside the project
    "lX" 'lsp-execute-code-action)
 
   (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
     :config
     (setq lsp-ui-sideline-enable t)
-    (setq lsp-ui-sideline-show-hover nil)
-    (setq lsp-ui-doc-position 'bottom)
-    (lsp-ui-doc-show))
+    (setq lsp-ui-sideline-show-hover t)
+    (setq lsp-ui-doc-position 'bottom))
+
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (use-package lsp-treemacs :commands lsp-ivy-treemacs-errors-list)
 #+end_src
+**** lsp-treemacs
+
+Provides an even nicer UI on top of lsp-mode using Treemacs
+
+- ~lsp-treemacs-symbols~ - Show a tree view of the symbols in the current file
+- ~lsp-treemacs-references~ - Show a tree view for the references of the symbol under the cursor
+- ~lsp-treemacs-error-list~ - Show a tree view for the diagnostic messages in the project
+
+  #+begin_src emacs-lisp
+        (use-package lsp-treemacs
+          :after lsp)
+
+    ; Quicker symbol search with lsp-ivy
+    (use-package lsp-ivy)
+  #+end_src
 **** Debug adapter
 #+begin_src emacs-lisp
 
@@ -1036,15 +1033,35 @@ This extension display all the comments with the word TODO inside the project
 #+end_src
 
 
+****  Better completion options with company-mode
+
+Company is a Modular text completion framework for emacs
+
+#+begin_src emacs-lisp
+  (use-package company
+  :after lsp-mode
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+              ("<tab>" . company-complete-selection))
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+#+end_src
+
 **** TypeScript and JavaScript
 
 Configure both languages as equals
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle nil
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 4))
 
 (defun lem/set-js-indentation ()
   (setq js-indent-level 4)
@@ -1071,65 +1088,24 @@ Configure both languages as equals
 
 **** HTML
 #+begin_src emacs-lisp
-  (use-package web-mode
-    :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'")
+    (use-package web-mode
+      :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+      :config
+      (setq-default web-mode-code-indent-offset 2)
+      (setq-default web-mode-markup-indent-offset 2)
+      (setq-default web-mode-attribute-indent-offset 2))
 
-  (defun lem/web-hook ()
-    "Hook for web mode"
-    (setq web-mode-markup-indent-offset 2
-              web-mode-css-indent-offset 2
-              web-mode-code-indent-offset 4))
-  (add-hook 'web-mode-hook  'lem/web-hook)
+    (defun lem/web-hook ()
+      "Hook for web mode"
+      (setq web-mode-markup-indent-offset 2
+            web-mode-css-indent-offset 2
+            web-mode-code-indent-offset 4))
+    (add-hook 'web-mode-hook  'lem/web-hook)
 #+end_src
-**  Better completion options with company-mode
-
-Company is a Modular text completion framework for emacs
-
-#+begin_src emacs-lisp
-  (use-package company
-  :after lsp-mode
-  :hook (prog-mode . company-mode)
-  :bind (:map company-active-map
-              ("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
-        ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
-#+end_src
-** More UI Enhancements lsp-ui-mode
-
-#+begin_src emacs-lisp
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode))
-
-  (setq lsp-ui-doc-position 'bottom)
-  (setq lsp-ui-sideline-enable nil)
-  (setq lsp-ui-sideline-show-hover nil)
-#+end_src
-** lsp-treemacs
-
-Provides an even nicer UI on top of lsp-mode using Treemacs
-
-- ~lsp-treemacs-symbols~ - Show a tree view of the symbols in the current file
-- ~lsp-treemacs-references~ - Show a tree view for the references of the symbol under the cursor
-- ~lsp-treemacs-error-list~ - Show a tree view for the diagnostic messages in the project
-
-  #+begin_src emacs-lisp
-        (use-package lsp-treemacs
-          :after lsp)
-
-    ; Quicker symbol search with lsp-ivy
-    (use-package lsp-ivy)
-  #+end_src
 ** Minor modes
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
-
 #+end_src
 
 * Org mode
@@ -1149,7 +1125,7 @@ The main reason why I changes to emacs
     (defun lem/org-mode-setup ()
           (org-indent-mode)
           (variable-pitch-mode 1)
-          (auto-fill-mode 0)
+          (auto-fill-mode 1)
           (visual-line-mode 1)
           (setq evil-auto-indent nil)
           (diminish org-indent-mode))
@@ -1298,11 +1274,8 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
 ** Org toc
 
 #+begin_src emacs-lisp
-
   (use-package toc-org
   :hook (org-mode . toc-org-mode))
-
-
 #+end_src
 
 ** Set up org-agenda
@@ -1312,8 +1285,34 @@ event is trigger.  On the following section, we go to setup some triggers for
 the agenda mode. This allows as to archive the task that are done.
 
 #+begin_src emacs-lisp
-  ; Save Org buffers after refiling!
+      ; Save Org buffers after refiling!
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (defun my/org-roam-copy-todo-to-today ()
+    (interactive)
+    (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+          (org-roam-dailies-capture-templates
+            '(("t" "tasks" entry "%?"
+               :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+          (org-after-refile-insert-hook #'save-buffer)
+          today-file
+          pos)
+      (save-window-excursion
+        (org-roam-dailies--capture (current-time) t)
+        (setq today-file (buffer-file-name))
+        (setq pos (point)))
+
+      ;; Only refile if the target file is different than the current file
+      (unless (equal (file-truename today-file)
+                     (file-truename (buffer-file-name)))
+        (org-refile nil nil (list "Tasks" today-file nil pos)))))
+
+  (setq org-archive-location
+        (add-to-list 'org-after-todo-state-change-hook
+                     (lambda ()
+                       (when (equal org-state "DONE")
+                         (my/org-roam-copy-todo-to-today))))
+
+        (setq org-archive-location (concat org-directory "/Archive.org::datetree/** From %s"))
 #+end_src
 
 *** Org habit
@@ -1420,17 +1419,25 @@ Org publish allows you to convert your org file into html, pdf, markdown and oth
 
 ** Sync Org files
 
-I have a script which try to keep sync with a repository on [[https://codeberg.org/luelvira/Org][codeberg]]. This repo contains the org files only, and it is named sync
+I have a script which try to keep sync with a repository on [[https://codeberg.org/luelvira/Org][codeberg]]. This repo
+contains the org files only, and it is named sync
 
 #+begin_src emacs-lisp
-  (defun lem/sync ()
-  "Sync the Org foler with an external script"
-  (when (and (eq major-mode 'org-mode)
-             (s-prefix? (expand-file-name org-directory)
-                        (buffer-file-name (current-buffer))))
-    (shell-command-to-string "/home/lucas/.local/bin/sync.sh")))
+    (defun lem/sync (path)
+      (shell-command-to-string (format "/home/lucas/.local/bin/sync.sh %s" path)))
 
-  (add-hook 'after-save #'lem/sync)
+    (defun lem/sync-org ()
+    "Sync the Org foler with an external script"
+    (interactive)
+    (lem/sync "~/Documents/Org"))
+
+    (defun lem/sync-conf ()
+    "Sync the config foler with an external script"
+  (interactive)
+  (lem/sync "~/Documents/git/dotfiles"))
+
+
+    ;; (add-hook 'after-save-hook 'lem/sync) Use as hook generate a lot of commits
 #+end_src
 * Org Roam, the good part
 
@@ -1441,28 +1448,31 @@ within Org-mode
 The instalation process use the melpa or melpa stable package manager from emacs. 
 
 #+begin_src emacs-lisp
-    (use-package org-roam
-       :ensure t
-       :demand t
-       :init
-       (setq org-roam-v2-ack t)
-       :custom
-       (org-roam-completion-everywhere t)
-       (org-roam-directory (file-truename "~/Documents/Org/roam"))
-       :bind (("C-c n l" . org-roam-buffer-toggle)
-              ("C-c n f" . org-roam-node-find)
-              ("C-c n i" . org-roam-node-insert)
-              :map org-mode-map
-              ("C-M-i" . completion-at-point)
-              :map org-roam-dailies-map
-              ("Y" . org-roam-dailies-capture-yesterday)
-              ("T" . org-roam-dailies-capture-tomorrow))
-    :bind-keymap
-    ("C-c n d" . org-roam-dailies-map)
-    :config
-    (require 'org-roam-dailies) ;; Ensure the keymap is available
-    (org-roam-db-autosync-mode))
-  
+  (use-package org-roam
+     :ensure t
+     :demand t
+     :init
+     (setq org-roam-v2-ack t)
+     :custom
+     (org-roam-directory (file-truename "~/Documents/Org/roam"))
+     (org-roam-completion-everywhere t)
+     (org-roam-dailies-capture-templates
+      '(("d" "default" entry "* %<%I:%M %p>: %?"
+         :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+     :bind (("C-c n l" . org-roam-buffer-togle)
+            ("C-c n f" . org-roam-node-find)
+            ("C-c n i" . org-roam-node-insert)
+            :map org-mode-map
+            ("C-M-i" . completion-at-point)
+            :map org-roam-dailies-map
+            ("Y" . org-roam-dailies-capture-yesterday)
+            ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
+  (org-roam-db-autosync-mode))
+
 #+end_src
 
 Some dependencies are:
@@ -1476,35 +1486,14 @@ Some dependencies are:
 
 *** Org roam capture
 #+begin_src emacs-lisp
-            ;;    (defun my/org-roam-capture-inbox ()
-            ;;      (interactive)
-            ;;      (org-roam-capture- :node (org-roam-node-create)
-            ;;                         :templates '(("i" "inbox" plain "* %?"
-            ;;                                      :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
-            ;;
-            ;;    (global-set-key (kbd "C-c n b") #'my/org-roam-capture-inbox)
-            ;;
-            ;;
-            ;;    (defun my/org-roam-capture-task ()
-            ;;    (interactive)
-            ;;    ;; Add the project file to the agenda after capture is finished
-            ;;    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-            ;;
-            ;;    ;; Capture the new task, creating the project file if necessary
-            ;;    (org-roam-capture- :node (org-roam-node-read
-            ;;                              nil
-            ;;                              (my/org-roam-filter-by-tag "Project"))
-            ;;                       :templates '(("p" "project" plain "* TODO %?"
-            ;;                                     :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-            ;;                                                            "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
-            ;;                                                            ("Tasks"))))))
-            ;;
-            ;;  (global-set-key (kbd "C-c n t") #'my/org-roam-capture-task)
-          (setq org-roam-capture-templates
-                '(("d" "default" plain "%?"
-                  :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n#+author: %n\n")
-                  :unnarrowed t))
-                )
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n#+author: %n\n")
+           :unnarrowed t)
+          ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
+  :unnarrowed t)
+          ))
 
 #+end_src
   
@@ -1564,37 +1553,37 @@ This package create a website with D3.JS displays the org roam system in a graph
 
 This section is disable until I finally understand How it works.
 
-#+begin_example emacs-lisp
+#+begin_src emacs-lisp
 
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
 
-(defun my/org-roam-list-notes-by-tag (tag-name)
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (my/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
+  (defun my/org-roam-filter-by-tag (tag-name)
+    (lambda (node)
+      (member tag-name (org-roam-node-tags node))))
 
-(defun my/org-roam-refresh-agenda-list ()
-  (interactive)
-  (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
+  (defun my/org-roam-list-notes-by-tag (tag-name)
+      (mapcar #'org-roam-node-file
+              (seq-filter
+               (my/org-roam-filter-by-tag tag-name)
+               (org-roam-node-list))))
 
-;; Build the agenda list the first time for the session
-(my/org-roam-refresh-agenda-list)
+  (defun my/org-roam-refresh-agenda-list ()
+    (interactive)
+    (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
 
-(defun my/org-roam-project-finalize-hook ()
-  "Adds the captured project file to `org-agenda-files' if the
-capture was not aborted."
-  ;; Remove the hook since it was added temporarily
-  (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+    ;; Build the agenda list the first time for the session
 
-  ;; Add project file to the agenda list if the capture was confirmed
-  (unless org-note-abort
-    (with-current-buffer (org-capture-get :buffer)
-      (add-to-list 'org-agenda-files (buffer-file-name)))))
+  (defun my/org-roam-project-finalize-hook ()
+      "Adds the captured project file to `org-agenda-files' if the
+    capture was not aborted."
+      ;; Remove the hook since it was added temporarily
+      (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-(defun my/org-roam-find-project ()
+      ;; Add project file to the agenda list if the capture was confirmed
+      (unless org-note-abort
+        (with-current-buffer (org-capture-get :buffer)
+          (add-to-list 'org-agenda-files (buffer-file-name)))))
+
+  (defun my/org-roam-find-project ()
   (interactive)
   ;; Add the project file to the agenda after capture is finished
   (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
@@ -1603,29 +1592,26 @@ capture was not aborted."
   (org-roam-node-find
    nil
    nil
-   (my/org-roam-filter-by-tag "Project")
-   :templates
-   '(("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
-      :unnarrowed t))))
+   (my/org-roam-filter-by-tag "Project")))
 
-(defun my/org-roam-capture-inbox ()
-  (interactive)
-  (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "* %?"
-                                  :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+  (defun my/org-roam-capture-inbox ()
+    (interactive)
+    (org-roam-capture- :node (org-roam-node-create)
+                       :templates '(("i" "inbox" plain "* %?"
+                                     :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
 
-(defun my/org-roam-capture-task ()
-  (interactive)
-  ;; Add the project file to the agenda after capture is finished
-  (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  (defun my/org-roam-capture-task ()
+    (interactive)
+    ;; Add the project file to the agenda after capture is finished
+    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-  ;; Capture the new task, creating the project file if necessary
-  (org-roam-capture- :node (org-roam-node-read
-                            nil
-                            (my/org-roam-filter-by-tag "Project"))
-                     :templates '(("p" "project" plain "** TODO %?"
-                                   :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                          "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
-                                                          ("Tasks"))))))
-#+end_example
+    ;; Capture the new task, creating the project file if necessary
+    (org-roam-capture- :node (org-roam-node-read
+                              nil
+                              (my/org-roam-filter-by-tag "Project"))
+                       :templates '(("p" "project" plain "** TODO %?"
+                                     :if-new
+                                     (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                    "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+                                                            ("Tasks"))))))
+#+end_src

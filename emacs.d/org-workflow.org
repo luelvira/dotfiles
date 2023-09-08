@@ -57,7 +57,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
 * Agendas
 
 #+begin_src emacs-lisp
-  (setq org-agenda-files (mapcar (lambda (file) (concat org-directory file)) '("Tasks.org" "Inbox.org" "Habits.org" "Projects/")))
+  (setq org-agenda-files (mapcar (lambda (file) (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects/")))
 
     (setq org-agenda-window-setup 'current-window)
     (setq org-agenda-span 'day)
@@ -72,7 +72,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
 
 ** Custom comands
 
-#+begin_src emacs-lisp
+#+begin_example emacs-lisp
   (setq org-agenda-custom-commands
         '(("d" "Dashboard"
            ((agenda "" ((org-deadline-warning-days 7)))
@@ -97,7 +97,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
            ((org-agenda-overriding-header "Low Effort Tasks")
             (org-agenda-max-todos 20)
             (org-agenda-files org-agenda-files)))))
-#+end_src
+#+end_example
 
 Org agenda is a mode of emacs that allows you to view the task for the week
 
