@@ -1,10 +1,15 @@
 #+TITLE: Org Mode Workflow
 #+PROPERTY: header-args:emacs-lisp :tangle ./lisp/org-workflow.el
 
-* Table Of Content
-:PROPERTIES:
-:TOC:      :ignore this :include all
-:END:
+* Table Of Content :TOC:
+- [[#principles][Principles]]
+  -  [[#files-path][Files Path]]
+  -  [[#gtd][GTD]]
+- [[#agendas][Agendas]]
+  - [[#custom-comands][Custom comands]]
+  - [[#control-time-per-task][Control time per task]]
+- [[#capture-template][Capture template]]
+- [[#end-of-file][End of file]]
 
 * Principles
 
@@ -12,9 +17,10 @@
 
 First define where is the org folder
 #+begin_src emacs-lisp
-  (setq 
+(setq 
    org-directory (file-truename "~/Documents/Org/"))
-(setq org-default-notes-file (concat org-directory "Inbox.org"))
+(setq
+  org-default-notes-file (concat org-directory "Inbox.org"))
 #+end_src
 **  GTD
 
@@ -57,16 +63,16 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
 * Agendas
 
 #+begin_src emacs-lisp
-  (setq org-agenda-files (mapcar (lambda (file) (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects/")))
+(setq org-agenda-files (mapcar (lambda (file) (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects/")))
 
-    (setq org-agenda-window-setup 'current-window)
-    (setq org-agenda-span 'day)
-    (setq org-agenda-start-with-log-mode t)
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
+(setq org-agenda-window-setup 'current-window)
+  (setq org-agenda-span 'day)
+(setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+(setq org-log-into-drawer t)
 
-    ; custom display of task
-    (setq org-columns-default-format "%20CATEGORY(Category) %65ITEM(Task) %TODO %6Effort(Estim){:}  %6CLOCKSUM(Clock) %TAGS")
+; custom display of task
+(setq org-columns-default-format "%20CATEGORY(Category) %65ITEM(Task) %TODO %6Effort(Estim){:}  %6CLOCKSUM(Clock) %TAGS")
 
 #+end_src
 
@@ -112,7 +118,7 @@ be repeat, for example a birthday that is repeat each year (see the agenda file)
 Emacs give you a way to capture the time you spends on each task. You only need go over the task and execute the command =org-clock-in= and when you stop or finish go again over the task and run =org-clock-out=
 
 #+begin_src emacs-lisp
-    (setq org-clock-persist 'history)
+  (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
 #+end_src
 

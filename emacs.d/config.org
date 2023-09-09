@@ -407,10 +407,9 @@ also run =M-x counsel-load-theme= to choose between them easily.
 #+begin_src emacs-lisp
 ;; Set the font
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Noto Sans"  :weight 'regular)
-(set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
+(set-face-attribute 'fixed-pitch nil :family "Fira Code" :height 1.0 :inherit 'default)
+(set-face-attribute 'variable-pitch nil :family "Noto Sans" :weight 'regular :inherit 'default)
+(set-face-attribute 'font-lock-comment-face nil :slant 'italic :inherit 'default)
 #+end_src
 
 ** Better Modeline
@@ -622,8 +621,8 @@ Emacs configuration.  It is very useful for figuring out how things work in Emac
 ** Text Scaling
 
 I use the default command to text scale:
-- =C-v C-+=  text-scale-increate
-- =C-v C--=  text-scale-decrease
+- =C-x C-+=  text-scale-increate
+- =C-x C--=  text-scale-decrease
 
 ** Terminal emulators
 *** term-mode
@@ -722,6 +721,26 @@ configure to be used on different kinds of situations.
     ))
 
   (global-set-key (kbd "<f8>")   'lem/switch-dictionary)
+#+end_src
+*** Install language tool
+
+Language tool is a software that check both, grammar and spelling in different
+languages.
+
+**** Install the binary
+#+begin_src shell
+curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
+unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp
+  (use-package langtool
+    :config
+    (setq langtool-language-tool-jar "~/.local/lib/languageTool/LanguageTool-6.2/languagetool-commandline.jar"
+ langtool-default-language "en-US"
+        ))
 #+end_src
 
 * Dired
@@ -1033,7 +1052,8 @@ Provides an even nicer UI on top of lsp-mode using Treemacs
 #+end_src
 
 
-****  Better completion options with company-mode
+**** Completion system
+*****  Better completion options with company-mode
 
 Company is a Modular text completion framework for emacs
 
@@ -1052,7 +1072,59 @@ Company is a Modular text completion framework for emacs
   (use-package company-box
     :hook (company-mode . company-box-mode))
 #+end_src
+***** Vertico
+#+begin_src emacs-lisp
+  (use-package vertigo
+    :bind (:map vertigo-map
+                ("C-j" . vertico-next)
+                ("C-k" . vertico-previous)
+                ("C-f" . vertico-exit))
+    :custom
+    (vertico-cycle t)
+    :custom-face
+    (vertico-current ((t (:background "#3a3f5a"))))
+    :init
+    (vertico-mode))
+#+end_src
+***** Orderless
 
+Orderless improves candidate filtering create pattern by words separate with
+spaces and display any command which has the same words in any order
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+***** Completion annotations
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :after vertico
+    :custom
+    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+    :init
+    (marginalia-mode))
+#+end_src
+***** Completion action
+#+begin_src emacs-lisp
+(use-package embark
+  :bind (("C-S-a" . embark-act)
+         :map minibuffer-local-map
+         ("C-d" . embark-act))
+  :config
+
+  ;; Show Embark actions via which-key
+  (setq embark-action-indicator
+        (lambda (map)
+          (which-key--show-keymap "Embark" map nil nil 'no-paging)
+          #'which-key--hide-popup-ignore-command)
+        embark-become-indicator embark-action-indicator))
+
+(use-package embark-consult
+  :after embark)
+#+end_src
 **** TypeScript and JavaScript
 
 Configure both languages as equals
@@ -1189,9 +1261,9 @@ The configuration file of this section was moved to
     ;; first tangle the content
   (unless (file-directory-p  "~/Documents/git/dotfiles/emacs.d/lisp")
     (make-directory "~/Documents/git/dotfiles/emacs.d/lisp"))
-  
+
   (org-babel-tangle-file "~/Documents/git//dotfiles/emacs.d/org-workflow.org")
-    (require 'org-workflow)
+  (require 'org-workflow)
 #+end_src
 
 ** Configure Fonts and bullets
@@ -1285,19 +1357,20 @@ event is trigger.  On the following section, we go to setup some triggers for
 the agenda mode. This allows as to archive the task that are done.
 
 #+begin_src emacs-lisp
-      ; Save Org buffers after refiling!
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
-  (defun my/org-roam-copy-todo-to-today ()
-    (interactive)
-    (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-          (org-roam-dailies-capture-templates
-            '(("t" "tasks" entry "%?"
-               :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
-          (org-after-refile-insert-hook #'save-buffer)
-          today-file
-          pos)
-      (save-window-excursion
-        (org-roam-dailies--capture (current-time) t)
+; Save Org buffers after refiling!
+;(advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+(defun my/org-roam-copy-todo-to-today ()
+  (interactive)
+  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+        (org-roam-dailies-capture-templates
+        '(("t" "tasks" entry "%?"
+         :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+        (org-after-refile-insert-hook #'save-buffer)
+        today-file
+        pos)
+    (save-window-excursion
+      (org-roam-dailies--capture (current-time) t)
         (setq today-file (buffer-file-name))
         (setq pos (point)))
 
@@ -1306,13 +1379,12 @@ the agenda mode. This allows as to archive the task that are done.
                      (file-truename (buffer-file-name)))
         (org-refile nil nil (list "Tasks" today-file nil pos)))))
 
-  (setq org-archive-location
-        (add-to-list 'org-after-todo-state-change-hook
-                     (lambda ()
-                       (when (equal org-state "DONE")
-                         (my/org-roam-copy-todo-to-today))))
+(add-to-list 'org-after-todo-state-change-hook
+(lambda ()
+(when (equal org-state "DONE")
+(my/org-roam-copy-todo-to-today))))
 
-        (setq org-archive-location (concat org-directory "/Archive.org::datetree/** From %s"))
+(setq org-archive-location (concat org-directory "/Archive.org::datetree/** From %s"))
 #+end_src
 
 *** Org habit
@@ -1507,7 +1579,8 @@ org-roam-directory, and maintains a cache of all links and nodes.
 #+end_src
 
 Autosync mode allows to keep track and cache all changes to maintain cache consistency. Also this
-configuration parameter was moved to the package declaration
+In this vault, these notes are so related to
+[[AREA|area]]/[[PROJECTS|project]] so can be omitted.configuration parameter was moved to the package declaration
 
 #+begin_src emacs-lisp
 ; (org-roam-db-autosync-mode) 
@@ -1546,6 +1619,14 @@ One can exclude some nodes, for example, to exclude all the headlines with the A
 This package create a website with D3.JS displays the org roam system in a graph-view like obsidian does.
 #+begin_src emacs-lisp
 (use-package org-roam-ui)
+#+end_src
+
+*** Workflow configuration for zettelkasten methodology
+The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkasten.org]]
+
+#+begin_src emacs-lisp
+  (org-babel-tangle-file "~/Documents/git/dotfiles/emacs.d/org-zettelkasten.org")
+  (require 'org-zettel)
 #+end_src
 
 
