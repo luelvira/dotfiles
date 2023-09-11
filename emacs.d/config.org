@@ -1653,8 +1653,6 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
 This section is disable until I finally understand How it works.
 
 #+begin_src emacs-lisp
-
-
   (defun my/org-roam-filter-by-tag (tag-name)
     (lambda (node)
       (member tag-name (org-roam-node-tags node))))
