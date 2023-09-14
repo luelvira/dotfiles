@@ -41,36 +41,39 @@ another note with the explanation. This allows you to keep separate the original
 content to your conclusion and ideas.
 
 #+begin_src emacs-lisp
-      (setq bibliography-files '("~/Documents/Org/bibliography.bib"))
-      (use-package ivy-bibtex
-        :config
-        (setq bibtex-completion-bibliography bibliography-files))
+            (setq bibliography-files '("~/Documents/Org/bibliography.bib"
+                                       "~/Documents/Org/phd.bib"))
+            (use-package ivy-bibtex
+              :config
+              (setq bibtex-completion-bibliography bibliography-files))
 
 
-    (use-package org-ref
-      :ensure nil
-      :init (require 'bibtex)
-      (setq bibtex-autokey-year-length 4 bibtex-autokey-name-year-separator
-            "-" bibtex-autokey-year-title-separator "-"
-            bibtex-autokey-titleword-separator "-" bibtex-autokey-titlewords
-            2 bibtex-autokey-titlewords-stretch 1 bibtex-autokey-titleword-length 5)
-      (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
-      (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
-      (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
-      (require 'org-ref-ivy)
-      (require 'org-ref-arxiv)
-      (require 'org-ref-scopus)
-      (require 'org-ref-wos))
+          (use-package org-ref
+            :ensure nil
+            :init (require 'bibtex)
+            (setq bibtex-autokey-year-length 4 bibtex-autokey-name-year-separator
+                  "-" bibtex-autokey-year-title-separator "-"
+                  bibtex-autokey-titleword-separator "-" bibtex-autokey-titlewords
+                  2 bibtex-autokey-titlewords-stretch 1 bibtex-autokey-titleword-length 5)
+            (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
+            (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
+            (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
+            (require 'org-ref-ivy)
+            (require 'org-ref-sci-id)
+            (require 'org-ref-arxiv)
+            (require 'org-ref-scopus)
+            (require 'org-ref-pubmed)
+            (require 'org-ref-wos))
 
 
-    (use-package org-ref-ivy
-      :ensure nil
-      :init (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
-                  org-ref-insert-cite-function 'org-ref-cite-insert-ivy
-                  org-ref-insert-label-function 'org-ref-insert-label-link
-                  org-ref-insert-ref-function 'org-ref-insert-ref-link
-                  org-ref-cite-onclick-function (lambda (_)
-                    (org-ref-citation-hydra/body))))
+          (use-package org-ref-ivy
+            :ensure nil
+            :init (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
+                        org-ref-insert-cite-function 'org-ref-cite-insert-ivy
+                        org-ref-insert-label-function 'org-ref-insert-label-link
+                        org-ref-insert-ref-function 'org-ref-insert-ref-link
+                        org-ref-cite-onclick-function (lambda (_)
+                          (org-ref-citation-hydra/body))))
 #+end_src
 *** Citar
 
@@ -80,29 +83,28 @@ org-cite editing support.
 
 #+begin_src emacs-lisp
   (use-package citar
-    :config
-    (citar-register-notes-source 'orb-citar-source
-                             (list :name "Org-Roam Notes"
-                                   :category 'org-roam-node
-                                   :items #'citar-org-roam--get-candidates
-                                   :hasitems #'citar-org-roam-has-notes
-                                   :open #'citar-org-roam-open-note
-                                   :create #'orb-citar-edit-note
-                                   :annotate #'citar-org-roam--annotate))
-
-    (setq citar-notes-source 'orb-citar-source)
     :custom
-    (citar-bibliography '("~/Documents/Org/bibliography.bib")))
+    (citar-bibliography bibliography-files))
 #+end_src
 *** citar-org-roam
 
 This package use citar as base to improve the citation process.
 
 #+begin_src emacs-lisp
-(use-package org-roam-bibtex :after org-roam)
-(use-package citar-org-roam
-  :after (citar org-roam)
-  :config (citar-org-roam-mode))
+  (use-package org-roam-bibtex :after org-roam)
+  (use-package citar-org-roam
+   :after (citar org-roam)
+   :config
+   (citar-org-roam-mode)
+   (citar-register-notes-source 'orb-citar-source
+    (list :name "Org-Roam Notes"
+     :category 'org-roam-node
+     :items #'citar-org-roam--get-candidates
+     :hasitems #'citar-org-roam-has-notes
+     :open #'citar-org-roam-open-note
+     :create #'orb-citar-edit-note
+     :annotate #'citar-org-roam--annotate))
+   (setq citar-notes-source 'orb-citar-source))
 #+end_src
 
 
