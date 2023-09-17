@@ -284,26 +284,28 @@ problem, because it disable the arrows also in terminal mode.
 Evil collection is a package that provide evil keybindings for a lot of modes
 
 #+begin_src emacs-lisp
-(use-package evil-collection
- :after evil
- :config
- (evil-collection-init))
-
-
-(use-package evil-numbers
+  (use-package evil-collection
    :after evil
-   :hook 'lem/evil-mode-number-hook)
+   :config
+   (evil-collection-init))
 
-(define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
-(define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
 
-(use-package evil-surround
- :ensure t
- :config
-(global-evil-surround-mode 1))
+  (use-package evil-numbers
+     :after evil
+     :hook 'lem/evil-mode-number-hook)
+
+  (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
+  (evil-define-key '(normal visual) 'global (kbd "C-a g +") 'evil-numbers/inc-at-pt-incremental)
+  (evil-define-key '(normal visual) 'global (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental
+  (use-package evil-surround
+   :ensure t
+   :config
+  (global-evil-surround-mode 1))
 
 #+end_src
 
+   
 ** Which Key
   
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to
@@ -491,7 +493,8 @@ also run =M-x counsel-load-theme= to choose between them easily.
 
 #+begin_src emacs-lisp
   (defun lem/custom-emacs-state () 
-  (dolist (p '((minibuffer-inactive-mode . emacs)
+    (interactive)
+    (dolist (p '((minibuffer-inactive-mode . emacs)
                (calendar-mode . emacs)
                (term-mode . emacs)
                (w3m-mode . emacs)

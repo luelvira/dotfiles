@@ -90,7 +90,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
                    (org-agenda-max-todos nil)))
             (todo "TODO"
                   ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                   (org-agenda-files '(,(dw/org-path "Inbox.org")))
+                   (org-agenda-files '(,(org-directory "Inbox.org")))
                    (org-agenda-text-search-extra-files nil)))))
 
           ("n" "Next Tasks"
