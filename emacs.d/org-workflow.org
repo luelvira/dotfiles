@@ -40,7 +40,7 @@ shortcut to select them is: =C-u C-u C-c C-t=;  =C-s-RIGHT=;  =C-s-LEFT=
 
 #+begin_src emacs-lisp
   (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d!)")))
+        '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d!)" "CANCELED(c!)")))
 #+end_src
 
 **** Tags
@@ -50,14 +50,13 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
 - *followup* Someone is waiting on me to finish this task
 #+begin_src emacs-lisp
   (setq org-tag-alist
-      '((:startgroup)
+      '((:startgroup . nil)
        ;Put mutually exclusive tags here
        ("@home" . ?H )
        ("@PHD" . ?P)
        ("@UI" . ?U)
-       (:endgroup)
-       ("batch" . ?b)
-       ("followup" - ?f)))
+       (:endgroup . nil)))
+
 #+end_src
 
 * Agendas
@@ -107,7 +106,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
 
 Org agenda is a mode of emacs that allows you to view the task for the week
 
-*Note 1* You can shcedule the todos with org-shedule command or due time with org-deadline. To move arrownd
+*Note 1* You can shcedule the todos with org-shedule command or due time with org-deadline. To move around
 the date use ~Shift+arrows~
 
 *Note 2*: We can get a repeat item ading to the deadline the period of time to
@@ -128,10 +127,12 @@ Emacs give you a way to capture the time you spends on each task. You only need 
 
   (setq org-capture-templates
         `(("t" "Tasks / Projects")
-          ("tl" "Task with link" entry (file ,(concat org-directory "Inbox.org"))
+          ("tl" "Task with link" entry (file+olp+datetree ,(concat org-directory "Tasks.org"))
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-          ("tt" "Task" entry (file ,(concat org-directory "Inbox.org"))
-           "* TODO %?\n  %U\n  %i" :empty-lines 1)
+          ("tt" "Task" entry (file+olp+datetree ,(concat org-directory "Tasks.org"))
+           "* TODO %?\n  %U\n  %i"
+           :tree-type week
+           :empty-lines 1)
         ("j" "Journal Entries")
         ("je" "Journal" entry
           (file+olp+datetree ,(concat org-directory "Journal.org"))

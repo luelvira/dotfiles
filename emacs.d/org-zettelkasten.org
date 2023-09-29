@@ -41,39 +41,44 @@ another note with the explanation. This allows you to keep separate the original
 content to your conclusion and ideas.
 
 #+begin_src emacs-lisp
-            (setq bibliography-files '("~/Documents/Org/bibliography.bib"
-                                       "~/Documents/Org/phd.bib"))
-            (use-package ivy-bibtex
-              :config
-              (setq bibtex-completion-bibliography bibliography-files))
+    (setq bibliography-files '("~/Documents/Org/bibliography.bib"
+                                 "~/Documents/Org/phd.bib"))
+    (use-package ivy-bibtex
+      :config
+      (setq bibtex-completion-bibliography bibliography-files))
 
 
-          (use-package org-ref
-            :ensure nil
-            :init (require 'bibtex)
-            (setq bibtex-autokey-year-length 4 bibtex-autokey-name-year-separator
-                  "-" bibtex-autokey-year-title-separator "-"
-                  bibtex-autokey-titleword-separator "-" bibtex-autokey-titlewords
-                  2 bibtex-autokey-titlewords-stretch 1 bibtex-autokey-titleword-length 5)
-            (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
-            (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
-            (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
-            (require 'org-ref-ivy)
-            (require 'org-ref-sci-id)
-            (require 'org-ref-arxiv)
-            (require 'org-ref-scopus)
-            (require 'org-ref-pubmed)
-            (require 'org-ref-wos))
+    (use-package org-ref
+      :ensure nil
+      :init (require 'bibtex)
+      :config (setq bibtex-autokey-year-length 4
+                    bibtex-autokey-name-year-separator "-"
+                    bibtex-autokey-year-title-separator "-"
+                    bibtex-autokey-titleword-separator "-"
+                    bibtex-autokey-titlewords 2
+                    bibtex-autokey-titlewords-stretch 1
+                    bibtex-autokey-titleword-length 5
+                    org-ref-glsentries '("~/Documents/Org/roam/glossary.tex"))
+      (define-key bibtex-mode-map (kbd "H-b") 'org-ref-bibtex-hydra/body)
+      (define-key org-mode-map (kbd "C-c ]") 'org-ref-insert-link)
+      (define-key org-mode-map (kbd "s-[") 'org-ref-insert-link-hydra/body)
+      (require 'org-ref-ivy)
+      (require 'org-ref-sci-id)
+      (require 'org-ref-arxiv)
+      (require 'org-ref-scopus)
+      (require 'org-ref-pubmed)
+      (require 'org-ref-wos)
+      )
 
 
-          (use-package org-ref-ivy
-            :ensure nil
-            :init (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
-                        org-ref-insert-cite-function 'org-ref-cite-insert-ivy
-                        org-ref-insert-label-function 'org-ref-insert-label-link
-                        org-ref-insert-ref-function 'org-ref-insert-ref-link
-                        org-ref-cite-onclick-function (lambda (_)
-                          (org-ref-citation-hydra/body))))
+    (use-package org-ref-ivy
+      :ensure nil
+      :init (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body
+                  org-ref-insert-cite-function 'org-ref-cite-insert-ivy
+                  org-ref-insert-label-function 'org-ref-insert-label-link
+                  org-ref-insert-ref-function 'org-ref-insert-ref-link
+                  org-ref-cite-onclick-function (lambda (_)
+                    (org-ref-citation-hydra/body))))
 #+end_src
 *** Citar
 
@@ -109,12 +114,12 @@ This package use citar as base to improve the citation process.
 
 
 #+begin_src emacs-lisp
-  (setq citar-org-roam-note-title-template "${author} - ${title}")
-  (add-to-list 'org-roam-capture-templates
-               '("r" "bibliography reference" plain "%?"
-                 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}\n#+AUTHOR: %n\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${citedate} \n#+created: %U\n#+last_modified: %U\n\n")
-                 :unnarrowed t))
-  (setq citar-org-roam-capture-template-key "r")
+    (setq citar-org-roam-note-title-template "${author} - ${title}")
+    (add-to-list 'org-roam-capture-templates
+                 '("r" "bibliography reference" plain "%?"
+                   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n")
+                   :unnarrowed t))
+    (setq citar-org-roam-capture-template-key "r")
 #+end_src
 
 **  3. Permanent notes

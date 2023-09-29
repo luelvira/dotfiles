@@ -58,10 +58,10 @@
   - [[#bindings-some-keys][Bindings some keys]]
   - [[#end-use-package-org-mode][End use-package org-mode]]
   - [[#org-toc][Org toc]]
-  - [[#set-up-org-agenda][Set up org-agenda]]
   - [[#org-export][Org export]]
   - [[#sync-org-files][Sync Org files]]
 - [[#org-roam-the-good-part][Org Roam, the good part]]
+  - [[#set-up-org-agenda][Set up org-agenda]]
 
 * PUT THIS IN YOUR init.el
 
@@ -78,6 +78,7 @@
 This command allow to run emacs as server, so all the startup can be done once
 time and connect client to it each time you need
 #+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
   (server-start)
 #+end_src
 *** Connect a client
@@ -296,14 +297,16 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 
   (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
-  (evil-define-key '(normal visual) 'global (kbd "C-a g +") 'evil-numbers/inc-at-pt-incremental)
-  (evil-define-key '(normal visual) 'global (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental
+  (define-key evil-normal-state-map (kbd "C-a g +") 'evil-numbers/inc-at-pt-incremental)
+  (define-key  evil-normal-state-map (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental)
+
   (use-package evil-surround
    :ensure t
    :config
   (global-evil-surround-mode 1))
 
 #+end_src
+
 
    
 ** Which Key
@@ -407,18 +410,25 @@ also run =M-x counsel-load-theme= to choose between them easily.
 ** Fonts
 
 #+begin_src emacs-lisp
-;; Set the font
-(set-face-attribute 'default nil :font "Fira Code" :height 120)
-(set-face-attribute 'fixed-pitch nil :family "Fira Code" :height 1.0 :inherit 'default)
-(set-face-attribute 'variable-pitch nil :family "Noto Sans" :weight 'regular :inherit 'default)
-(set-face-attribute 'font-lock-comment-face nil :slant 'italic :inherit 'default)
+  ;; Set the font
+  (set-face-attribute 'default nil :font "Fira Code" :height 120)
+  (set-face-attribute 'fixed-pitch nil :family "Fira Code" :height 1.0 :inherit 'default)
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans" :weight 'regular :inherit 'default)
+
+(use-package fira-code-mode
+  :custom (fira-code-mode-disabled-ligatures '("[]" "x"))  ; ligatures you don't want
+  :hook prog-mode)  
 #+end_src
 
 ** Better Modeline
 
-[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
+configuration for Emacs.  The default configuration is quite good but you can
+check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
 
-*NOTE:* The first time you load your configuration on a new machine, you'll need to run `M-x all-the-icons-install-fonts` so that mode line icons display correctly.
+*NOTE:* The first time you load your configuration on a new machine, you'll need
+to run `M-x all-the-icons-install-fonts` so that mode line icons display
+correctly.
 
 #+begin_src emacs-lisp
     (setq display-time-format "%l:%M %p %b %y"
@@ -493,6 +503,7 @@ also run =M-x counsel-load-theme= to choose between them easily.
 
 #+begin_src emacs-lisp
   (defun lem/custom-emacs-state () 
+"Disable vim mode for some buffer types"
     (interactive)
     (dolist (p '((minibuffer-inactive-mode . emacs)
                (calendar-mode . emacs)
@@ -957,8 +968,8 @@ Also you could include your own class. This will be address on the [[*Export to 
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Documents/git")
-    (setq projectile-project-search-path '("~/Documents/git")))
+;  (when (file-directory-p "~/Documents/git")
+;    (setq projectile-project-search-path '("~/Documents/git")))
   (setq projectile-switch-project-action #'projectile-dired))
 #+end_src
 **** Counsel-projectile
@@ -1215,43 +1226,43 @@ The main reason why I changes to emacs
 
 #+begin_src emacs-lisp
 
-    (defun lem/org-mode-setup ()
-          (org-indent-mode)
-          (variable-pitch-mode 1)
-          (auto-fill-mode 1)
-          (visual-line-mode 1)
-          (setq evil-auto-indent nil)
-          (diminish org-indent-mode))
+  (defun lem/org-mode-setup ()
+        (org-indent-mode)
+        (variable-pitch-mode 1)
+        (auto-fill-mode 1)
+        (visual-line-mode 1)
+        (setq evil-auto-indent nil)
+        (diminish org-indent-mode))
 
-    (defun lucas/org-font-setup ()
-          ;; Replace list hyphen with dot
-      (font-lock-add-keywords 'org-mode
-                              '(("^ *\\([-]\\) "
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
+  (defun lucas/org-font-setup ()
+        ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 
-    (use-package org
-      :defer t
-      :hook (org-mode . lem/org-mode-setup)
-      :config
-      (setq org-ellipsis " ▾"
-            org-hide-emphasis-markers nil
-            org-src-fontify-natively t
-            org-fontify-quote-and-verse-blocks t
-            org-src-tab-acts-natively t
-            org-edit-src-content-indentation 2
-            org-hide-block-startup nil
-            org-src-preserve-indentation nil
-            org-cycle-separator-lines 2)
-      (setq org-modules
-            '(org-crypt
-              org-habit
-              org-journal))
+  (use-package org
+    :defer t
+    :hook (org-mode . lem/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers nil
+          org-src-fontify-natively t
+          org-fontify-quote-and-verse-blocks t
+          org-src-tab-acts-natively t
+          org-edit-src-content-indentation 2
+          org-hide-block-startup nil
+          org-src-preserve-indentation nil
+          org-cycle-separator-lines 2)
+    (setq org-modules
+          '(org-crypt
+            org-habit
+            org-journal))
 
 
-      (setq org-refile-targets '((nil :maxlevel . 2)
-                                 (org-agenda-files :maxlevel . 1)))
-      (setq org-outline-path-complete-in-steps nil)
-      (setq org-refile-use-outline-path t)
+    (setq org-refile-targets '((nil :maxlevel . 2)
+                               (org-agenda-files :maxlevel . 1)))
+    (setq org-outline-path-complete-in-steps nil)
+    (setq org-refile-use-outline-path t)
 
 #+end_src
 ** Configure Babel languages
@@ -1271,7 +1282,7 @@ org-babel.
   ))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
-
+(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
 #+end_src  
 
 ** WorkFlow configuration
@@ -1285,6 +1296,8 @@ The configuration file of this section was moved to
 
   (org-babel-tangle-file "~/Documents/git//dotfiles/emacs.d/org-workflow.org")
   (require 'org-workflow)
+  (setq org-habits-show-all-today t
+        org-habit-show-habits-only-for-today nil)
 #+end_src
 
 ** Configure Fonts and bullets
@@ -1370,53 +1383,6 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
   (use-package toc-org
   :hook (org-mode . toc-org-mode))
 #+end_src
-
-** Set up org-agenda
-
-Refill is the ability to move some text to other file when some action happen or
-event is trigger.  On the following section, we go to setup some triggers for
-the agenda mode. This allows as to archive the task that are done.
-
-#+begin_src emacs-lisp
-; Save Org buffers after refiling!
-;(advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-(defun my/org-roam-copy-todo-to-today ()
-  (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-        (org-roam-dailies-capture-templates
-        '(("t" "tasks" entry "%?"
-         :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
-        (org-after-refile-insert-hook #'save-buffer)
-        today-file
-        pos)
-    (save-window-excursion
-      (org-roam-dailies--capture (current-time) t)
-        (setq today-file (buffer-file-name))
-        (setq pos (point)))
-
-      ;; Only refile if the target file is different than the current file
-      (unless (equal (file-truename today-file)
-                     (file-truename (buffer-file-name)))
-        (org-refile nil nil (list "Tasks" today-file nil pos)))))
-
-(add-to-list 'org-after-todo-state-change-hook
-(lambda ()
-(when (equal org-state "DONE")
-(my/org-roam-copy-todo-to-today))))
-
-(setq org-archive-location (concat org-directory "/Archive.org::datetree/** From %s"))
-#+end_src
-
-*** Org habit
-
-#+begin_src emacs-lisp
- (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60)
-#+end_src
-
-The habits are task with a repeat periods. You can see the task into the agenda-dashboard and remember you to do and what times you skip it.
 
 ** Org export
 
@@ -1588,6 +1554,7 @@ Some dependencies are:
   :unnarrowed t)
           ))
 
+
 #+end_src
   
 *** Setting up Org-roam
@@ -1650,55 +1617,136 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
   (require 'org-zettel)
 #+end_src
 
+** Set up org-agenda
+
+Refill is the ability to move some text to other file when some action happen or
+event is trigger.  On the following section, we go to setup some triggers for
+the agenda mode. This allows as to archive the task that are done.
+
+#+begin_src emacs-lisp
+;;Save Org buffers after refiling!
+;; (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+;;  (defun my/org-roam-copy-todo-to-today ()
+;;   (interactive)
+;;   (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+;;         (org-roam-dailies-capture-templates
+;;          '(("t" "tasks" entry "%?"
+;;              :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+;;         (org-after-refile-insert-hook #'save-buffer)
+;;         today-file
+;;         pos)
+;;    (save-window-excursion
+;;     (org-roam-dailies-capture-templates (current-time) t)
+;;     (setq today-file (buffer-file-name))
+;;     (setq pos (point)))
+;;
+;;    ;; Only refile if the target file is different than the current file
+;;    (unless (equal (file-truename today-file)
+;;             (file-truename (buffer-file-name)))
+;;     (org-refile nil nil (list "Tasks" today-file nil pos)))))
+;;
+;;
+;;  (save-window-excursion
+;;   (org-roam-dailies-capture-templates (current-time) t)
+;;   (setq today-file (buffer-file-name))
+;;   (setq pos (point)))
+;;
+;;  (add-to-list 'org-after-todo-state-change-hook
+;;   (lambda ()
+;;    (when (equal org-state "DONE")
+;;     (my/org-roam-copy-todo-to-today))))
+;;
+;;  (setq org-archive-location (concat org-directory "/Archive.org::datetree/** From %s"))
+#+end_src
+
+*** Org habit
+
+#+begin_src emacs-lisp
+ (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+#+end_src
+
+The habits are task with a repeat periods. You can see the task into the agenda-dashboard and remember you to do and what times you skip it.
+
 
 *** Org roam configuration hacks
 
-This section is disable until I finally understand How it works.
 
 #+begin_src emacs-lisp
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
+      (defun my/org-roam-filter-by-tag (tag-name)
+        (lambda (node)
+          (member tag-name (org-roam-node-tags node))))
 
-  
-  (defun my/org-roam-list-notes-by-tag (tag-name)
-    (mapcar #'org-roam-node-file
-            (seq-filter
-             (my/org-roam-filter-by-tag tag-name)
-             (org-roam-node-list))))
+
+      (defun my/org-roam-list-notes-by-tag (tag-name)
+          (mapcar #'org-roam-node-file
+                  (seq-filter
+                   (my/org-roam-filter-by-tag tag-name)
+                   (org-roam-node-list))))
+
       (defun my/org-roam-refresh-agenda-list ()
-        (interactive)
-        (setq org-agenda-files (my/org-roam-list-notes-by-tag "Project")))
+              (interactive)
+              (setq org-agenda-files (delete-dups (append org-agenda-files (my/org-roam-list-notes-by-tag "Project")))))
 
-        ;; Build the agenda list the first time for the session
+              ;; Build the agenda list the first time for the session
 
-      (defun my/org-roam-project-finalize-hook ()
-          "Adds the captured project file to `org-agenda-files' if the
-        capture was not aborted."
-          ;; Remove the hook since it was added temporarily
-          (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+            (defun my/org-roam-project-finalize-hook ()
+                "Adds the captured project file to `org-agenda-files' if the
+              capture was not aborted."
+                ;; Remove the hook since it was added temporarily
+                (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-          ;; Add project file to the agenda list if the capture was confirmed
-          (unless org-note-abort
-            (with-current-buffer (org-capture-get :buffer)
-              (add-to-list 'org-agenda-files (buffer-file-name)))))
+                ;; Add project file to the agenda list if the capture was confirmed
+                (unless org-note-abort
+                  (with-current-buffer (org-capture-get :buffer)
+                    (add-to-list 'org-agenda-files (buffer-file-name)))))
 
-    (defun my/org-roam-find-project ()
-        (interactive)
-        ;; Add the project file to the agenda after capture is finished
-        (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+          (defun my/org-roam-find-project ()
+              (interactive)
+              ;; Add the project file to the agenda after capture is finished
+              (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-      ;; Select a project file to open, creating it if necessary
-        (org-roam-node-find
-       nil
-       nil
-       (lambda (node)
-        (member "Project" (org-roam-node-tags node)))))
+            ;; Select a project file to open, creating it if necessary
+              (org-roam-node-find
+             nil
+             nil
+             (lambda (node)
+              (member "Project" (org-roam-node-tags node)))))
 
       (defun my/org-roam-capture-inbox ()
         (interactive)
         (org-roam-capture- :node (org-roam-node-create)
                            :templates '(("i" "inbox" plain "* %?"
                                          :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+    (defun my/org-roam-capture-task ()
+      (interactive)
+      ;; Capture the new task, creating the project file if necessary
+      (org-roam-capture- :node (org-roam-node-read
+                                nil
+                                (my/org-roam-filter-by-tag "Project"))
+                         :templates '(
+                                      ("p" "project" plain "** TODO %?"
+                                       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                              "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+                                                              ("Tasks")))
+                                      ("s" "start now" entry "** TODO %?"
+                                       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                              "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
+                                                              ("Tasks"))
+                                       :clock-in :clock-resume)
+                                      )))
 
+    (defun lem/org-roam-capture-meeting ()
+      (interactive)
+      (org-roam-capture- :node (org-roam-node-read
+                               nil
+                               (my/org-roam-filter-by-tag "Project"))
+                         :templates '(("m" "Meeting" plain "** %<%Y-%m-%d %H:%M>\n%?"
+                                       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                                  "#+title: ${title}\n#+category:${title}\n#+filetags: Project"
+                                                                  ("Meetings"))
+                                       :clock-in :clock-resume
+                                       :empty-lines: 1))))
 #+end_src
