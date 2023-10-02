@@ -900,7 +900,7 @@ cdlatex is a package that allows to display inline math expressions in latex
 with the cdlatex mode
 #+begin_src emacs-lisp
 (use-package cdlatex)
-(add-hook 'org-mode-hook #'turn-on-org-cdlatex)
+;;(add-hook 'org-mode-hook #'turn-on-org-cdlatex)
 #+end_src
 
 ** text mode
@@ -962,15 +962,23 @@ Also you could include your own class. This will be address on the [[*Export to 
 *** Projectile
 
 #+begin_src emacs-lisp
-  (use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-;  (when (file-directory-p "~/Documents/git")
-;    (setq projectile-project-search-path '("~/Documents/git")))
-  (setq projectile-switch-project-action #'projectile-dired))
+    (use-package projectile
+    :diminish projectile-mode
+    :config (projectile-mode)
+    (projectile-register-project-type 'npm '("package.json")
+                                    :project-file "package.json"
+                                    :compile "npm install"
+                                    :test "npm test"
+                                    :run "npm start"
+                                    :test-suffix ".spec")
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+  ;  (when (file-directory-p "~/Documents/git")
+  ;    (setq projectile-project-search-path '("~/Documents/git")))
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  
 #+end_src
 **** Counsel-projectile
 [[https://github.com/ericdanan/counsel-projectile][counsel-projectile]] on github

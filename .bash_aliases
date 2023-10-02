@@ -60,7 +60,7 @@ tmpmkdir() {
 }
 
 gbackup() {
-    stamp=$(date '+%Y-%m-%dT%H:%m')
+    stamp=$(date '+%Y-%m-%dT%H:%M')
     git commit -m $stamp
 }
 cd() {
