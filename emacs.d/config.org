@@ -76,7 +76,8 @@
 ** Emacs as server
 
 This command allow to run emacs as server, so all the startup can be done once
-time and connect client to it each time you need
+time and connect client to it each time you need.
+
 #+begin_src emacs-lisp
 ;; -*- lexical-binding: t; -*-
   (server-start)
@@ -415,9 +416,6 @@ also run =M-x counsel-load-theme= to choose between them easily.
   (set-face-attribute 'fixed-pitch nil :family "Fira Code" :height 1.0 :inherit 'default)
   (set-face-attribute 'variable-pitch nil :family "Noto Sans" :weight 'regular :inherit 'default)
 
-(use-package fira-code-mode
-  :custom (fira-code-mode-disabled-ligatures '("[]" "x"))  ; ligatures you don't want
-  :hook prog-mode)  
 #+end_src
 
 ** Better Modeline
@@ -490,13 +488,12 @@ correctly.
     (setq visual-fill-column-width 100
           fill-column 80
           visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
+    (visual-fill-column-mode t))
 
   (use-package visual-fill-column
   :defer t
     :hook (org-mode . lucas/org-mode-visual-fill))
 #+end_src
-
 * Control and behavior
 		    
 *** Evil mode
@@ -909,7 +906,7 @@ with the cdlatex mode
     "test hook"
     (variable-pitch-mode 1)
     (auto-fill-mode 1)
-    (visual-line-mode 1)
+    ;(visual-line-mode 1)
     (visual-fill-column-mode 1)
     (setq evil-auto-indent nil))
 
@@ -921,7 +918,8 @@ with the cdlatex mode
 Latex is a markup language bast used to write text without warning about the
 format. One very important advantage of this language is that you could define
 the style after write  the text and the resulting PDF will be the same,
-independent the OS you are using. This not happen when you work with visual editors
+independent the OS you are using. This not happen when you work with visual
+editors. 
 
 ***** Configure image and math preview
 
@@ -1013,35 +1011,87 @@ This extension display all the comments with the word TODO inside the project
   (use-package magit-todos
   :defer t)
 #+end_src
+*** Git-glutter
+Git glutter is a software which make easy to view the difference between a file
+and the last commit from the same file
+#+begin_src emacs-lisp
+  (use-package git-gutter
+    :ensure t
+    :hook (prog-mode . git-gutter-mode)
+    :config
+    (setq git-gutter:update-interval 0.02))
+
+  (use-package git-gutter-fringe
+    :ensure t
+    :config
+    (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+#+end_src
 ** Languages
 *** LSP (Language server protocol)
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :commands lsp
-    :hook (prog-mode-hook . lsp)
-    :bind (:map lsp-mode-map
-                ("TAB" . completion-at-point))
-  :custom (lsp-headerline-breadcrub-enable t))
+    ;;  (use-package lsp-mode
+    ;;    :commands lsp
+    ;;    :hook (prog-mode-hook . lsp)
+    ;;    :bind (:map lsp-mode-map
+    ;;                ("TAB" . completion-at-point))
+    ;;  :custom (lsp-headerline-breadcrub-enable t))
+    ;;
+    (use-package lsp-mode
+      :hook ((prog-mode) . lsp-deferred)
+      :commands lsp
+      :config
+      (setq lsp-auto-guess-root t)
+      (setq lsp-log-io nil)
+      (setq lsp-restart 'auto-restart)
+      (setq lsp-enable-symbol-highlighting nil)
+      (setq lsp-enable-on-type-formatting nil)
+      (setq lsp-signature-auto-activate nil)
+      (setq lsp-signature-render-documentation nil)
+      (setq lsp-eldoc-hook nil)
+      (setq lsp-modeline-code-actions-enable nil)
+      (setq lsp-modeline-diagnostics-enable nil)
+      (setq lsp-headerline-breadcrumb-enable nil)
+      (setq lsp-semantic-tokens-enable nil)
+      (setq lsp-enable-folding nil)
+      (setq lsp-enable-imenu nil)
+      (setq lsp-enable-snippet nil)
+      (setq read-process-output-max (* 1024 1024)) ;; 1MB
+      (setq lsp-idle-delay 0.5)
+      :bind (:map lsp-mode-map
+                  ("TAB" . completion-at-point))
+      :custom (lsp-headerline-breadcrumb-enable t))
 
-  (lem/leader-key-def
-   "l"  '(:ignore t :which-key "lsp")
-   "ld" 'xref-find-definitions
-   "lr" 'xref-find-references
-   "ln" 'lsp-ui-find-next-reference
-   "lp" 'lsp-ui-find-prev-reference
-   "ls" 'counsel-imenu
-   "le" 'lsp-ui-flycheck-list
-   "lS" 'lsp-ui-sideline-mode
-   "lX" 'lsp-execute-code-action)
+  ;;    (lem/leader-key-def
+  ;;     "l"  '(:ignore t :which-key "lsp")
+  ;;     "ld" 'xref-find-definitions
+  ;;     "lr" 'xref-find-references
+  ;;     "ln" 'lsp-ui-find-next-reference
+  ;;     "lp" 'lsp-ui-find-prev-reference
+  ;;     "ls" 'counsel-imenu
+  ;;     "le" 'lsp-ui-flycheck-list
+  ;;     "lS" 'lsp-ui-sideline-mode
+  ;;     "lX" 'lsp-execute-code-action)
+  ;;
 
-  (use-package lsp-ui
-    :config
-    (setq lsp-ui-sideline-enable t)
-    (setq lsp-ui-sideline-show-hover t)
-    (setq lsp-ui-doc-position 'bottom))
+      (use-package lsp-ui
+        :commands lsp-ui-mode
+        :config
+        (setq lsp-ui-doc-enable t)
+        (setq lsp-ui-doc-header t)
+        (setq lsp-ui-doc-include-signature t)
+        (setq lsp-ui-doc-border (face-foreground 'default))
+        (setq lsp-ui-sideline-show-code-actions t)
+        (setq lsp-ui-sideline-delay 0.05))
 
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-ivy-treemacs-errors-list)
+  (use-package lsp-pyright
+    :hook (python-mode . (lambda () (require 'lsp-pyright)))
+    :init (when (executable-find "python3")
+            (setq lsp-pyright-python-executable-cmd "python3")))
+
+      (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+      (use-package lsp-treemacs :commands lsp-ivy-treemacs-errors-list)
 #+end_src
 **** lsp-treemacs
 
@@ -1052,11 +1102,9 @@ Provides an even nicer UI on top of lsp-mode using Treemacs
 - ~lsp-treemacs-error-list~ - Show a tree view for the diagnostic messages in the project
 
   #+begin_src emacs-lisp
-        (use-package lsp-treemacs
-          :after lsp)
+    (use-package lsp-treemacs
+      :after lsp)
 
-    ; Quicker symbol search with lsp-ivy
-    (use-package lsp-ivy)
   #+end_src
 **** Debug adapter
 #+begin_src emacs-lisp
@@ -1238,7 +1286,7 @@ The main reason why I changes to emacs
         (org-indent-mode)
         (variable-pitch-mode 1)
         (auto-fill-mode 1)
-        (visual-line-mode 1)
+        ;(visual-line-mode 1)
         (setq evil-auto-indent nil)
         (diminish org-indent-mode))
 
@@ -1246,7 +1294,9 @@ The main reason why I changes to emacs
         ;; Replace list hyphen with dot
     (font-lock-add-keywords 'org-mode
                             '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
+                               (0 (prog1 () (compose-region
+                                             (match-beginning 1)
+                                             (match-end 1) "•")))))))
 
   (use-package org
     :defer t
@@ -1262,16 +1312,15 @@ The main reason why I changes to emacs
           org-src-preserve-indentation nil
           org-cycle-separator-lines 2)
     (setq org-modules
-          '(org-crypt
-            org-habit
-            org-journal))
+          '(org-habit
+            org-pomodoro
+            ))
 
 
     (setq org-refile-targets '((nil :maxlevel . 2)
                                (org-agenda-files :maxlevel . 1)))
     (setq org-outline-path-complete-in-steps nil)
     (setq org-refile-use-outline-path t)
-
 #+end_src
 ** Configure Babel languages
 
@@ -1625,6 +1674,16 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
   (require 'org-zettel)
 #+end_src
 
+*** Managment time with Org dailies
+
+#+begin_src elisp
+
+  (setq org-roam-dailies-capture-templates
+      '(("d" "day" entry "** %<%I:%M %p>: %?"
+         :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n\n* Time Managment\n#+BEGIN: clocktable :scope agenda :maxlevel 6 :block %<%Y-%m-%d>\n#+CAPTION: \n#+END:" ("Notes")))))
+#+end_src
+
+
 ** Set up org-agenda
 
 Refill is the ability to move some text to other file when some action happen or
@@ -1676,7 +1735,22 @@ the agenda mode. This allows as to archive the task that are done.
   (setq org-habit-graph-column 60)
 #+end_src
 
-The habits are task with a repeat periods. You can see the task into the agenda-dashboard and remember you to do and what times you skip it.
+The habits are task with a repeat periods. You can see the task into the
+agenda-dashboard and remember you to do and what times you skip it.
+
+*** Org pomodoro
+
+#+begin_src emacs-lisp
+  (use-package org-pomodoro
+    :ensure t
+    :after org
+    :commands (org-pomodoro)
+    :config
+    (setq
+   alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
+   org-pomodoro-length 100
+   org-pomodoro-short-break-length 10))
+#+end_src
 
 
 *** Org roam configuration hacks

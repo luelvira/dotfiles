@@ -158,7 +158,7 @@ entry will be added into the list with all the acronyms.
            (format
             "\\newacronym{%s}{%s}{%s}\n"
             label abbrv full)
-  nil "~/Documents/Org/roam/glossary2.tex" 'append)))
+  nil "~/Documents/Org/roam/glossary.tex" 'append)))
 
 #+end_src
 **  3. Permanent notes
