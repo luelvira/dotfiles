@@ -47,8 +47,8 @@ if type rg &> /dev/null; then
 fi
 
 . ~/.bash_aliases
-export EDITOR=vim
-export VISUAL=vim
+#export EDITOR=vim
+#export VISUAL=vim
 #export EDITOR="emacsclient -t"
 #export VISUAL="emacsclient -c -a emacs"
 
@@ -57,3 +57,4 @@ export TERM=xterm-256color
 if [ -d ~/.cargo/ ]; then
     . "$HOME/.cargo/env"
 fi
+PATH=$HOME/.config/emacs/bin:$PATH
