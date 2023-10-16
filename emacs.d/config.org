@@ -1011,8 +1011,8 @@ This extension display all the comments with the word TODO inside the project
   (use-package magit-todos
   :defer t)
 #+end_src
-*** Git-glutter
-Git glutter is a software which make easy to view the difference between a file
+*** Git-gutter
+Git gutter is a software which make easy to view the difference between a file
 and the last commit from the same file
 #+begin_src emacs-lisp
   (use-package git-gutter
@@ -1144,8 +1144,8 @@ Company is a Modular text completion framework for emacs
 #+end_src
 ***** Vertico
 #+begin_src emacs-lisp
-  (use-package vertigo
-    :bind (:map vertigo-map
+  (use-package vertico
+    :bind (:map vertico-map
                 ("C-j" . vertico-next)
                 ("C-k" . vertico-previous)
                 ("C-f" . vertico-exit))
@@ -1551,7 +1551,6 @@ contains the org files only, and it is named sync
     "Sync the config foler with an external script"
   (interactive)
   (lem/sync "~/Documents/git/dotfiles"))
-
 
     ;; (add-hook 'after-save-hook 'lem/sync) Use as hook generate a lot of commits
 #+end_src
