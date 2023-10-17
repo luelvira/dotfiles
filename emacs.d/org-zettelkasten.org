@@ -24,7 +24,6 @@ title instead of the concept.
              :unnarrowed nil))
 #+end_src
 
-
 **  2. Literature Notes
 
 Literature notes are notes extracted from external source. These must include
@@ -118,8 +117,8 @@ This package use citar as base to improve the citation process.
   (add-to-list 'org-roam-capture-templates
                '("r" "bibliography reference" plain "%?"
                  :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n**Abstract\n${abstract}")
-                 :unnarrowed t))
+                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n** Abstract\n${abstract}")
+                 :unnarrowed t) t)
   (setq citar-org-roam-capture-template-key "r")
 #+end_src
 *** Import annotations from Zotero
@@ -143,22 +142,22 @@ current buffer, such happens with org-ref. I need the acronym or the glossary
 entry will be added into the list with all the acronyms.
 
 #+begin_src emacs-lisp
-          (defun lem/add-acronym (label abbrv full)
-              (interactive "sLabel: \nsAccronym: \nsFull text: ")
-              (save-excursion
-        (re-search-backward "#\\+latex_header" nil t)
-        (forward-line)
-        (when (not (looking-at "^$"))
-            (beginning-of-line)
-            (insert "\n")
-            (forward-line -1))
-          (insert (format "#+latex_header_extra: \\newacronym{%s}{%s}{%s}\n"
-                          label abbrv full))
-          (write-region
-           (format
-            "\\newacronym{%s}{%s}{%s}\n"
-            label abbrv full)
-  nil "~/Documents/Org/roam/glossary2.tex" 'append)))
+  (defun lem/add-acronym (label abbrv full)
+    (interactive "sLabel: \nsAccronym: \nsFull text: ")
+    (save-excursion
+      (re-search-backward "#\\+latex_header" nil t)
+      (forward-line)
+      (when (not (looking-at "^$"))
+        (beginning-of-line)
+        (insert "\n")
+        (forward-line -1))
+      (insert (format "#+latex_header_extra: \\newacronym{%s}{%s}{%s}\n"
+                      label abbrv full))
+      (write-region
+       (format
+        "\\newacronym{%s}{%s}{%s}\n"
+        label abbrv full)
+       nil "~/Documents/Org/roam/glossary.tex" 'append)))
 
 #+end_src
 **  3. Permanent notes
@@ -176,6 +175,16 @@ ideas, related content and any kind of useful information for you.
 Index notes are these notes used to group connected notes. Can be a TOC, a sort
 description, or whatever you want. 
 
+** 5. Create new note without open the buffer
+
+#+begin_src emacs-lisp
+(defun org-roam-node-insert-immediate (arg &rest args)
+  (interactive "P")
+  (let ((args (cons arg args))
+        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                  '(:immediate-finish t)))))
+    (apply #'org-roam-node-insert args)))
+#+end_src
 
 * EOF
 
