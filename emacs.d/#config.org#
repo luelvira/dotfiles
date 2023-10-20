@@ -336,19 +336,19 @@ modes with Vi-like keybindings for evil-mode.
 
   
 #+begin_src emacs-lisp
-(use-package general
-  :config
-  (general-evil-setup t)
+    (use-package general
+      :config
+      (general-evil-setup t)
 
-  (general-create-definer lem/leader-key-def
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
+      (general-create-definer lem/leader-key-def
+        :keymaps '(normal insert visual emacs)
+        :prefix "SPC"
+        :global-prefix "C-SPC")
 
-  (general-create-definer lem/ctrl-c-keys
-    :keymaps '(normal emacs)
+      (general-create-definer lem/ctrl-c-keys
+        :keymaps '(normal emacs)
         :prefix "C-c"
-        :global-prefix "C-c"))
+        :global-prefix "C-c")
 #+end_src
 
 * UI
@@ -1442,11 +1442,10 @@ In this subsection, I will add some capture to the capture list, that are not
 related with any workflow
 
 #+begin_src emacs-lisp
-  (add-to-list 'org-capture-templates
-               `("m" "Metrics" table-line
-		 (file+headline ,(expand-file-name "Metrics.org" org-directory) "Fondos")
-		 "| %U | %^{fondo1} | %^{fondo2} |" :kill-buffer nil))
-
+;;  (add-to-list 'org-capture-templates
+;;             `("m" "Metrics" table-lines
+;;              (file+olp (expand-file-name "Metrics.org" org-directory) "Metrics")
+;;              "| %U | %^{fondo1} | %^{fondo2} |" :kill-buffer t))
 #+end_src
 
 ** Org toc

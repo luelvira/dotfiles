@@ -131,13 +131,11 @@ Emacs give you a way to capture the time you spends on each task. You only need 
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
           ("tt" "Task" entry (file+olp+datetree ,(concat org-directory "Tasks.org"))
            "* TODO %?\n  %U\n  %i"
-           :tree-type week
            :empty-lines 1)
         ("j" "Journal Entries")
         ("je" "Journal" entry
           (file+olp+datetree ,(concat org-directory "Journal.org"))
           "\n* %<%I:%M %p> - %^{Title} \n\n%?\n\n"
-          :tree-type week
           :clock-in :clock-resume
           :empty-lines 1)
         ("jt" "Task Entry" entry
@@ -148,13 +146,11 @@ Emacs give you a way to capture the time you spends on each task. You only need 
          :empty-lines 1)
         ("jm" "Meeting" entry
          (file+olp+datetree ,(concat org-directory "Journal.org"))
-         "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-         :clock-in :clock-resume
+         "* %<%I:%M %p> - %^{Title} :meetings:\n\n%?\n\n"
          :empty-lines 1)
         ("jj" "Journal" entry
          (file+olp+datetree ,(concat org-directory "Journal.org"))
          "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-         :tree-type week
          :clock-in :clock-resume
          :empty-lines 1)))
 
