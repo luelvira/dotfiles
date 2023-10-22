@@ -52,11 +52,11 @@
   - [[#insert-heading][Insert heading!]]
   - [[#configure-view][Configure view]]
   - [[#configure-babel-languages][Configure Babel languages]]
-  - [[#workflow-configuration][WorkFlow configuration]]
   - [[#configure-fonts-and-bullets][Configure Fonts and bullets]]
   - [[#structure-templates][Structure templates]]
-  - [[#bindings-some-keys][Bindings some keys]]
   - [[#end-use-package-org-mode][End use-package org-mode]]
+  - [[#workflow-configuration][WorkFlow configuration]]
+  - [[#bindings-some-keys][Bindings some keys]]
   - [[#org-capture][Org capture]]
   - [[#org-toc][Org toc]]
   - [[#org-export][Org export]]
@@ -1339,26 +1339,11 @@ org-babel.
    (python . t)
    (js . t)
    (shell . t)
-  ))
+   (gnuplot . t)))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
 #+end_src  
-
-** WorkFlow configuration
-The configuration file of this section was moved to
-[[file:~/Documents/git/dotfiles/emacs.d/org-workflow.org][org-workflow.org]].
-
-#+begin_src emacs-lisp
-    ;; first tangle the content
-  (unless (file-directory-p  "~/Documents/git/dotfiles/emacs.d/lisp")
-    (make-directory "~/Documents/git/dotfiles/emacs.d/lisp"))
-
-  (org-babel-tangle-file "~/Documents/git//dotfiles/emacs.d/org-workflow.org")
-  (require 'org-workflow)
-  (setq org-habits-show-all-today t
-        org-habit-show-habits-only-for-today nil)
-#+end_src
 
 ** Configure Fonts and bullets
 
@@ -1421,6 +1406,30 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
 #+end_src
 
 
+** End use-package org-mode
+
+#+begin_src emacs-lisp
+  )
+#+end_src
+
+** WorkFlow configuration
+The configuration file of this section was moved to
+[[file:~/Documents/git/dotfiles/emacs.d/org-workflow.org][org-workflow.org]].
+
+#+begin_src emacs-lisp
+    ;; first tangle the content
+  (unless (file-directory-p  "~/Documents/git/dotfiles/emacs.d/lisp")
+    (make-directory "~/Documents/git/dotfiles/emacs.d/lisp"))
+
+  (org-babel-tangle-file "~/Documents/git//dotfiles/emacs.d/org-workflow.org")
+  (require 'org-workflow)
+  (setq org-habits-show-all-today t
+        org-habit-show-habits-only-for-today nil)
+#+end_src
+
+
+
+
 ** Bindings some keys
 
 #+begin_src emacs-lisp
@@ -1430,11 +1439,6 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
    "ot" '(org-todo-list :which-key "Show TODOs")
    "oc" '(org-capture t :which-key "Capture"))
 
-#+end_src
-** End use-package org-mode
-
-#+begin_src emacs-lisp
-  )
 #+end_src
 ** Org capture
 
