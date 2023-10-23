@@ -1371,6 +1371,7 @@ org-babel.
   (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
   (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
   (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-date nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
@@ -1448,8 +1449,12 @@ related with any workflow
 #+begin_src emacs-lisp
   (add-to-list 'org-capture-templates
                `("m" "Metrics" table-line
-		 (file+headline ,(expand-file-name "Metrics.org" org-directory) "Fondos")
-		 "| %U | %^{fondo1} | %^{fondo2} |" :kill-buffer nil))
+                 (file+headline ,(expand-file-name "Metrics.org" org-directory) "Fondos")
+                 "| %U | %^{fondo1} | %^{fondo2} |" :kill-buffer nil))
+  (add-to-list 'org-capture-templates
+                 `("h" "Habit" entry
+                  (file+headline ,(expand-file-name "Habits.org" org-directory) "Habits")
+                  "* TODO %?\n:PROPERTIES:\n:STYLE:    habit\n:END:\n"))
 
 #+end_src
 
