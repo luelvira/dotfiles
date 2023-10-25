@@ -7,7 +7,7 @@ else
 fi
 
 cd $project
-
+git fetch
 if [[ `git status --porcelain` ]]; then
     git add .
     git commit -m "Commit at $(date +'%Y-%m-%d %H:%M:%S') from $HOSTNAME"
