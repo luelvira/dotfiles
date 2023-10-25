@@ -117,7 +117,7 @@ This package use citar as base to improve the citation process.
   (add-to-list 'org-roam-capture-templates
                '("r" "bibliography reference" plain "%?"
                  :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n** Abstract\n${abstract}")
+                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n** Abstract\n${Abstract}")
                  :unnarrowed t) t)
   (setq citar-org-roam-capture-template-key "r")
 #+end_src
