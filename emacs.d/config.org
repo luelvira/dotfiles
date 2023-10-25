@@ -48,6 +48,7 @@
   - [[#projectile-and-magit][Projectile and magit]]
   - [[#languages][Languages]]
   - [[#minor-modes][Minor modes]]
+  - [[#github-copilot][Github copilot]]
 - [[#org-mode][Org mode]]
   - [[#insert-heading][Insert heading!]]
   - [[#configure-view][Configure view]]
@@ -1270,7 +1271,17 @@ Configure both languages as equals
   (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
+** Github copilot
 
+Download the unofficial copilot version for emacs
+#+begin_src emacs-lisp
+  (use-package copilot
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :ensure t)
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
+#+end_src
 * Org mode
 The main reason why I changes to emacs
 
@@ -1659,9 +1670,9 @@ aligned, tabular completion interface. For example, to include a column for tags
 org-roam-node-display-template as such:
 
 #+begin_src emacs-lisp
-(setq org-roam-node-display-template
-      (concat "${title:*} "
-              (propertize "${tags:10}" 'face 'org-tag)))
+  (setq org-roam-node-display-template
+        (concat "${title:*} "
+                (propertize "${tags:*}" 'face 'org-tag)))
 #+end_src
 
 *** What to cache
