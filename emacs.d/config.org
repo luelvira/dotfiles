@@ -26,6 +26,7 @@
   - [[#highlight-matching-parentheses][Highlight matching parentheses]]
   - [[#visual-fill-configuration][Visual fill configuration]]
 - [[#control-and-behavior][Control and behavior]]
+  - [[#evil-mode][Evil mode]]
   - [[#recent-files][Recent files]]
   - [[#ivy-and-counsel][ivy and counsel]]
   - [[#helpul][helpul]]
@@ -236,14 +237,14 @@ Evil mode is a mayor mode that allow to use vim keybindings in emacs
  :bind (
  ; Disable arrows in insert mode and disable the mouse
    :map evil-insert-state-map
-   ("<right>" . 'nope)
-   ("<left>" . 'nope)
-   ("<up>" . 'nope)
-   ("<down>" . 'nope)
-   ("<down-mouse-1>" . nil)
-   ("<mouse-1>" . nil)
-   ("<down-mouse-3>" . nil)
-   ("<mouse-3>" . nil)
+;   ("<right>" . 'nope)
+;   ("<left>" . 'nope)
+;   ("<up>" . 'nope)
+;   ("<down>" . 'nope)
+;   ("<down-mouse-1>" . nil)
+;   ("<mouse-1>" . nil)
+;   ("<down-mouse-3>" . nil)
+;   ("<mouse-3>" . nil)
 ;   :map evil-normal-state-map
 ;   ("<down-mouse-1>" . nil)
 ;   ("<mouse-1>" . nil)
@@ -273,15 +274,15 @@ I don't like to use the arrows in insert mode, so I disable it. This has a
 problem, because it disable the arrows also in terminal mode.
 
 #+begin_src emacs-lisp
-(defun rune/dont-arrow-me-bro ()
-(interactive)
-(message "Arrow keys are bad, you know?"))
-
-;; Disable arrow keys in insert mode
-(define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
-(define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
-(define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
-(define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro)
+;(defun rune/dont-arrow-me-bro ()
+;(interactive)
+;(message "Arrow keys are bad, you know?"))
+;
+;;; Disable arrow keys in insert mode
+;(define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
+;(define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
+;(define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
+;(define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro)
 #+end_src
 
 *** Install evil-collection
@@ -500,7 +501,7 @@ correctly.
 #+end_src
 * Control and behavior
 		    
-*** Evil mode
+** Evil mode
 
 #+begin_src emacs-lisp
   (defun lem/custom-emacs-state () 
@@ -658,7 +659,7 @@ Run a shell program on your computer. Does not operate as a terminal emulaor
 - ~C-c C-u~ delete the current input string backwards up to the current cursor
 - ~counsel-shell-history~ - A searchable history of commands typed into the shell
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (setq comint-output-filter-functions
         (remove 'ansi-color-process-output comint-output-filter-functions))
 
@@ -673,7 +674,7 @@ Run a shell program on your computer. Does not operate as a terminal emulaor
 #+end_src
 *** Eshell-mode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun lem/configure-eshell ()
   ;; Save command history when commands are entered
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
@@ -693,16 +694,12 @@ Run a shell program on your computer. Does not operate as a terminal emulaor
 
 (use-package eshell
   :hook (eshell-first-time-mode . lem/configure-eshell))
-#+end_src
 
-#+begin_src emacs-lisp
 (use-package eshell-git-prompt
 
 :config
 (eshell-git-prompt-use-theme 'powerline))
-#+end_src
 
-#+begin_src emacs-lisp
 (with-eval-after-load 'esh-opt
   (setq eshell-destroy-buffer-when-process-dies t)
   (setq eshell-visual-commands '("htop" "zsh" "vim")))
@@ -1035,68 +1032,38 @@ and the last commit from the same file
 ** Languages
 *** LSP (Language server protocol)
 #+begin_src emacs-lisp
-    ;;  (use-package lsp-mode
-    ;;    :commands lsp
-    ;;    :hook (prog-mode-hook . lsp)
-    ;;    :bind (:map lsp-mode-map
-    ;;                ("TAB" . completion-at-point))
-    ;;  :custom (lsp-headerline-breadcrub-enable t))
-    ;;
-    (use-package lsp-mode
-      :hook ((prog-mode) . lsp-deferred)
-      :commands lsp
-      :config
-      (setq lsp-auto-guess-root t)
-      (setq lsp-log-io nil)
-      (setq lsp-restart 'auto-restart)
-      (setq lsp-enable-symbol-highlighting nil)
-      (setq lsp-enable-on-type-formatting nil)
-      (setq lsp-signature-auto-activate nil)
-      (setq lsp-signature-render-documentation nil)
-      (setq lsp-eldoc-hook nil)
-      (setq lsp-modeline-code-actions-enable nil)
-      (setq lsp-modeline-diagnostics-enable nil)
-      (setq lsp-headerline-breadcrumb-enable nil)
-      (setq lsp-semantic-tokens-enable nil)
-      (setq lsp-enable-folding nil)
-      (setq lsp-enable-imenu nil)
-      (setq lsp-enable-snippet nil)
-      (setq read-process-output-max (* 1024 1024)) ;; 1MB
-      (setq lsp-idle-delay 0.5)
-      :bind (:map lsp-mode-map
-                  ("TAB" . completion-at-point))
-      :custom (lsp-headerline-breadcrumb-enable t))
+  (use-package lsp-mode
+    :straight t
+    :commands lsp
+    :hook((typescript-mode js2mode web-mode) . lsp)
+    :bind (:map lsp-mode-map
+                ("TAB" . completion-at-point))
+    :custom (lsp-headerline-breadcrumb-enable nil))
 
-  ;;    (lem/leader-key-def
-  ;;     "l"  '(:ignore t :which-key "lsp")
-  ;;     "ld" 'xref-find-definitions
-  ;;     "lr" 'xref-find-references
-  ;;     "ln" 'lsp-ui-find-next-reference
-  ;;     "lp" 'lsp-ui-find-prev-reference
-  ;;     "ls" 'counsel-imenu
-  ;;     "le" 'lsp-ui-flycheck-list
-  ;;     "lS" 'lsp-ui-sideline-mode
-  ;;     "lX" 'lsp-execute-code-action)
-  ;;
+  (lem/leader-key-def
+    "l"  '(:ignore t :which-key "lsp")
+    "ld" 'xref-find-definitions
+    "lr" 'xref-find-references
+    "ln" 'lsp-ui-find-next-reference
+    "lp" 'lsp-ui-find-prev-reference
+    "ls" 'counsel-imenu
+    "le" 'lsp-ui-flycheck-list
+    "lS" 'lsp-ui-sideline-mode
+    "lX" 'lsp-execute-code-action)
 
-      (use-package lsp-ui
-        :commands lsp-ui-mode
-        :config
-        (setq lsp-ui-doc-enable t)
-        (setq lsp-ui-doc-header t)
-        (setq lsp-ui-doc-include-signature t)
-        (setq lsp-ui-doc-border (face-foreground 'default))
-        (setq lsp-ui-sideline-show-code-actions t)
-        (setq lsp-ui-sideline-delay 0.05))
 
-  (use-package lsp-pyright
-    :hook (python-mode . (lambda () (require 'lsp-pyright)))
-    :init (when (executable-find "python3")
-            (setq lsp-pyright-python-executable-cmd "python3")))
+  (use-package lsp-ui
+    :straight t
+    :hook (lsp-mode . lsp-ui-mode)
+    :config
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-sideline-show-hover nil
+          lsp-ui-doc-position 'bottom)
+    (lsp-ui-doc-show))
 
-      (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-      (use-package lsp-treemacs :commands lsp-ivy-treemacs-errors-list)
-#+end_src
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  #+end_src
+
 **** lsp-treemacs
 
 Provides an even nicer UI on top of lsp-mode using Treemacs
@@ -1106,27 +1073,39 @@ Provides an even nicer UI on top of lsp-mode using Treemacs
 - ~lsp-treemacs-error-list~ - Show a tree view for the diagnostic messages in the project
 
   #+begin_src emacs-lisp
-    (use-package lsp-treemacs
-      :after lsp)
+     (use-package lsp-treemacs
+       :after lsp
+       :commands lsp-ivy-treemacs-errors-list)
 
   #+end_src
-**** Debug adapter
+
+**** configure lsp for python
 #+begin_src emacs-lisp
 
-;;(use-package dap-mode
-;;  :straight t
-;;  :custom
-;;  (lsp-enable-dap-auto-configure nil)
-;;  :config
-;;  (dap-ui-mode 1)
-;;  (dap-tooltip-mode 1)
-;;  (require 'dap-node)
-;;  (dap-node-setup))
-;;
+  (use-package lsp-pyright
+    :hook (python-mode . (lambda () (require 'lsp-pyright)))
+    :init (when (executable-find "python3")
+            (setq lsp-pyright-python-executable-cmd "python3")))
+
+#+end_src
+
+**** Debug adapter
+#+begin_src emacs-lisp
+  (use-package dap-mode
+    :straight t
+    :custom
+    (lsp-enable-dap-auto-configure nil)
+    :config
+    (dap-ui-mode 1)
+    (dap-tooltip-mode 1)
+    (require 'dap-node)
+    (require 'dap-firefox)
+    (dap-node-setup))
+
 #+end_src
 
 
-**** Completion system
+*** Completion system
 *****  Better completion options with company-mode
 
 Company is a Modular text completion framework for emacs
@@ -1210,66 +1189,92 @@ spaces and display any command which has the same words in any order
 
 ;;  (use-package yasnippet-snippeets)
 #+end_src
-**** TypeScript and JavaScript
+*** TypeScript and JavaScript
 
 Configure both languages as equals
 #+begin_src emacs-lisp :tangle no
 
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :config
-  (setq typescript-indent-level 4))
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :config
+    (setq typescript-indent-level 4))
 
-(defun lem/set-js-indentation ()
-  (setq js-indent-level 4)
-  (setq evil-shift-width js-indent-level)
-  (setq-default tab-width 4))
+  (defun lem/set-js-indentation ()
+    (setq js-indent-level 4)
+    (setq evil-shift-width js-indent-level)
+    (setq-default tab-width 4))
 
-(use-package js2-mode
-  :mode "\\.jsx?\\'"
-  :config
-  ;; Use js2-mode for Node scripts
-  (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+  (use-package js2-mode
+    :mode "\\.jsx?\\'"
+    :config
+    ;; Use js2-mode for Node scripts
+    (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+    ;; Don't use built-in syntax checking
+    (setq js2-mode-show-strict-warnings t)
+    ;; Set up proper indentation in JavaScript and JSON files
+    (add-hook 'js2-mode-hook #'lem/set-js-indentation))
 
-  ;; Don't use built-in syntax checking
-  (setq js2-mode-show-strict-warnings t)
-
-  ;; Set up proper indentation in JavaScript and JSON files
-  (add-hook 'js2-mode-hook #'lem/set-js-indentation))
+  (use-package apheleia
+    :config
+    (apheleia-global-mode +1))
 
 
-(use-package prettier-js
-  :config
-  (setq prettier-js-show-errors t))
+  (use-package prettier-js
+    :config
+    (setq prettier-js-show-errors t))
 #+end_src
 
-**** HTML
+*** HTML
 #+begin_src emacs-lisp
-    (use-package web-mode
-      :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\|css\\)\\'"
-      :config
-      (setq-default web-mode-code-indent-offset 2)
-      (setq-default web-mode-markup-indent-offset 2)
-      (setq-default web-mode-attribute-indent-offset 2))
+      (use-package web-mode
+        :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\|css\\)\\'"
+        :config
+        (setq-default web-mode-code-indent-offset 2)
+        (setq-default web-mode-markup-indent-offset 2)
+        (setq-default web-mode-attribute-indent-offset 2))
 
-    (defun lem/web-hook ()
-      "Hook for web mode"
-      (setq web-mode-markup-indent-offset 2
-            web-mode-css-indent-offset 2
-            web-mode-code-indent-offset 4))
-    (add-hook 'web-mode-hook  'lem/web-hook)
-#+end_src
+      (defun lem/web-hook ()
+        "Hook for web mode"
+        (setq web-mode-markup-indent-offset 2
+              web-mode-css-indent-offset 2
+              web-mode-code-indent-offset 4))
+      (add-hook 'web-mode-hook  'lem/web-hook)
 
-***** Emmet
+    (use-package emmet-mode
+      :mode "(\\.\\(html?\\|css\\)\\'")
 
-#+begin_src emacs-lisp
-  (use-package emmet-mode
-    :mode "(\\.\\(html?\\|css\\)\\'")
+  ;; 1. Start the server with `httpd-start'
+  ;; 2. Use `impatient-mode' on any buffer
+  (use-package impatient-mode
+    :straight t)
+
+  (use-package skewer-mode
+    :straight t)
 #+end_src
 ** Minor modes
+
+
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode))
+
+#+end_src
+
+Rainbow mode allows to set the background of HTML color strings
+#+begin_src emacs-lisp
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+         emacs-lisp-mode
+         web-mode
+         typescript-mode
+         js2-mode))
 #+end_src
 ** Github copilot
 
@@ -1775,23 +1780,26 @@ agenda-dashboard and remember you to do and what times you skip it.
 *** Org pomodoro
 
 #+begin_src emacs-lisp
-    (use-package org-pomodoro
+  (use-package org-pomodoro
       :ensure t
       :after org
-      :commands (org-pomodoro)
       :config
       (setq
-     alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
-     org-pomodoro-length 100
-     org-pomodoro-short-break-length 10))
+       alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
+       org-pomodoro-length 100
+       org-pomodoro-short-break-length 10
+       org-pomodoro-long-break-length 20
+       org-pomodoro-clock-break t
+       org-pomodoro-manual-break t))
 
     (defun set-pomodoro-timer (minutes)
-        (interactive "nMinutes: ")
+      (interactive "nMinutes: ")
       (setq org-pomodoro-length minutes))
 
   (lem/leader-key-def
-    "P" '(:ignore t :which-key "Pomodoro")
-    "Pt" '(set-pomodoro-timer :which-key "Set pomodoro timer")) 
+    "op" '(:ignore t :which-key "Pomodoro")
+    "ops" '(org-pomodoro :whick-key "Start org pomodoro")
+    "opt" '(set-pomodoro-timer :which-key "Set pomodoro timer")) 
 
 #+end_src
 
