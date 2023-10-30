@@ -128,9 +128,9 @@ Emacs give you a way to capture the time you spends on each task. You only need 
   (setq org-capture-templates
         `(("t" "Tasks / Projects")
           ("tl" "Task with link" entry (file+olp+datetree ,(concat org-directory "Tasks.org"))
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+           "* TODO %?\n  %a\n  %i" :empty-lines 1)
           ("tt" "Task" entry (file+olp+datetree ,(concat org-directory "Tasks.org"))
-           "* TODO %?\n  %U\n  %i"
+           "* TODO %?\n  %i"
            :empty-lines 1)
         ("j" "Journal Entries")
         ("je" "Journal" entry

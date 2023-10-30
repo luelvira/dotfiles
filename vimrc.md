@@ -336,7 +336,7 @@ if $HOSTNAME == "fedora-pc"
 " colorscheme gruvbox
     colorscheme nord
 else
-    colorscheme gruvbox
+"    colorscheme gruvbox
 "    colorscheme nord
 endif
 ```
