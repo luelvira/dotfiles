@@ -28,6 +28,7 @@
 - [[#control-and-behavior][Control and behavior]]
   - [[#evil-mode][Evil mode]]
   - [[#recent-files][Recent files]]
+  - [[#config-files][Config files]]
   - [[#ivy-and-counsel][ivy and counsel]]
   - [[#helpul][helpul]]
   - [[#text-scaling][Text Scaling]]
@@ -534,6 +535,16 @@ To use the recent file, we can create a keybinding which call the ~recentf-open-
   "fr" '(counsel-recentf :which-key "Recent files"))
 #+end_src
 
+** Config files
+We can set a sortcut to open the config file from the emacs directory
+
+#+begin_src emacs-lisp
+  (lem/leader-key-def
+  "fd" '((lambda () (interactive) (counsel-find-file "~/Documents/git/dotfiles")) :which-key "Config")
+  "fe" '((lambda () (interactive) (counsel-find-file "~/Documents/git/dotfiles/emacs.d/")) :which-key "Emacs Config")
+  "fo" '((lambda () (interactive) (counsel-find-file "~/Documents/Org/")) :which-key "Org files"))
+#+end_src
+
 ** ivy and counsel
 
 ivy is a generic completion mechanism for Emacs. It is based on the idea of incremental narrowing:
@@ -563,23 +574,26 @@ as dependencies, but I will install ivy manually
 
 
 #+begin_src emacs-lisp
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+    (lem/leader-key-def
+    "C-S" '(counsel-projectile-grep :which-key "Projectile grep"))
 #+end_src
 
 This are some keybining for changes between buffers
@@ -1186,6 +1200,7 @@ spaces and display any command which has the same words in any order
       :config
       (yas-reload-all)
       (yas-global-mode 1))
+(use-package yasnippet-snippets)
 
 ;;  (use-package yasnippet-snippeets)
 #+end_src
@@ -1227,7 +1242,7 @@ Configure both languages as equals
 *** HTML
 #+begin_src emacs-lisp
       (use-package web-mode
-        :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\|css\\)\\'"
+        ;:mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\|css\\)\\'"
         :config
         (setq-default web-mode-code-indent-offset 2)
         (setq-default web-mode-markup-indent-offset 2)
@@ -1245,9 +1260,6 @@ Configure both languages as equals
 
   ;; 1. Start the server with `httpd-start'
   ;; 2. Use `impatient-mode' on any buffer
-  (use-package impatient-mode
-    :straight t)
-
   (use-package skewer-mode
     :straight t)
 #+end_src
