@@ -79,6 +79,7 @@ content to your conclusion and ideas.
                 org-ref-cite-onclick-function (lambda (_)
                   (org-ref-citation-hydra/body))))
 #+end_src
+
 *** Citar
 
 [[https://github.com/emacs-citar/citar][Citar]] provides a highly-configurable completing-read front-end to browse and act
@@ -160,6 +161,7 @@ entry will be added into the list with all the acronyms.
        nil "~/Documents/Org/roam/glossary.tex" 'append)))
 
 #+end_src
+
 **  3. Permanent notes
 
 Permanent notes are stand-alone ideas, that can be made without any direct
