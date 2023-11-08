@@ -57,7 +57,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
 " navigation
-" Plug 'preservim/nerdtree'
+Plug 'preservim/nerdtree'
 " Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
