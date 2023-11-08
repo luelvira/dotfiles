@@ -66,6 +66,7 @@
   - [[#sync-org-files][Sync Org files]]
   - [[#org-habit][Org habit]]
   - [[#org-pomodoro][Org pomodoro]]
+  - [[#org-todoist][Org-todoist]]
   - [[#set-up-org-agenda][Set up org-agenda]]
 - [[#org-roam-the-good-part][Org Roam, the good part]]
   - [[#instalation][Instalation]]
@@ -77,6 +78,7 @@
   - [[#workflow-configuration-for-zettelkasten-methodology][Workflow configuration for zettelkasten methodology]]
   - [[#managment-time-with-org-dailies][Managment time with Org dailies]]
   - [[#org-roam-configuration-hacks][Org roam configuration hacks]]
+- [[#restart-the-dashboard][Restart the dashboard]]
 
 * PUT THIS IN YOUR init.el
 
@@ -1343,7 +1345,6 @@ The main reason why I changes to emacs
                                              (match-end 1) "•")))))))
 
   (use-package org
-    :defer t
     :hook (org-mode . lem/org-mode-setup)
     :config
     (setq org-ellipsis " ▾"
@@ -1499,7 +1500,8 @@ related with any workflow
 
 #+begin_src emacs-lisp
   (use-package toc-org
-  :hook (org-mode . toc-org-mode))
+    :require t
+    :hook (org-mode . toc-org-mode))
 #+end_src
 
 ** Org export
@@ -1636,7 +1638,7 @@ agenda-dashboard and remember you to do and what times you skip it.
       :config
       (setq
        alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
-       org-pomodoro-length 100
+       org-pomodoro-length 90
        org-pomodoro-short-break-length 10
        org-pomodoro-long-break-length 20
        org-pomodoro-clock-break t
@@ -1651,6 +1653,15 @@ agenda-dashboard and remember you to do and what times you skip it.
     "ops" '(org-pomodoro :whick-key "Start org pomodoro")
     "opt" '(set-pomodoro-timer :which-key "Set pomodoro timer")) 
 
+#+end_src
+
+** Org-todoist
+This package enable a syncronization between emacs org-mode and todoist api. I
+like this package because it is written in emacs-lisp instead of ruby or python
+
+#+begin_src emacs-lisp
+  (use-package todoist
+    :config (setq todoist-token "550e8205143c11d3cd92c00864ac716fd78bfaa8"))
 #+end_src
 
 ** Set up org-agenda
@@ -1754,10 +1765,7 @@ the templates system of the org-mode
            :unnarrowed t)
           ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
-  :unnarrowed t)
-          ))
-
-
+  :unnarrowed t)))
 #+end_src
 
 *** Insert immediately
@@ -1929,4 +1937,11 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
                                                             ("Meetings"))
                                      :clock-in :clock-resume
                                      :empty-lines: 1))))
+#+end_src
+
+* Restart the dashboard
+
+After load all the config, I want to see the dashboard updated
+#+begin_src emacs-lisp
+(dashboard-open)
 #+end_src
