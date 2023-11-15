@@ -4,18 +4,20 @@
 
 * Table of content                                                      :TOC:
 - [[#put-this-in-your-initel][PUT THIS IN YOUR init.el]]
-- [[#autorun][AUTORUN]]
-  - [[#emacs-as-server][Emacs as server]]
+  - [[#startup-performance][Startup performance]]
 - [[#package-system-setup][Package system setup]]
   - [[#enable-straight][Enable straight]]
-  - [[#keep-it-clean][Keep it clean]]
+- [[#keep-it-clean][Keep it clean]]
 - [[#custom-library][Custom library]]
 - [[#set-encoding-by-default][Set encoding by default]]
+- [[#autorun][AUTORUN]]
+  - [[#emacs-as-server][Emacs as server]]
 - [[#keyboard-binding][Keyboard binding]]
   - [[#esc-as-c-g][ESC as C-g]]
+  - [[#rebind-c-u][Rebind C-u]]
   - [[#set-up-evil-mode][Set up evil mode]]
   - [[#which-key][Which Key]]
-  - [[#keybinding-configuration][Keybinding configuration]]
+  - [[#generalel][General.el]]
 - [[#ui][UI]]
   - [[#reduce-distraction][Reduce distraction]]
   - [[#collor-theme][Collor Theme]]
@@ -24,24 +26,28 @@
   - [[#auto-revert-buffer][Auto revert buffer]]
   - [[#toggle-display-white-space][Toggle display white space]]
   - [[#highlight-matching-parentheses][Highlight matching parentheses]]
+  - [[#tramp][Tramp]]
+- [[#editing-configuration][Editing configuration]]
+  - [[#tab-widths][Tab widths]]
+  - [[#commenting-lines][Commenting lines]]
+  - [[#automatically-clean-extra-whitespaces][Automatically clean extra whitespaces]]
+- [[#configuration-files][Configuration files]]
   - [[#visual-fill-configuration][Visual fill configuration]]
 - [[#control-and-behavior][Control and behavior]]
-  - [[#evil-mode][Evil mode]]
   - [[#recent-files][Recent files]]
-  - [[#config-files][Config files]]
+- [[#completions-with-ivy-and-counsel][Completions with Ivy and Counsel]]
   - [[#ivy-and-counsel][ivy and counsel]]
   - [[#helpul][helpul]]
-  - [[#text-scaling][Text Scaling]]
-  - [[#terminal-emulators][Terminal emulators]]
--  [[#writing][Writing]]
-  - [[#configure-flyspell][Configure flyspell]]
-- [[#dired][Dired]]
+- [[#file-browsing][File browsing]]
   - [[#open-dired][Open dired]]
   - [[#keybinding-within-dired][Keybinding within dired]]
   - [[#keybinding-for-peep-dired-mode][Keybinding for peep-dired-mode]]
+-  [[#writing][Writing]]
+  - [[#configure-flyspell][Configure flyspell]]
+  - [[#text-scaling][Text Scaling]]
+  - [[#terminal-emulators][Terminal emulators]]
 - [[#dashboard][DASHBOARD]]
   - [[#launch-dashboard-by-default-when-launch-emacs][Launch dashboard by default when launch emacs]]
-  - [[#startup-performance][Startup performance]]
 - [[#disable-mouse][Disable mouse]]
 - [[#display-language-modes][Display language modes]]
   - [[#cdlatex][cdlatex]]
@@ -49,7 +55,6 @@
 - [[#development][Development]]
   - [[#projectile-and-magit][Projectile and magit]]
   - [[#languages][Languages]]
-  - [[#minor-modes][Minor modes]]
   - [[#github-copilot][Github copilot]]
 - [[#org-mode][Org mode]]
   - [[#insert-heading][Insert heading!]]
@@ -57,7 +62,6 @@
   - [[#configure-babel-languages][Configure Babel languages]]
   - [[#configure-fonts-and-bullets][Configure Fonts and bullets]]
   - [[#structure-templates][Structure templates]]
-  - [[#end-use-package-org-mode][End use-package org-mode]]
   - [[#workflow-configuration][WorkFlow configuration]]
   - [[#bindings-some-keys][Bindings some keys]]
   - [[#org-capture][Org capture]]
@@ -78,7 +82,7 @@
   - [[#workflow-configuration-for-zettelkasten-methodology][Workflow configuration for zettelkasten methodology]]
   - [[#managment-time-with-org-dailies][Managment time with Org dailies]]
   - [[#org-roam-configuration-hacks][Org roam configuration hacks]]
-- [[#restart-the-dashboard][Restart the dashboard]]
+  - [[#deft][Deft]]
 
 * PUT THIS IN YOUR init.el
 
@@ -89,27 +93,30 @@
   user-emacs-directory))
 #+end_example
 
-* AUTORUN
-** Emacs as server
+** Startup performance
 
-This command allow to run emacs as server, so all the startup can be done once
-time and connect client to it each time you need.
+Make startup faster by reducing the frequency of garbage collection and then use
+a hook to measure Emacs startup time.
+
+Also, turn on lexical-binding for the init file!
 
 #+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
-  (server-start)
+(use-package gcmh
+:config
+(gcmh-mode 1))
+;; Setting garbage collection threshold
+(setq gc-cons-threshold (* 50 1000 1000)
+    gc-cons-percentage 0.6)
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+        (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                    (format "%.2f seconds"
+                            (float-time
+                            (time-subtract after-init-time before-init-time)))
+                    gcs-done)))
+
 #+end_src
-*** Connect a client
-To connect a client to the server you need to run
-
-#+begin_example shell
-emacsclient --create-frame --alternate-editor=""
- or use an alias
-export ALTERNATE_EDITOR=""
-export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
-export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
-#+end_example
-
 
 * Package system setup
 
@@ -117,16 +124,17 @@ Emacs has a built in package manager but it doesn’t make it easy to automatica
 on a new system the first time you pull down your configuration. [[https:github.com/jwiegley/use-package][use-package]] is a really helpful
 package used in this configuration to make it a lot easier to automate the installation and
 configuration of everything else we use.
+
 #+begin_src emacs-lisp
 
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(unless package-archive-contents
-  (package-refresh-contents))
 (package-initialize)
+
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
@@ -159,7 +167,7 @@ configuration of everything else we use.
 ;; Clean up unused repos with `straight-remove-unused-repos'
 #+end_src
 
-** Keep it clean
+* Keep it clean
 First I define the default emacs back-up where all the cache files will be
 stored
 
@@ -185,7 +193,6 @@ Then define where will be store the temporal files
   )
 #+end_src
 
-
 * Custom library
 
 I would like to make this configuration as modular as possible, so I will break it up into multiples
@@ -200,7 +207,27 @@ files. With that in mind, I add a directory to the path.
 (set-default-coding-systems 'utf-8)
 #+end_src
 
+* AUTORUN
+** Emacs as server
 
+This command allow to run emacs as server, so all the startup can be done once
+time and connect client to it each time you need.
+
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
+  (server-start)
+#+end_src
+
+*** Connect a client
+To connect a client to the server you need to run
+
+#+begin_example shell
+emacsclient --create-frame --alternate-editor=""
+ or use an alias
+export ALTERNATE_EDITOR=""
+export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
+export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
+#+end_example
 
 * Keyboard binding
 
@@ -210,37 +237,55 @@ files. With that in mind, I add a directory to the path.
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 
+** Rebind C-u
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-M-u") 'universal-argument)
+#+end_src
+
 ** Set up evil mode
 Evil mode is a mayor mode that allow to use vim keybindings in emacs
 
 #+begin_src emacs-lisp
-;; Define a hook to prevent evil mode be load in some modes
-(defun lem/evil-custom-state ()
-  (dolist (mode '(custom-mode
-                  eshell-mode
-                  git-rebase-mode
-                  erc-mode
-                  circe-server-mode
-                  circe-chat-mode
-                  circe-query-mode
-                  sauron-mode
-                  term-mode))
-  (add-to-list 'evil-emacs-state-modes mode)))
+  ;; Define a hook to prevent evil mode be load in some modes
+  (defun lem/evil-custom-state ()
+    (dolist (mode '(custom-mode
+                    eshell-mode
+                    git-rebase-mode
+                    erc-mode
+                    circe-server-mode
+                    circe-chat-mode
+                    circe-query-mode
+                    sauron-mode
+                    term-mode))
+    (add-to-list 'evil-emacs-state-modes mode)))
 
-(use-package undo-tree
-  :init
-  (global-undo-tree-mode 1))
+  (defun rune/dont-arrow-me-bro ()
+    (interactive)
+    (message "Arrow keys are bad, you know?"))
+
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode 1)
+  :config
+  (setq undo-tree-auto-save-history nil))
 #+end_src
 
 *** Install evil mode
 
+This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.
+[[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with
+which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs
+modes with Vi-like keybindings for evil-mode.
 #+begin_src emacs-lisp
+
 (use-package evil
  :init
  (setq evil-want-integration t)
  (setq evil-want-keybinding nil)
  (setq evil-want-C-u-scroll t)
- (setq evil-want-C-i-jump nil)
+ (setq evil-want-C-i-jump t)
+ (setq evil-undo-system 'undo-tree)
  :config
  (add-hook 'evil-mode-hook 'lem/evil-custom-state)
  (evil-mode 1)
@@ -248,55 +293,22 @@ Evil mode is a mayor mode that allow to use vim keybindings in emacs
  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
  (evil-set-initial-state 'messages-buffer-mode 'normal)
  (evil-set-initial-state 'dashboard-mode 'normal)
- :bind (
- ; Disable arrows in insert mode and disable the mouse
-   :map evil-insert-state-map
-;   ("<right>" . 'nope)
-;   ("<left>" . 'nope)
-;   ("<up>" . 'nope)
-;   ("<down>" . 'nope)
-;   ("<down-mouse-1>" . nil)
-;   ("<mouse-1>" . nil)
-;   ("<down-mouse-3>" . nil)
-;   ("<mouse-3>" . nil)
-;   :map evil-normal-state-map
-;   ("<down-mouse-1>" . nil)
-;   ("<mouse-1>" . nil)
-;   ("<down-mouse-3>" . nil)
-;   ("<mouse-3>" . nil)
-;   :map    evil-motion-state-map
-;   ("<down-mouse-1>" . nil)
-;   ("<mouse-1>" . nil)
-;   ("<down-mouse-3>" . nil)
-;   ("<mouse-3>" . nil)
-   ))
+
+  ;;; Disable arrow keys in insert mode
+  (define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
+  (define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
+  (define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
+  (define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro))
 #+end_src
 
 *** Setup undo-tree
 
 View the documentation: [[https://www.dr-qubit.org/undo-tree/undo-tree.txt][undo-tree]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (define-key evil-normal-state-map (kbd "u") 'undo-tree-undo)
 (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
 (setq undo-tree-auto-save-history nil)
-#+end_src
-
-*** Disable arrows keys
-
-I don't like to use the arrows in insert mode, so I disable it. This has a
-problem, because it disable the arrows also in terminal mode.
-
-#+begin_src emacs-lisp
-;(defun rune/dont-arrow-me-bro ()
-;(interactive)
-;(message "Arrow keys are bad, you know?"))
-;
-;;; Disable arrow keys in insert mode
-;(define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
-;(define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
-;(define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
-;(define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro)
 #+end_src
 
 *** Install evil-collection
@@ -305,6 +317,8 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 #+begin_src emacs-lisp
   (use-package evil-collection
    :after evil
+   :custom
+   (evil-collection-outline-bind-tab-p nil)
    :config
    (evil-collection-init))
 
@@ -343,14 +357,8 @@ possible key bindings in the mode of your current buffer.
   (setq which-key-idle-delay 0.3))
 #+end_src
 
-** Keybinding configuration
+** General.el
 
-This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.
-[[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with
-which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs
-modes with Vi-like keybindings for evil-mode.
-
-  
 #+begin_src emacs-lisp
 (use-package general
   :config
@@ -396,7 +404,7 @@ Maximize window by default
 #+end_src
 
 Enable line numbers
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;; set line numbers
    (column-number-mode)
    (global-display-line-numbers-mode t)
@@ -406,6 +414,18 @@ Enable line numbers
 		  shell-mode-hook
 		  eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+end_src
+
+Try this new approach
+
+#+begin_src emacs-lisp
+(column-number-mode)
+
+;; Enable line numbers for some modes
+(dolist (mode '(text-mode-hook
+                prog-mode-hook
+                conf-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
 #+end_src
 
 Ignore warning messages when following symlinks
@@ -422,9 +442,9 @@ also run =M-x counsel-load-theme= to choose between them easily.
 
 #+begin_src emacs-lisp
 (use-package spacegray-theme :defer t)
-(use-package doom-themes
-  :defer t
-  :init (load-theme 'doom-dracula t))
+(use-package doom-themes :defer t)
+(load-theme 'doom-palenight t)
+(doom-themes-visual-bell-config)
 #+end_src
 
 ** Fonts
@@ -448,15 +468,19 @@ to run `M-x all-the-icons-install-fonts` so that mode line icons display
 correctly.
 
 #+begin_src emacs-lisp
-    (setq display-time-format "%l:%M %p %b %y"
-          display-time-default-load-average nil)
-    ;; Dimish modeline clutter hides pesky minor modes 
-    (use-package diminish)
+(setq display-time-format "%l:%M %p %b %y"
+  display-time-default-load-average nil)
+;; Dimish modeline clutter hides pesky minor modes 
+(use-package diminish)
 
     ;; All the icons
-      (use-package all-the-icons)
-     (use-package doom-modeline
+(use-package all-the-icons)
+(use-package minions
+  :hook (doom-modeline-mode . minions-mode))
+
+(use-package doom-modeline
        :init (doom-modeline-mode 1)
+       :hook (after-init . doom-modeline-init)
   ;    :custom-face
   ;    (mode-line ((t (:height 0.85))))
   ;    (mode-line-inactive ((t (:height 0.85))))
@@ -499,6 +523,60 @@ correctly.
   (show-paren-mode 1))
 #+end_src
 
+** Tramp
+
+Tramp is a built-in package that allows you to open files over SSH, su, and sudo
+from within Emacs.  It's incredibly useful if you need to edit files as root or
+on a remote machine frequently.
+
+#+begin_src emacs-lisp
+(use-package tramp
+  :defer t
+  :config
+  (setq tramp-default-method "ssh"))
+#+end_src
+
+* Editing configuration
+
+** Tab widths
+Default tab width is 8, which is too much. We can change it to 4.
+
+#+begin_src emacs-lisp
+(setq-default tab-width 4)
+(setq-default evil-shift-width tab-width)
+;; use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
+#+end_src
+
+** Commenting lines
+
+#+begin_src emacs-lisp
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+#+end_src
+
+** Automatically clean extra whitespaces
+
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :hook (prog-mode . ws-butler-mode))
+#+end_src
+
+* Configuration files
+We can set a sortcut to open the config file from the emacs directory
+
+#+begin_src emacs-lisp
+  (lem/leader-key-def
+  "fd" '((lambda () (interactive) (counsel-find-file "~/Documents/git/dotfiles")) :which-key "Config")
+  "fo" '((lambda () (interactive) (counsel-find-file "~/Documents/Org/")) :which-key "Org files")
+  "fe" '(:ignore t :which-key "Emacs Config")
+  "fec" '((lambda () (interactive) (find-file "~/Documents/git/dotfiles/emacs.d/config.org")) :which-key "Emacs Config file")
+  "few" '((lambda () (interactive) (find-file "~/Documents/git/dotfiles/emacs.d/org-workflow.org")) :which-key "Emacs workflow file")
+  "fez" '((lambda () (interactive) (find-file "~/Documents/git/dotfiles/emacs.d/org-zettelkasten.org")) :which-key "Emacs zettel file"))
+#+end_src
+
+
+
 ** Visual fill configuration
 
 #+begin_src emacs-lisp
@@ -513,32 +591,8 @@ correctly.
   :defer t
     :hook (org-mode . lucas/org-mode-visual-fill))
 #+end_src
+
 * Control and behavior
-		    
-** Evil mode
-
-#+begin_src emacs-lisp
-  (defun lem/custom-emacs-state () 
-"Disable vim mode for some buffer types"
-    (interactive)
-    (dolist (p '((minibuffer-inactive-mode . emacs)
-               (calendar-mode . emacs)
-               (term-mode . emacs)
-               (w3m-mode . emacs)
-               (eshell-mode . emacs)
-               (shell-mode . emacs)
-               ;;(message-mode . emacs)
-               (compilation-mode . emacs)
-               (speedbar-mode . emacs)
-               (ivy-occur-mode . emacs)
-               (ffip-file-mode . emacs)
-               (ivy-occur-grep-mode . normal)
-               ))
-    (evil-set-initial-state (car p) (cdr p))))
-
-  (lem/custom-emacs-state)
-#+end_src
-
 ** Recent files
 
 To use the recent file, we can create a keybinding which call the ~recentf-open-files~ function
@@ -548,16 +602,7 @@ To use the recent file, we can create a keybinding which call the ~recentf-open-
   "fr" '(counsel-recentf :which-key "Recent files"))
 #+end_src
 
-** Config files
-We can set a sortcut to open the config file from the emacs directory
-
-#+begin_src emacs-lisp
-  (lem/leader-key-def
-  "fd" '((lambda () (interactive) (counsel-find-file "~/Documents/git/dotfiles")) :which-key "Config")
-  "fe" '((lambda () (interactive) (counsel-find-file "~/Documents/git/dotfiles/emacs.d/")) :which-key "Emacs Config")
-  "fo" '((lambda () (interactive) (counsel-find-file "~/Documents/Org/")) :which-key "Org files"))
-#+end_src
-
+* Completions with Ivy and Counsel
 ** ivy and counsel
 
 ivy is a generic completion mechanism for Emacs. It is based on the idea of incremental narrowing:
@@ -572,44 +617,90 @@ useful commands for each of the default completion commands.
 [[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each
 item.
 
+#+begin_src emacs-lisp
+
+      (use-package hydra
+        :defer 1)
+
+        (use-package ivy
+          :diminish
+          :bind (("C-s" . swiper)
+          :map ivy-minibuffer-map
+          ("TAB" . ivy-alt-done)
+              ("C-l" . ivy-alt-done)
+              ("C-j" . ivy-next-line)
+              ("C-k" . ivy-previous-line)
+              :map ivy-switch-buffer-map
+              ("C-k" . ivy-previous-line)
+              ("C-l" . ivy-done)
+              ("C-d" . ivy-switch-buffer-kill)
+              :map ivy-reverse-i-search-map
+              ("C-k" . ivy-previous-line)
+              ("C-d" . ivy-reverse-i-search-kill))
+            :init
+            (ivy-mode 1)
+            :config
+            (setq ivy-use-virtual-buffers t)
+            (setq ivy-wrap t)
+            (setq ivy-count-format "(%d/%d) ")
+            (setq enable-recursive-minibuffers t)
+  (setf (alist-get 'counsel-projectile-ag ivy-height-alist) 15)
+  (setf (alist-get 'counsel-projectile-rg ivy-height-alist) 15)
+  (setf (alist-get 'swiper ivy-height-alist) 15)
+  (setf (alist-get 'counsel-switch-buffer ivy-height-alist) 7))
+
+      (lem/leader-key-def
+          "C-S" '(counsel-projectile-grep :which-key "Projectile grep"))
+
+
+      (use-package ivy-hydra
+        :defer t
+        :after hydra)
+
+      (use-package ivy-rich
+        :init
+        (ivy-rich-mode 1)
+        :after counsel
+        :config
+        (setq ivy-format-function #'ivy-format-function-line)
+        (setq ivy-rich-display-transformers-list
+              (plist-put ivy-rich-display-transformers-list
+                         'ivy-switch-buffer
+                         '(:columns
+                           ((ivy-rich-candidate (:width 40))
+                            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
+                            (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))          ; return the major mode info
+                            (ivy-rich-switch-buffer-project (:width 15 :face success))             ; return project name using `projectile'
+                            (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
+                           :predicate
+                           (lambda (cand)
+                             (if-let ((buffer (get-buffer cand)))
+                                 ;; Don't mess with EXWM buffers
+                                 (with-current-buffer buffer
+                                   (not (derived-mode-p 'exwm-mode)))))))))
+#+end_src
+
 *** Counsel
+
 Counsel need to be installed before ivy. Also, Counsel provides ivy and swipper
 as dependencies, but I will install ivy manually
 
 #+begin_src emacs-lisp
-    (use-package counsel
-      :bind (("C-M-j" . 'counsel-switch-buffer)
-             :map minibuffer-local-map
-             ("C-r" . 'counsel-minibuffer-history))
-      :config
-      (counsel-mode 1))
-#+end_src
 
-
-#+begin_src emacs-lisp
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-           :map ivy-minibuffer-map
-           ("TAB" . ivy-alt-done)
-           ("C-l" . ivy-alt-done)
-           ("C-j" . ivy-next-line)
-           ("C-k" . ivy-previous-line)
-           :map ivy-switch-buffer-map
-           ("C-k" . ivy-previous-line)
-           ("C-l" . ivy-done)
-           ("C-d" . ivy-switch-buffer-kill)
-           :map ivy-reverse-i-search-map
-           ("C-k" . ivy-previous-line)
-           ("C-d" . ivy-reverse-i-search-kill))
+  (use-package counsel
+    :demand t
+    :bind (("M-x" . counsel-M-x)
+           ("C-x b" . counsel-switch-buffer)
+           ("C-x C-f" . counsel-find-file)
+           ;; ("C-M-j" . counsel-switch-buffer)
+           ("C-M-l" . counsel-imenu)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
     :config
-    (ivy-mode 1))
-
-    (lem/leader-key-def
-    "C-S" '(counsel-projectile-grep :which-key "Projectile grep"))
+    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 #+end_src
-
-This are some keybining for changes between buffers
 
 *** Disable '^' of M-x
 
@@ -623,15 +714,6 @@ without knowing what it begins with though.
 (setq ivy-initial-inputs-alist nil)
 #+end_src
 
-*** Ivy Rich
-
-Is an interface for Ivy that provides more information about the commands
-
-#+begin_src emacs-lisp
-  (use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
-#+end_src
 *** Install Smex
 
 Smex is a package that makes M-x remember out history
@@ -640,6 +722,109 @@ Smex is a package that makes M-x remember out history
 (use-package smex)
 (smex-initialize)
 #+end_src
+
+*** Flx
+Flx is a package that makes ivy fuzzy search
+
+#+begin_src emacs-lisp
+(use-package flx  ;; Improves sorting for fuzzy-matched results
+  :after ivy
+  :defer t
+  :init
+  (setq ivy-flx-limit 10000))
+#+end_src
+
+*** Vertico
+#+begin_src emacs-lisp
+  (use-package vertico
+    :bind (:map vertico-map
+                ("C-j" . vertico-next)
+                ("C-k" . vertico-previous)
+                ("C-f" . vertico-exit))
+    :custom
+    (vertico-cycle t)
+    :custom-face
+    (vertico-current ((t (:background "#3a3f5a"))))
+    :init
+    (vertico-mode))
+#+end_src
+
+*** Orderless
+
+Orderless improves candidate filtering create pattern by words separate with
+spaces and display any command which has the same words in any order
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+
+*** Completion annotations
+
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :after vertico
+    :custom
+    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+    :init
+    (marginalia-mode))
+#+end_src
+
+*** Completion action
+
+#+begin_src emacs-lisp
+(use-package embark
+  :bind (("C-S-a" . embark-act)
+         :map minibuffer-local-map
+         ("C-d" . embark-act))
+  :config
+
+  ;; Show Embark actions via which-key
+  (setq embark-action-indicator
+        (lambda (map)
+          (which-key--show-keymap "Embark" map nil nil 'no-paging)
+          #'which-key--hide-popup-ignore-command)
+        embark-become-indicator embark-action-indicator))
+
+(use-package embark-consult
+  :after embark)
+#+end_src
+
+*** Snippets
+
+#+begin_src emacs-lisp
+    (use-package yasnippet
+      :hook (prog-mode . yas-minor-mode)
+      :config
+      (yas-reload-all)
+      (yas-global-mode 1))
+(use-package yasnippet-snippets)
+
+;;  (use-package yasnippet-snippeets)
+#+end_src
+***  Better completion options with company-mode
+
+Company is a Modular text completion framework for emacs
+
+#+begin_src emacs-lisp
+  (use-package company
+  :after lsp-mode
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+              ("<tab>" . company-complete-selection))
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+#+end_src
+
 
 ** helpul
 
@@ -661,126 +846,7 @@ Emacs configuration.  It is very useful for figuring out how things work in Emac
   ([remap describe-key] . helpful-key))
 #+end_src
 
-** Text Scaling
-
-I use the default command to text scale:
-- =C-x C-+=  text-scale-increate
-- =C-x C--=  text-scale-decrease
-
-** Terminal emulators
-*** term-mode
-#+begin_src emacs-lisp
-  (use-package term
-  :config
-  ;;(setq explicit-zsh-args '())
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-
-;; improve colors
-  (use-package eterm-256color
-  :hook (term-mode . eterm-256color-mode)) 
-#+end_src
-*** Shell-mode
-Run a shell program on your computer. Does not operate as a terminal emulaor
-- ~C-c C-p~ / ~C-c C-n~ Go back / forwards in the buffer's prompts
-- ~M-p~ / ~M-n~ Go back / forward in the input history
-- ~C-c C-u~ delete the current input string backwards up to the current cursor
-- ~counsel-shell-history~ - A searchable history of commands typed into the shell
-
-#+begin_src emacs-lisp :tangle no
-  (setq comint-output-filter-functions
-        (remove 'ansi-color-process-output comint-output-filter-functions))
-
-  (add-hook 'shell-mode-hook
-            (lambda ()
-              ;; Disable font-locking in this buffer to improve performance
-              (font-lock-mode -1)
-              ;; Prevent font-locking from being re-enabled in this buffer
-              (make-local-variable 'font-lock-function)
-              (setq font-lock-function (lambda (_) nil))
-              (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
-#+end_src
-*** Eshell-mode
-
-#+begin_src emacs-lisp :tangle no
-(defun lem/configure-eshell ()
-  ;; Save command history when commands are entered
-  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-
-  ;; Truncate buffer for performance
-  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-
-  ;; Bind some useful keys for evil-mode
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
-  (evil-normalize-keymaps)
-
-  (setq eshell-history-size         10000
-        eshell-buffer-maximum-lines 10000
-        eshell-hist-ignoredups t
-        eshell-scroll-to-bottom-on-input t))
-
-(use-package eshell
-  :hook (eshell-first-time-mode . lem/configure-eshell))
-
-(use-package eshell-git-prompt
-
-:config
-(eshell-git-prompt-use-theme 'powerline))
-
-(with-eval-after-load 'esh-opt
-  (setq eshell-destroy-buffer-when-process-dies t)
-  (setq eshell-visual-commands '("htop" "zsh" "vim")))
-#+end_src
-
-*  Writing
-** Configure flyspell
-
-Fly spell is a mode that allows you to see typing errors. By default it is disable, but can be
-configure to be used on different kinds of situations.
-
-#+begin_src emacs-lisp
-  (use-package flyspell
-      :config
-      (setq ispell-program-name "hunspell"
-            ispell-default-dictionary "en_US")
-      :hook (text-mode . flyspell-mode)
-      :bind (("M-<f7>" . flyspell-buffer)
-             ("<f7>" . flyspell-word)
-             ("C-;" . flyspell-auto-correct-previous-word)))
-#+end_src
-*** Toggle dictionaries
-
-#+begin_src emacs-lisp
-  (defun lem/switch-dictionary()
-  (interactive)
-  (let* ((dic ispell-current-dictionary)
-     (change (if (string= dic "en_US") "es_ES" "en_US")))
-    (ispell-change-dictionary change)
-    (message "Dictionary switched from %s to %s" dic change)
-    ))
-
-  (global-set-key (kbd "<f8>")   'lem/switch-dictionary)
-#+end_src
-*** Install language tool
-
-Language tool is a software that check both, grammar and spelling in different
-languages.
-
-**** Install the binary
-#+begin_src shell
-curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
-mkdir -p ~/.local/lib/
-unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package langtool
-     :config
-     (setq langtool-language-tool-jar "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
-  langtool-default-language "en-US"))
-#+end_src
-
-* Dired
+* File browsing
 ** Open dired
 
 | Command    | Description                     | KEYBINDING |
@@ -839,7 +905,7 @@ unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
 
 *** Open files Externally
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package openwith
     :config
     (setq openwith-associations
@@ -847,6 +913,132 @@ unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
            (list (openwith-make-extension-regexp '("pdf" )) "evince" '(file)))))
   (openwith-mode 1)
 
+#+end_src
+*  Writing
+** Configure flyspell
+
+Fly spell is a mode that allows you to see typing errors. By default it is disable, but can be
+configure to be used on different kinds of situations.
+
+#+begin_src emacs-lisp
+  (use-package flyspell
+      :config
+      (setq ispell-program-name "hunspell"
+            ispell-default-dictionary "en_US")
+      :hook (text-mode . flyspell-mode)
+      :bind (("M-<f7>" . flyspell-buffer)
+             ("<f7>" . flyspell-word)
+             ("C-;" . flyspell-auto-correct-previous-word)))
+#+end_src
+
+*** Toggle dictionaries
+
+#+begin_src emacs-lisp
+  (defun lem/switch-dictionary()
+  (interactive)
+  (let* ((dic ispell-current-dictionary)
+     (change (if (string= dic "en_US") "es_ES" "en_US")))
+    (ispell-change-dictionary change)
+    (message "Dictionary switched from %s to %s" dic change)
+    ))
+
+  (global-set-key (kbd "<f8>")   'lem/switch-dictionary)
+#+end_src
+
+*** Install language tool
+
+Language tool is a software that check both, grammar and spelling in different
+languages.
+
+**** Install the binary
+
+#+begin_src shell
+curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
+mkdir -p ~/.local/lib/
+unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package langtool
+     :config
+     (setq langtool-language-tool-jar "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
+  langtool-default-language "en-US"))
+#+end_src
+
+
+
+** Text Scaling
+
+I use the default command to text scale:
+- =C-x C-+=  text-scale-increate
+- =C-x C--=  text-scale-decrease
+
+** Terminal emulators
+
+*** term-mode
+#+begin_src emacs-lisp
+  (use-package term
+  :config
+  ;;(setq explicit-zsh-args '())
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
+;; improve colors
+  (use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode)) 
+#+end_src
+
+*** Shell-mode
+
+Run a shell program on your computer. Does not operate as a terminal emulaor
+- ~C-c C-p~ / ~C-c C-n~ Go back / forwards in the buffer's prompts
+- ~M-p~ / ~M-n~ Go back / forward in the input history
+- ~C-c C-u~ delete the current input string backwards up to the current cursor
+- ~counsel-shell-history~ - A searchable history of commands typed into the shell
+
+#+begin_src emacs-lisp :tangle no
+  (setq comint-output-filter-functions
+        (remove 'ansi-color-process-output comint-output-filter-functions))
+
+  (add-hook 'shell-mode-hook
+            (lambda ()
+              ;; Disable font-locking in this buffer to improve performance
+              (font-lock-mode -1)
+              ;; Prevent font-locking from being re-enabled in this buffer
+              (make-local-variable 'font-lock-function)
+              (setq font-lock-function (lambda (_) nil))
+              (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
+#+end_src
+*** Eshell-mode
+
+#+begin_src emacs-lisp :tangle no
+(defun lem/configure-eshell ()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  ;; Bind some useful keys for evil-mode
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell
+  :hook (eshell-first-time-mode . lem/configure-eshell))
+
+(use-package eshell-git-prompt
+
+:config
+(eshell-git-prompt-use-theme 'powerline))
+
+(with-eval-after-load 'esh-opt
+  (setq eshell-destroy-buffer-when-process-dies t)
+  (setq eshell-visual-commands '("htop" "zsh" "vim")))
 #+end_src
 
 
@@ -879,30 +1071,6 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 				      (bookmarks . "book"))))
   ; ensure emacs open in dashboard
   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-#+end_src
-** Startup performance
-
-Make startup faster by reducing the frequency of garbage collection and then use
-a hook to measure Emacs startup time.
-
-Also, turn on lexical-binding for the init file!
-
-#+begin_src emacs-lisp
-(use-package gcmh
-:config
-(gcmh-mode 1))
-;; Setting garbage collection threshold
-(setq gc-cons-threshold (* 50 1000 1000)
-    gc-cons-percentage 0.6)
-;; Profile emacs startup
-(add-hook 'emacs-startup-hook
-        (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                    (format "%.2f seconds"
-                            (float-time
-                            (time-subtract after-init-time before-init-time)))
-                    gcs-done)))
-
 #+end_src
 * Disable mouse
 
@@ -1116,107 +1284,7 @@ Provides an even nicer UI on top of lsp-mode using Treemacs
 
 #+end_src
 
-**** Debug adapter
-#+begin_src emacs-lisp
-  (use-package dap-mode
-    :straight t
-    :custom
-    (lsp-enable-dap-auto-configure nil)
-    :config
-    (dap-ui-mode 1)
-    (dap-tooltip-mode 1)
-    (require 'dap-node)
-    (require 'dap-firefox)
-    (dap-node-setup))
 
-#+end_src
-
-
-*** Completion system
-*****  Better completion options with company-mode
-
-Company is a Modular text completion framework for emacs
-
-#+begin_src emacs-lisp
-  (use-package company
-  :after lsp-mode
-  :hook (prog-mode . company-mode)
-  :bind (:map company-active-map
-              ("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
-        ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
-#+end_src
-***** Vertico
-#+begin_src emacs-lisp
-  (use-package vertico
-    :bind (:map vertico-map
-                ("C-j" . vertico-next)
-                ("C-k" . vertico-previous)
-                ("C-f" . vertico-exit))
-    :custom
-    (vertico-cycle t)
-    :custom-face
-    (vertico-current ((t (:background "#3a3f5a"))))
-    :init
-    (vertico-mode))
-#+end_src
-***** Orderless
-
-Orderless improves candidate filtering create pattern by words separate with
-spaces and display any command which has the same words in any order
-
-#+begin_src emacs-lisp
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-#+end_src
-***** Completion annotations
-#+begin_src emacs-lisp
-  (use-package marginalia
-    :after vertico
-    :custom
-    (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
-    :init
-    (marginalia-mode))
-#+end_src
-***** Completion action
-#+begin_src emacs-lisp
-(use-package embark
-  :bind (("C-S-a" . embark-act)
-         :map minibuffer-local-map
-         ("C-d" . embark-act))
-  :config
-
-  ;; Show Embark actions via which-key
-  (setq embark-action-indicator
-        (lambda (map)
-          (which-key--show-keymap "Embark" map nil nil 'no-paging)
-          #'which-key--hide-popup-ignore-command)
-        embark-become-indicator embark-action-indicator))
-
-(use-package embark-consult
-  :after embark)
-#+end_src
-***** Snippets
-
-#+begin_src emacs-lisp
-    (use-package yasnippet
-      :hook (prog-mode . yas-minor-mode)
-      :config
-      (yas-reload-all)
-      (yas-global-mode 1))
-(use-package yasnippet-snippets)
-
-;;  (use-package yasnippet-snippeets)
-#+end_src
 *** TypeScript and JavaScript
 
 Configure both languages as equals
@@ -1276,7 +1344,6 @@ Configure both languages as equals
   (use-package skewer-mode
     :straight t)
 #+end_src
-** Minor modes
 
 
 #+begin_src emacs-lisp
@@ -1336,8 +1403,8 @@ The main reason why I changes to emacs
         (setq evil-auto-indent nil)
         (diminish org-indent-mode))
 
-  (defun lucas/org-font-setup ()
-        ;; Replace list hyphen with dot
+  (defun lem/org-font-setup ()
+    ;; Replace list hyphen with dot
     (font-lock-add-keywords 'org-mode
                             '(("^ *\\([-]\\) "
                                (0 (prog1 () (compose-region
@@ -1345,6 +1412,7 @@ The main reason why I changes to emacs
                                              (match-end 1) "•")))))))
 
   (use-package org
+    :defer t
     :hook (org-mode . lem/org-mode-setup)
     :config
     (setq org-ellipsis " ▾"
@@ -1365,8 +1433,9 @@ The main reason why I changes to emacs
     (setq org-refile-targets '((nil :maxlevel . 2)
                                (org-agenda-files :maxlevel . 1)))
     (setq org-outline-path-complete-in-steps nil)
-    (setq org-refile-use-outline-path t)
+    (setq org-refile-use-outline-path t))
 #+end_src
+
 ** Configure Babel languages
 
 To execute or export code in org-mode code blocks, you’ll need to set up org-babel-load-languages
@@ -1448,12 +1517,6 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
   (add-to-list 'org-structure-template-alist '("ex" . "export"))
 #+end_src
 
-** End use-package org-mode
-
-#+begin_src emacs-lisp
-  )
-#+end_src
-
 ** WorkFlow configuration
 The configuration file of this section was moved to
 [[file:~/Documents/git/dotfiles/emacs.d/org-workflow.org][org-workflow.org]].
@@ -1472,13 +1535,14 @@ The configuration file of this section was moved to
 ** Bindings some keys
 
 #+begin_src emacs-lisp
-  (lem/ctrl-c-keys
+  (lem/leader-key-def
    "o" '(:ignore t :which-key "org mode")
    "oa" '(org-agenda :which-key "Status")
    "ot" '(org-todo-list :which-key "Show TODOs")
    "oc" '(org-capture t :which-key "Capture"))
 
 #+end_src
+
 ** Org capture
 
 In this subsection, I will add some capture to the capture list, that are not
@@ -1500,7 +1564,6 @@ related with any workflow
 
 #+begin_src emacs-lisp
   (use-package toc-org
-    :require t
     :hook (org-mode . toc-org-mode))
 #+end_src
 
@@ -1717,10 +1780,7 @@ The instalation process use the melpa or melpa stable package manager from emacs
 
 #+begin_src emacs-lisp
   (use-package org-roam
-     :ensure t
-     :demand t
-     :init
-     (setq org-roam-v2-ack t)
+  :straight t
      :custom
      (org-roam-directory (file-truename "~/Documents/Org/roam"))
      (org-roam-completion-everywhere t)
@@ -1862,41 +1922,40 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
     (lambda (node)
       (member tag-name (org-roam-node-tags node))))
 
+    (defun my/org-roam-list-notes-by-tag (tag-name)
+      (mapcar #'org-roam-node-file
+              (seq-filter
+               (my/org-roam-filter-by-tag tag-name)
+               (org-roam-node-list))))
 
-  (defun my/org-roam-list-notes-by-tag (tag-name)
-    (mapcar #'org-roam-node-file
-            (seq-filter
-             (my/org-roam-filter-by-tag tag-name)
-             (org-roam-node-list))))
+    (defun my/org-roam-refresh-agenda-list ()
+      (interactive)
+      (setq org-agenda-files (delete-dups (append org-agenda-files (my/org-roam-list-notes-by-tag "Project")))))
+    (my/org-roam-refresh-agenda-list)
 
-  (defun my/org-roam-refresh-agenda-list ()
-    (interactive)
-    (setq org-agenda-files (delete-dups (append org-agenda-files (my/org-roam-list-notes-by-tag "Project")))))
-  (my/org-roam-refresh-agenda-list)
+    ;; Build the agenda list the first time for the session
 
-  ;; Build the agenda list the first time for the session
+    (defun my/org-roam-project-finalize-hook ()
+      "Adds the captured project file to `org-agenda-files' if the capture was not aborted."
+      ;; Remove the hook since it was added temporarily
+      (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-  (defun my/org-roam-project-finalize-hook ()
-    "Adds the captured project file to `org-agenda-files' if the capture was not aborted."
-    ;; Remove the hook since it was added temporarily
-    (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+      ;; Add project file to the agenda list if the capture was confirmed
+      (unless org-note-abort
+        (with-current-buffer (org-capture-get :buffer)
+          (add-to-list 'org-agenda-files (buffer-file-name)))))
 
-    ;; Add project file to the agenda list if the capture was confirmed
-    (unless org-note-abort
-      (with-current-buffer (org-capture-get :buffer)
-        (add-to-list 'org-agenda-files (buffer-file-name)))))
+    (defun my/org-roam-find-project ()
+      (interactive)
+      ;; Add the project file to the agenda after capture is finished
+      (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
 
-  (defun my/org-roam-find-project ()
-    (interactive)
-    ;; Add the project file to the agenda after capture is finished
-    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
-
-    ;; Select a project file to open, creating it if necessary
-    (org-roam-node-find
-     nil
-     nil
-     (lambda (node)
-       (member "Project" (org-roam-node-tags node)))))
+      ;; Select a project file to open, creating it if necessary
+      (org-roam-node-find
+       nil
+       nil
+       (lambda (node)
+         (member "Project" (org-roam-node-tags node)))))
 
     (defun my/org-roam-capture-inbox ()
       (interactive)
@@ -1908,7 +1967,7 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
       ;; Capture the new task, creating the project file if necessary
       (org-roam-capture- :node (org-roam-node-read
                                 nil
-                                (my/org-roam-filter-by-tag "Project"))
+                                (lambda (node) (member "Project" (org-roam-node-tags node))))
                          :templates '(
                                       ("p" "project" plain "** TODO %?"
                                        :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
@@ -1926,22 +1985,26 @@ The content of this file was moved to [[file:org-zettelkasten.org][org-zettelkas
                                                               ("Meetings"))
                                        :target (file+olp+datetree "%<%Y%m%d%H%M%S>-${slug}.org" ("Meetings"))))))
 
-  (defun lem/org-roam-capture-meeting ()
-    (interactive)
-    (org-roam-capture- :node (org-roam-node-read
-                              nil
-                              (my/org-roam-filter-by-tag "Project"))
-                       :templates '(("m" "Meeting" plain "** %<%Y-%m-%d %H:%M>\n%?"
-                                     :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                            "#+title: ${title}\n#+category:${title}\n#+filetags: Project"
-                                                            ("Meetings"))
-                                     :clock-in :clock-resume
-                                     :empty-lines: 1))))
+    (defun my/org-roam-capture-meeting ()
+      (interactive)
+      (org-roam-capture- :node (org-roam-node-read
+                                nil
+                                (my/org-roam-filter-by-tag "Project"))
+                         :templates '(("m" "Meeting" plain "** %<%Y-%m-%d %H:%M>\n%?"
+                                       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                              "#+title: ${title}\n#+category:${title}\n#+filetags: Project"
+                                                              ("Meetings"))
+                                       :clock-in :clock-resume
+                                       :empty-lines: 1))))
 #+end_src
 
-* Restart the dashboard
+** Deft
 
-After load all the config, I want to see the dashboard updated
 #+begin_src emacs-lisp
-(dashboard-open)
+  (use-package deft
+    :commands (deft)
+    :config
+    (setq deft-extensions '("org" "md")
+          deft-directory "~/Documents/Org/roam"
+          deft-recursive t))
 #+end_src
