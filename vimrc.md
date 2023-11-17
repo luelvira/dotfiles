@@ -331,7 +331,7 @@ italic. To prevent it, *before* set the it is necessary to setup some vars
 
 ```vim
 set termguicolors
-if $HOSTNAME == "fedora-pc"
+if $HOSTNAME == "fedora-laptop"
 " colors
 " colorscheme gruvbox
     colorscheme nord
