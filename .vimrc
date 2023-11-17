@@ -57,7 +57,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
 " navigation
-Plug 'preservim/nerdtree'
+" Plug 'preservim/nerdtree'
 " Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
@@ -135,10 +135,10 @@ set termguicolors
 if $HOSTNAME == "fedora-pc"
 " colors
 " colorscheme gruvbox
-"    colorscheme nord
+    colorscheme nord
 else
 "    colorscheme gruvbox
-"    colorscheme nord
+    colorscheme nord
 endif
 if exists("colors_name")
     if colors_name == "nord"
