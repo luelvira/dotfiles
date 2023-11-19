@@ -340,7 +340,6 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 #+end_src
 
 
-   
 ** Which Key
   
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to
