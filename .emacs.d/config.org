@@ -53,6 +53,7 @@
 - [[#development][Development]]
   - [[#projectile][Projectile]]
   - [[#magit][Magit]]
+  - [[#github-copilot][Github copilot]]
   - [[#languages][Languages]]
 
 * PUT THIS IN YOUR init.el
@@ -265,6 +266,7 @@ modes with Vi-like keybindings for evil-mode.
  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
  (evil-set-initial-state 'messages-buffer-mode 'normal)
  (evil-set-initial-state 'dashboard-mode 'normal)
+(evil-set-initial-state 'term-mode 'emacs)
 
   ;;; Disable arrow keys in insert mode
   (define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
@@ -917,7 +919,6 @@ contains the org files only, and it is named sync.
 *** Text mode
 Aditionaly to the last hook I will make more adjustement into the text view
 
-
 #+begin_src emacs-lisp
   (defun lem/text-mode-setup ()
     (variable-pitch-mode 1)
@@ -940,9 +941,9 @@ Aditionaly to the last hook I will make more adjustement into the text view
   :config
   (setq org-directory "~/Documents/Org/"
         org-default-notes-file (concat org-directory "Inbox.org")
-        org-ellipsis " ▼ "
+        org-ellipsis " ▾"
         org-superstar-headline-bullets-list '("◉" "●" "○" "◆" "●" "○" "◆")
-        org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)) ; changes +/- symbols in item lists
+        org-superstar-item-bullet-alist '((?- . ?➤) (?+ . ?✦)) ; changes +/- symbols in item lists
         org-log-done 'time
         org-hide-emphasis-markers nil
         org-table-convert-region-max-lines 20000
@@ -1184,7 +1185,7 @@ I dont like how it is shown
     "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
     "os"  '(lem/org-search :which-key "search notes")
     "oa" '(org-agenda :which-key "Status")
-    "ot" '(org-todo-list :which-key "Show TODOs")
+    ;;"ot" '(org-todo-list :which-key "Show TODOs")
     "oc" '(org-capture t :which-key "Capture")
     "op" '(:ignore t :which-key "Pomodoro")
     "ops" '(org-pomodoro :whick-key "Start org pomodoro")
@@ -1259,7 +1260,6 @@ Also the org roam is not close
    ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
     :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
     :unnarrowed t)))
-
 #+end_src
 **** Configure org roam completion
 
@@ -1446,7 +1446,7 @@ This package use citar as base to improve the citation process.
   (add-to-list 'org-roam-capture-templates                                      
                '("r" "bibliography reference" plain "%?"                        
                  :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"                                                                                                                                                  
-                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n** Abstract\n${Abstract}")
+                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n")
                  :unnarrowed t) t)                                              
   (setq citar-org-roam-capture-template-key "r"))                                
 #+end_src   
@@ -1504,9 +1504,11 @@ Index notes are these notes used to group connected notes. Can be a TOC, a sort
 description, or whatever you want.
 
 **** Org-roam-ui
+
 #+begin_src emacs-lisp
 (use-package org-roam-ui)
 #+end_src
+
 * Dashboard
 Emacs Dashboard is an extensible startup screen showing you recent files,
 bookmarks, agenda items and an Emacs banner.
@@ -1547,10 +1549,14 @@ It need to be compiled, so you need to install first some dependencies
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package vterm
-  :commands vterm
-  :config
-  (setq vterm-max-scrollback 10000))
+  (use-package vterm
+    :commands vterm
+    :config
+    (setq vterm-max-scrollback 10000))
+
+;;Still does not work
+  (add-hook 'vterm-mode-hook 'evil-emacs-state)
+  (add-hook 'term-mode-hook 'evil-emacs-state)
 #+end_src
 
 * Development
@@ -1623,6 +1629,18 @@ Git gutter is a software which make easy to view the difference between a file a
       (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
       (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
       (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+#+end_src
+
+** Github copilot
+Github copilot use OpenAI Codex to suggest code. There is not an emacs' version,
+but there is an alternative based in the [[https://github.com/github/copilot.vim][official vim]] binaries
+#+begin_src emacs-lisp
+  (use-package copilot
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :ensure t)
+
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 #+end_src
 
 ** Languages
@@ -1708,14 +1726,21 @@ Configure TypeScript and JavaScript language modes
 
 *** HTML/CSS mode
 #+begin_src emacs-lisp
-  (use-package web-mode
-    :config
-    (setq-default web-mode-code-indent-offset 2)
-    (setq-default web-mode-markup-indent-offset 2)
-    (setq-default web-mode-attribute-indent-offset 2))
+    (use-package web-mode
+      :config
+      (setq-default web-mode-code-indent-offset 2)
+      (setq-default web-mode-markup-indent-offset 2)
+      (setq-default web-mode-attribute-indent-offset 2))
 
-(use-package rainbow-delimiters :hook (prog-mode . rainbow-delimiters-mode))
-(use-package smartparens :hook (prog-mode . smartparens-mode))
+    (use-package rainbow-delimiters :hook (prog-mode . rainbow-delimiters-mode))
+    (use-package smartparens :hook (prog-mode . smartparens-mode))
+
+  (defun lem/html-as-prog ()
+    (interactive)
+              (variable-pitch-mode 0)
+              (auto-fill-mode 0)
+              (visual-fill-column-mode 0))
+(add-hook 'html-mode-hook 'lem/html-as-prog)
 
 #+end_src
 
