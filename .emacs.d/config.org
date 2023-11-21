@@ -280,16 +280,17 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 
 #+begin_src emacs-lisp
   (use-package evil-collection
-   :after evil
-   :custom
-   (evil-collection-outline-bind-tab-p nil)
-   :config
-   (evil-collection-init))
+    :after evil
+    :custom
+    (evil-collection-outline-bind-tab-p nil)
+    :config
+    (evil-collection-init)
+    (setq evil-collection-mode-list nil))
 
 
   (use-package evil-numbers
-     :after evil
-     :hook 'lem/evil-mode-number-hook)
+    :after evil
+    :hook 'lem/evil-mode-number-hook)
 
   (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
@@ -297,9 +298,9 @@ Evil collection is a package that provide evil keybindings for a lot of modes
   (define-key  evil-normal-state-map (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental)
 
   (use-package evil-surround
-   :ensure t
-   :config
-  (global-evil-surround-mode 1))
+    :ensure t
+    :config
+    (global-evil-surround-mode 1))
 
 #+end_src
 
@@ -410,8 +411,9 @@ to run `M-x all-the-icons-install-fonts` so that mode line icons display
 correctly.
 
 #+begin_src emacs-lisp
-  (setq display-time-format "%l:%M %p %b %y"
-	display-time-default-load-average nil)
+  (setq display-time-format "%H:%M %b %y"
+    display-time-default-load-average nil)
+(display-time-mode 1)
   ;; Dimish modeline clutter hides pesky minor modes
   (use-package diminish)
 
@@ -1677,7 +1679,7 @@ but there is an alternative based in the [[https://github.com/github/copilot.vim
 #+end_src
 
 *** Debug Adapter Support
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package dap-mode
   :straight t
   :custom
@@ -1715,13 +1717,13 @@ Configure TypeScript and JavaScript language modes
     ;; Set up proper indentation in JavaScript and JSON files
     (add-hook 'js2-mode-hook #'lem/set-js-indentation))
 
-  (use-package apheleia
-    :config
-    (apheleia-global-mode +1))
-
-  (use-package prettier-js
-    :config
-    (setq prettier-js-show-errors nil))
+;;  (use-package apheleia
+;;    :config
+;;    (apheleia-global-mode +1))
+;;
+;;  (use-package prettier-js
+;;    :config
+;;    (setq prettier-js-show-errors nil))
 #+end_src
 
 *** HTML/CSS mode
@@ -1759,6 +1761,9 @@ Combine httpd server with impatient mode
 (use-package impatient-mode :straight t)
 #+end_src
 
+
+*** Python
+
 *** Compilation
 
 Set up the compile package and ensure that compilation output automatically scrolls.
@@ -1776,7 +1781,6 @@ Set up the compile package and ensure that compilation output automatically scro
       (remove-hook 'after-save-hook #'recompile t)
     (add-hook 'after-save-hook #'recompile nil t)))
 #+end_src
-
 
 *** Productivity
 
