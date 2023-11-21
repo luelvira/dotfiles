@@ -1788,7 +1788,7 @@ Set up the compile package and ensure that compilation output automatically scro
 #+end_src
 
 **** Smart parens
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package smartparens
   :hook (prog-mode . smartparens-mode))
 #+end_src
