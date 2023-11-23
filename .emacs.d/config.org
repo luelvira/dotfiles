@@ -10,6 +10,7 @@
 - [[#keep-it-clean][Keep it clean]]
 - [[#custom-library][Custom library]]
 - [[#set-encoding-by-default][Set encoding by default]]
+- [[#disable-warnings][Disable warnings]]
 - [[#autorun][AUTORUN]]
   - [[#emacs-as-server][Emacs as server]]
 - [[#keyboard-binding][Keyboard binding]]
@@ -183,6 +184,13 @@ files. With that in mind, I add a directory to the path.
 (set-default-coding-systems 'utf-8)
 #+end_src
 
+* Disable warnings
+The first time emacs is open, display a lot of annoying warnings. To prevent
+this, use ~native-comp-async-report-warnings-errors~
+#+begin_src emacs-lisp
+(setq native-comp-async-report-warnings-errors nil)
+#+end_src
+
 * AUTORUN
 ** Emacs as server
 
@@ -284,8 +292,7 @@ Evil collection is a package that provide evil keybindings for a lot of modes
     :custom
     (evil-collection-outline-bind-tab-p nil)
     :config
-    (evil-collection-init)
-    (setq evil-collection-mode-list nil))
+    (evil-collection-init))
 
 
   (use-package evil-numbers
