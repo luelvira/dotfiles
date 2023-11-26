@@ -1,4 +1,4 @@
-#+TITLE: ~/.dotfiles~
+#+TITLE: ~$HOME/.dotfiles~
 
 This repo is in charge of store my configuration files, making easy share the
 configuration across all devices. 
@@ -33,7 +33,26 @@ similar structure to the ~$HOME~ folder
 ** .emacs.d
 
 This folder has all the configuration for emacs. The folder has 2 files, but
-[[file:.emacs.d/config.org]] is auto-explanatorily 
+[[file:.emacs.d/config.org][.emacs.d/config.org]] is auto-explanatorily.
+
+To start emacs at boot time, I use a desktop file stored in
+~$HOME/.local/share/applications/emacs-server.desktop~ which is run by the
+autorun used by default for the desktop environment I am using in this moment.
+
+#+begin_src sh
+[Desktop Entry]
+Name=Emacs Server
+GenericName=Text Editor
+Comment=Edit text daemon
+#MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+Exec=bash -c '/home/lucas/.local/bin/sync.sh && killall -9 emacs ; /usr/bin/emacs --daemon && notify-send "Emacs ready"'
+Icon=emacs
+Type=Application
+Terminal=true
+Categories=Development;TextEditor;
+StartupNotify=true
+StartupWMClass=Emacs
+#+end_src
 
 ** config
 The equivalent of the ~.config~ folder for the ~$HOME~
@@ -65,7 +84,7 @@ repo [[https://github.com/luelvira/vim-tangle][vim-tangle]]
 
 Depends on the  system I will use, it could change, but there is a list of
 *FOSS* I always install. For debian based distro. The script with more software
-is [[file:install_script.sh]]
+is [[file:install_script.sh][install_script.sh]]
 
 #+begin_src sh
 apt-get install wget curl build-essential git make cmake python3-virtualenv openvpn vim-nox xclip emacs
