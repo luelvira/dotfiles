@@ -63,11 +63,11 @@ gbackup() {
     stamp=$(date '+%Y-%m-%dT%H:%M')
     git commit -m $stamp
 }
-cd() {
-	builtin cd "$@"
-	bash ~/.local/bin/_projects -s
-}
-alias projection='source ~/.local/bin/_projects'
+#cd() {
+#	builtin cd "$@"
+#	bash ~/.local/bin/_projects -s
+#}
+#alias projection='source ~/.local/bin/_projects'
 
 # make an alias to prevent accidental rm -rf
 alias rm='rm -i'

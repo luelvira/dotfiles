@@ -1,0 +1,92 @@
+#+TITLE: ~/.dotfiles~
+
+This repo is in charge of store my configuration files, making easy share the
+configuration across all devices. 
+
+* Principles
+
+** Keyboard first
+I have a preference for tools which enables you reduce the use of the mouse. The
+mouse make me slow and I prefer don't need it
+
+** Minimal environment
+
+I have an ability to lose focus in task that I don't like. It's better for me
+reduce the number of elements displayed in the screen. Some WM that help me with
+that is gnome such it has all the items hidden by default. Also, when I'm in a
+pc (not laptop) I prefer the use of tilling window  manager.
+
+** Customization
+When I'm bored i like to take my time learning new tools and configure them. I
+take a lot of inspiration from other Linux user that share their config around
+the internet. To make that,  the tools need to be configured by text file, not
+with graphical tools.
+
+Also this have some other advantage like the use of control version and easier
+shared it
+
+* Structure
+
+The repo is not very clean. But I try to keep it organize into folders with a
+similar structure to the ~$HOME~ folder
+
+** .emacs.d
+
+This folder has all the configuration for emacs. The folder has 2 files, but
+[[file:.emacs.d/config.org]] is auto-explanatorily 
+
+** config
+The equivalent of the ~.config~ folder for the ~$HOME~
+
+** Scripts
+
+A folder with a custom set of script that I have been used for a time, but maybe
+they are not necessaries at this moment.
+
+** dotfiles
+
+Some of the most important files are:
+
+*** [[file:.bash_aliases][.bash_aliases]]
+This file contains a lot of aliases command that I used to use. *Note that
+without this alias some configuration does not work*. the file provides alias
+for common command like ls or cat. If they are replaced by another software, the
+alias enable use the same command if the software is installed or not.
+
+*** [[file:vimrc.md][vimrc.md]]
+Before move me to emacs I try to enable some of its functionalities in [[https://www.vim.org/][vim]]. One
+of it was the literature configuration. To make it, I write a little package
+that enables tangle a markdown file to another file. This file allows to
+generate the configuration for vim, but need to install the package from the
+repo [[https://github.com/luelvira/vim-tangle][vim-tangle]] 
+
+
+* Installation
+
+Depends on the  system I will use, it could change, but there is a list of
+*FOSS* I always install. For debian based distro. The script with more software
+is [[file:install_script.sh]]
+
+#+begin_src sh
+apt-get install wget curl build-essential git make cmake python3-virtualenv openvpn vim-nox xclip emacs
+#+end_src
+
+** For PC
+
+In the pc, I should install a tilling window manager like [[https://i3wm.org/][i3wm]]. Also I need some
+other software when I don't using a full desktop environment
+
+#+begin_src sh
+apt-get install i3wm i3wm-common bluemoon bluez polybar dunst rofi
+#+end_src
+
+- [[file:config/i3/config.org][Configuration file for i3]]
+- [[file:config/polybar/config.org][Configuration file for polybar]]
+- [[file:config/picom/picom.conf][Configuration file for picom]]
+
+** Download the repo
+
+#+begin_src shell
+git clone git@github.com:luelvira/dotfiles.git ~/Documents/git/dotfiles/
+ln -s ~/Documents/git/dotfiles/config/* ~/.config/
+#+end_src

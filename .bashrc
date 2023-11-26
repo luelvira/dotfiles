@@ -118,3 +118,6 @@ export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init --path)"
 eval "$(pyenv virtualenv-init -)"
 
+
+# Created by `pipx` on 2023-11-26 16:36:55
+export PATH="$PATH:/home/lucas/.local/bin"

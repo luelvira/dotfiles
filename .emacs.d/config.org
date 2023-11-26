@@ -1,6 +1,7 @@
 #+TITLE: My Org config
 #+DATE: 2023-11-19 Sun
 #+AUTHOR: Lucas Elvira Martín
+#+auto_tangle: t 
 
 * Table Of Content                                                      :TOC:
 - [[#put-this-in-your-initel][PUT THIS IN YOUR init.el]]
@@ -22,6 +23,7 @@
 - [[#ui][UI]]
   - [[#reduce-distraction][Reduce distraction]]
   - [[#maximize-window-by-default][Maximize window by default]]
+  - [[#transparency][Transparency]]
   - [[#enable-line-numbers][Enable line numbers]]
   - [[#ignore-warning-messages-when-following-symlinks][Ignore warning messages when following symlinks]]
   - [[#collor-theme][Collor Theme]]
@@ -365,6 +367,13 @@ This section configures basic UI settings that remove unneded elements to make E
 #+begin_src emacs-lisp
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src
+
+** Transparency
+
+#+begin_src emacs-lisp
+;; (set-frame-parameter (selected-frame) 'alpha '(90 90))
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 #+end_src
 
 ** Enable line numbers
@@ -832,7 +841,6 @@ use the delete-file function with the buffer-file-name
   (lem/leader-key-def
     "f" '(:ignore t :which-key  "Files")
     "fr" '(counsel-recentf :which-key "Recent files")
-    "fd" '(dired :which-key "open dired")
     "fD" '(lem/delete-file :which-key "Delete current file")
     "ff" '(counsel-find-file :which-key "Find files"))
 #+end_src
@@ -1089,7 +1097,7 @@ process for new tasks.
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60
-        org-habit-show-all-today t
+        org-habit-show-all-today nil
         org-habit-show-habits-only-for-today nil)
 #+end_src
 **** Configure Babel languages
@@ -1222,6 +1230,28 @@ related with any workflow
     :hook (org-mode . toc-org-mode))
 #+end_src
 
+**** Org-auto-tangle
+Org  auto-tangle enable tangle the content of a document each time, you save the
+org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
+#+begin_src emacs-lisp
+
+    (use-package org-auto-tangle
+      :defer t
+      :hook (org-mode . org-auto-tangle-mode)
+      :config
+      (setq org-auto-tangle-default t))
+
+    (defun lem/insert-auto-tangle-tag ()
+      "Insert auto-tangle tag in literature config."
+      (interactive)
+      (evil-org-open-below 1)
+      (insert "#+auto_tangle: t ")
+      (evil-force-normal-state))
+
+  (lem/leader-key-def
+    "ia" '(lem/insert-auto-tangle-tag :which-key "Insert auto-tangle header tag"))
+
+#+end_src
 *** Org roam mode
 Org-roam is a tool for networked thought. It reproduces some of the Roam
 Research’s key features within Org-mode.
