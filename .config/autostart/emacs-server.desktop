@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Emacs Server
+GenericName=Text Editor
+Comment=Edit text daemon
+Exec="bash -c '/home/lucas/.local/bin/sync.sh && killall -9 emacs ; /usr/bin/emacs --daemon && notify-send \"Emacs ready\"'"
+Terminal=true
+Type=Application
+Icon=emacs
+Categories=Development;
+StartupNotify=true

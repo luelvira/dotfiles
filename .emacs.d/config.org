@@ -1,8 +1,6 @@
 #+TITLE: My Org config
 #+DATE: 2023-11-19 Sun
 #+AUTHOR: Lucas Elvira Martín
-#+auto_tangle: t 
-
 * Table Of Content                                                      :TOC:
 - [[#put-this-in-your-initel][PUT THIS IN YOUR init.el]]
 - [[#package-system-setup][Package system setup]]
@@ -276,7 +274,7 @@ modes with Vi-like keybindings for evil-mode.
  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
  (evil-set-initial-state 'messages-buffer-mode 'normal)
  (evil-set-initial-state 'dashboard-mode 'normal)
-(evil-set-initial-state 'term-mode 'emacs)
+; (evil-set-initial-state 'term-mode 'emacs)
 
   ;;; Disable arrow keys in insert mode
   (define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
@@ -372,7 +370,7 @@ This section configures basic UI settings that remove unneded elements to make E
 ** Transparency
 
 #+begin_src emacs-lisp
-;; (set-frame-parameter (selected-frame) 'alpha '(90 90))
+(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 #+end_src
 
