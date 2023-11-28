@@ -370,8 +370,9 @@ This section configures basic UI settings that remove unneded elements to make E
 ** Transparency
 
 #+begin_src emacs-lisp
-(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-(add-to-list 'default-frame-alist '(alpha-background . 90))
+(unless (string= (getenv "DESKTOP_SESSION") "gnome")
+    (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+    (add-to-list 'default-frame-alist '(alpha-background . 90)))
 #+end_src
 
 ** Enable line numbers
