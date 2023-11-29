@@ -260,27 +260,28 @@ which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] i
 modes with Vi-like keybindings for evil-mode.
 #+begin_src emacs-lisp
 
-(use-package evil
- :init
- (setq evil-want-integration t)
- (setq evil-want-keybinding nil)
- (setq evil-want-C-u-scroll t)
- (setq evil-want-C-i-jump t)
- (setq evil-undo-system 'undo-tree)
- :config
- (add-hook 'evil-mode-hook 'lem/evil-custom-state)
- (evil-mode 1)
- (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
- (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
- (evil-set-initial-state 'messages-buffer-mode 'normal)
- (evil-set-initial-state 'dashboard-mode 'normal)
-; (evil-set-initial-state 'term-mode 'emacs)
+  (use-package evil
+   :init
+   (setq evil-want-integration t
+        evil-want-keybinding nil
+        evil-want-C-u-scroll t
+        evil-want-C-i-jump t
+        evil-undo-system 'undo-tree
+        evil-respect-visual-line-mode t)
+   :config
+   (add-hook 'evil-mode-hook 'lem/evil-custom-state)
+   (evil-mode 1)
+   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+   (evil-set-initial-state 'messages-buffer-mode 'normal)
+   (evil-set-initial-state 'dashboard-mode 'normal)
+  ; (evil-set-initial-state 'term-mode 'emacs)
 
-  ;;; Disable arrow keys in insert mode
-  (define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
-  (define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
-  (define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
-  (define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro))
+    ;;; Disable arrow keys in insert mode
+    (define-key evil-insert-state-map (kbd "<left>") 'rune/dont-arrow-me-bro)
+    (define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
+    (define-key evil-insert-state-map (kbd "<down>") 'rune/dont-arrow-me-bro)
+    (define-key evil-insert-state-map (kbd "<up>") 'rune/dont-arrow-me-bro))
 #+end_src
 
 *** Install evil-collection
@@ -1035,7 +1036,7 @@ Configure the agenda views
         org-agenda-span 'week
         org-agenda-start-with-log-mode t
         org-log-into-drawer t
-        org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %16SCHEDULED %6CLOCKSUM(Clock) %TAGS")
+        org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %20SCHEDULED %20DEADLINE %6CLOCKSUM(Clock) %TAGS")
 #+end_src
 
 Org agenda is a mode of emacs that allows you to view the task for the week
@@ -1185,15 +1186,15 @@ I dont like how it is shown
     (interactive)
     (counsel-rg "" org-directory nil "Search notes: "))
 
-  (use-package evil-org
-    :after org
-    :hook ((org-mode . evil-org-mode)
-           (org-agenda-mode . evil-org-mode)
-           (evil-org-mode . (lambda () (evil-org-set-key-theme '(navigation todo insert textobjects additional)))))
-    :config
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys))
-
+;;  (use-package evil-org
+;;    :after org
+;;    :hook ((org-mode . evil-org-mode)
+;;           (org-agenda-mode . evil-org-mode)
+;;           (evil-org-mode . (lambda () (evil-org-set-key-theme '(navigation todo insert textobjects additional)))))
+;;    :config
+;;    (require 'evil-org-agenda)
+;;    (evil-org-agenda-set-keys))
+;;
   (lem/leader-key-def
     "o" '(:ignore t :which-key "org mode")
     "oi" '(:ignore t :which-key "Insert")
@@ -1238,7 +1239,7 @@ org file. You need to add the option ~#+auto_tangle: t~ in the header of the fil
       :defer t
       :hook (org-mode . org-auto-tangle-mode)
       :config
-      (setq org-auto-tangle-default t))
+      (setq org-auto-tangle-default nil))
 
     (defun lem/insert-auto-tangle-tag ()
       "Insert auto-tangle tag in literature config."

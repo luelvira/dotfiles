@@ -2,7 +2,7 @@
 Name=Emacs Server
 GenericName=Text Editor
 Comment=Edit text daemon
-Exec="bash -c '/home/lucas/.local/bin/sync.sh && killall -9 emacs ; /usr/bin/emacs --daemon && notify-send \"Emacs ready\"'"
+Exec= /home/lucas/.local/bin/launch_emacs.sh
 Terminal=true
 Type=Application
 Icon=emacs
