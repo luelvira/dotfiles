@@ -30,6 +30,7 @@
   - [[#auto-revert-buffer][Auto revert buffer]]
   - [[#toggle-display-white-space][Toggle display white space]]
   - [[#highlight-matching-parentheses][Highlight matching parentheses]]
+  - [[#highlight-todo][HIGHLIGHT TODO]]
 - [[#editing-configuration][Editing configuration]]
   - [[#tramp][Tramp]]
   - [[#tab-widths][Tab widths]]
@@ -358,7 +359,6 @@ This section configures basic UI settings that remove unneded elements to make E
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
   (set-fringe-mode 0)        ; Give some breathing room (menu-bar-mode -1)            ; Disable the menu bar
-  (menu-bar-mode -1)
   ;; Set up the visible bell
   (setq visible-bell t)
   (electric-indent-mode -1)
@@ -414,10 +414,11 @@ also run =M-x counsel-load-theme= to choose between them easily.
 #+begin_src emacs-lisp
       ;; Set the font
     (setq default-mono-font "Fira Code"
-          default-variable-pitch-font "Noto Sans Mono")
+          default-variable-pitch-font "Noto Sans")
     (set-face-attribute 'default nil
         :font default-mono-font
-        :height 110)
+        :height 110
+        :weight 'medium)
     (set-face-attribute 'fixed-pitch nil
       :family default-mono-font :height 1.0 :inherit 'default)
     (set-face-attribute 'variable-pitch nil
@@ -512,6 +513,21 @@ correctly.
   (show-paren-mode 1))
 #+end_src
 
+** HIGHLIGHT TODO
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :hook ((org-mode . hl-todo-mode)
+         (prog-mode . hl-todo-mode))
+  :config
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        `(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("HACK"       font-lock-constant-face bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("NOTE"       success bold)
+          ("DEPRECATED" font-lock-doc-face bold))))
+#+end_src
 * Editing configuration
 ** Tramp
 Tramp is a built-in package that allows you to open files over SSH, su, and sudo
