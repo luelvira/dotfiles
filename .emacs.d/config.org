@@ -30,6 +30,7 @@
   - [[#auto-revert-buffer][Auto revert buffer]]
   - [[#toggle-display-white-space][Toggle display white space]]
   - [[#highlight-matching-parentheses][Highlight matching parentheses]]
+  - [[#highlight-todo][HIGHLIGHT TODO]]
 - [[#editing-configuration][Editing configuration]]
   - [[#tramp][Tramp]]
   - [[#tab-widths][Tab widths]]
@@ -47,7 +48,10 @@
   - [[#files][Files]]
 - [[#writting][Writting]]
   - [[#tools][Tools]]
-  - [[#modes][Modes]]
+  - [[#text-mode][Text mode]]
+  - [[#org-mode][Org mode]]
+  - [[#org-roam-mode][Org roam mode]]
+  - [[#pdfs][PDFs]]
 - [[#dashboard][Dashboard]]
 - [[#terminal-emulator][Terminal emulator]]
   - [[#vterm][vterm]]
@@ -56,6 +60,8 @@
   - [[#magit][Magit]]
   - [[#github-copilot][Github copilot]]
   - [[#languages][Languages]]
+- [[#applications][Applications]]
+  - [[#calendar][Calendar]]
 
 * PUT THIS IN YOUR init.el
 
@@ -348,17 +354,15 @@ This section configures basic UI settings that remove unneded elements to make E
 ** Reduce distraction
 
 #+begin_src emacs-lisp
-(setq inhibit-startup-message t)
-
+  (setq inhibit-startup-message t)
   (scroll-bar-mode -1)        ; Disable visible scrollbar
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
-  (set-fringe-mode 10)        ; Give some breathing room
-
-  (menu-bar-mode -1)            ; Disable the menu bar
-
+  (set-fringe-mode 0)        ; Give some breathing room (menu-bar-mode -1)            ; Disable the menu bar
   ;; Set up the visible bell
   (setq visible-bell t)
+  (electric-indent -1)
+  (electric-pair-mode -1)
 
 #+end_src
 
@@ -372,7 +376,7 @@ This section configures basic UI settings that remove unneded elements to make E
 
 #+begin_src emacs-lisp
 (unless (string= (getenv "DESKTOP_SESSION") "gnome")
-    (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+    (set-frame-parameter nil 'alpha '(90 . 90))
     (add-to-list 'default-frame-alist '(alpha-background . 90)))
 #+end_src
 
@@ -408,13 +412,46 @@ also run =M-x counsel-load-theme= to choose between them easily.
 ** Fonts
 
 #+begin_src emacs-lisp
-    ;; Set the font
-  (setq default-mono-font "Fira Code"
-            default-variable-pitch-font "Noto Sans")
-    (set-face-attribute 'default nil :font default-mono-font :height 120)
-    (set-face-attribute 'fixed-pitch nil :family default-mono-font :height 1.0 :inherit 'default)
-    (set-face-attribute 'variable-pitch nil :family default-variable-pitch-font :weight 'regular :inherit 'default)
+      ;; Set the font
+    (setq default-mono-font "Fira Code"
+          default-variable-pitch-font "Ubuntu")
+    (set-face-attribute 'default nil
+        :font default-mono-font
+        :height 110
+        :weight 'medium)
+    (set-face-attribute 'fixed-pitch nil
+      :family default-mono-font :height 1.0 :inherit 'default)
+    (set-face-attribute 'variable-pitch nil
+      :family default-variable-pitch-font :weight 'regular :inherit 'default)
 #+end_src
+
+*** Ligatures
+#+begin_src emacs-lisp
+  (use-package ligature
+  :config
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
+#+end_src
+
 
 ** Better Modeline
 
@@ -428,8 +465,8 @@ correctly.
 
 #+begin_src emacs-lisp
   (setq display-time-format "%H:%M %b %y"
-    display-time-default-load-average nil)
-(display-time-mode 1)
+        display-time-default-load-average nil)
+  (display-time-mode 1)
   ;; Dimish modeline clutter hides pesky minor modes
   (use-package diminish)
 
@@ -441,7 +478,12 @@ correctly.
   (use-package doom-modeline
     :init (doom-modeline-mode 1)
     :custom
-    (doom-modeline-height 15))
+    (doom-modeline-height 15)
+    (doom-modeline-bar-width 0)
+    (doom-modeline-minor-modes t)
+    (doom-modeline-persp-name nil)
+    (doom-modeline-buffer-file-name-style 'truncate-except-project)
+    (doom-modeline-major-mode-icon nil))
 #+end_src
 
 ** Auto revert buffer
@@ -471,8 +513,22 @@ correctly.
   (show-paren-mode 1))
 #+end_src
 
+** HIGHLIGHT TODO
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :hook ((org-mode . hl-todo-mode)
+         (prog-mode . hl-todo-mode))
+  :config
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        `(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("HACK"       font-lock-constant-face bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("NOTE"       success bold)
+          ("DEPRECATED" font-lock-doc-face bold))))
+#+end_src
 * Editing configuration
-
 ** Tramp
 Tramp is a built-in package that allows you to open files over SSH, su, and sudo
 from within Emacs. It’s incredibly useful if you need to edit files as root or
@@ -489,7 +545,7 @@ on a remote machine frequently.
 Default tab width is 8, which is too much. We can change it to 4.
 
 #+begin_src emacs-lisp
-(setq-default tab-width 4)
+(setq-default tab-width 2)
 (setq-default evil-shift-width tab-width)
 ;; use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -585,6 +641,7 @@ item.
 #+begin_src emacs-lisp
   (use-package hydra
     :defer 1)
+
   (use-package ivy
     :diminish
     :bind (("C-s" . swiper)
@@ -644,7 +701,6 @@ item.
 #+end_src
 
 *** Counsel
-
 Counsel need to be installed before ivy. Also, Counsel provides ivy and swipper
 as dependencies, but I will install ivy manually
 
@@ -707,13 +763,13 @@ Company is a Modular text completion framework for emacs
   (use-package company
   :after lsp-mode
   :hook (prog-mode . company-mode)
-  :bind (:map company-active-map
-              ("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
-        ("<tab>" . company-indent-or-complete-common))
   :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
 
   (use-package company-box
     :hook (company-mode . company-box-mode))
@@ -932,8 +988,7 @@ contains the org files only, and it is named sync.
 
   ;; (add-hook 'after-save-hook 'lem/sync) Use as hook generate a lot of commits
 #+end_src
-** Modes
-*** Text mode
+** Text mode
 Aditionaly to the last hook I will make more adjustement into the text view
 
 #+begin_src emacs-lisp
@@ -946,7 +1001,7 @@ Aditionaly to the last hook I will make more adjustement into the text view
   (add-hook 'text-mode-hook 'lem/text-mode-setup)
 #+end_src
 
-*** Org mode
+** Org mode
 
 #+begin_src emacs-lisp
   (defun lem/org-mode-hook ()
@@ -980,16 +1035,16 @@ Aditionaly to the last hook I will make more adjustement into the text view
 
 The org mode is not close
 
-**** GTD
-***** Multiple  keyword sets in one file
+*** GTD
+**** Multiple  keyword sets in one file
 From the [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]], sometimes you want to use different sets of TODO keywords in parallel. For
 example a set for task that could be =DONE= or =TODO=, other task that could depends on other and
 include the keyword =WAITING= and so on.
 
-*IMPORTANT* You can only use set at time, so you need first to select the correct workflow. The
+IMPORTANT* You can only use set at time, so you need first to select the correct workflow. The
 shortcut to select them is: =C-u C-u C-c C-t=;  =C-s-RIGHT=;  =C-s-LEFT=
 
-*****  Workflow states
+****  Workflow states
 - *TODO*: A task which should be done, but is not processed
 - *NEXT*: With the GTD flow, the next task to be done
 - *WAIT*: This task depends on other person, so it's not actionable
@@ -1000,7 +1055,7 @@ shortcut to select them is: =C-u C-u C-c C-t=;  =C-s-RIGHT=;  =C-s-LEFT=
         '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d!)" "CANCELED(c!)")))
 #+end_src
 
-***** Tags
+**** Tags
 
 Tags helps to filter over all task. This task are mutually exclusive, allowing to determinate its context.
 - *batch* Low effort
@@ -1015,7 +1070,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
        (:endgroup . nil)))
 #+end_src
 
-***** Priorities
+**** Priorities
 
 #+begin_src emacs-lisp
   (setq org-fancy-priorities-list '("🟥" "🟧" "🟨")
@@ -1026,7 +1081,7 @@ Tags helps to filter over all task. This task are mutually exclusive, allowing t
         org-agenda-block-separator 8411)
 #+end_src
 
-***** Agendas
+**** Agendas
 Configure the agenda views
 
 #+begin_src emacs-lisp
@@ -1041,14 +1096,14 @@ Configure the agenda views
 
 Org agenda is a mode of emacs that allows you to view the task for the week
 
-*Note 1* You can shcedule the todos with org-shedule command or due time with
+Note 1* You can shcedule the todos with org-shedule command or due time with
 org-deadline. To move around the date use ~Shift+arrows~
 
 
-*Note 2*: We can get a repeat item ading to the deadline the period of time to
+Note 2*: We can get a repeat item ading to the deadline the period of time to
 be repeat, for example a birthday that is repeat each year (see the agenda file)
 
-***** Control time per task
+**** Control time per task
 
 Emacs give you a way to capture the time you spends on each task. You only need
 go over the task and execute the command =org-clock-in= and when you stop or
@@ -1059,7 +1114,7 @@ finish go again over the task and run =org-clock-out=
   (org-clock-persistence-insinuate)
 #+end_src
 
-***** Capture template for task
+**** Capture template for task
 The following templates should be used to customize the behavior of the capture
 process for new tasks.
 
@@ -1067,11 +1122,14 @@ process for new tasks.
   (setq org-capture-templates
         `(("t" "Tasks")
           ("tt" "Task" entry (file+olp+datetree ,(concat org-directory "Tasks.org"))
-           "* TODO %?\n  %i"
-           :empty-lines 1)))
+           "* TODO %?\n  %i" :empty-lines 1)
+          ("tm" "Meeting" entry (file+headline ,(concat org-directory "Tasks.org") "Meeting")
+           "* %? :meeting:\n<%<%Y-%m-%d %a %H:00>>")
+        ("tn" "Note" entry (file ,(concat org-directory "notes.org"))
+         "* Note (%a)\nEntered on %U\n%?")))
 #+end_src
 
-***** Pomodoro
+**** Pomodoro
 #+begin_src emacs-lisp
 (use-package org-pomodoro
     :ensure t
@@ -1091,7 +1149,7 @@ process for new tasks.
 
 #+end_src
 
-***** Habit
+**** Habit
 
 #+begin_src emacs-lisp
   (require 'org-habit)
@@ -1100,7 +1158,7 @@ process for new tasks.
         org-habit-show-all-today nil
         org-habit-show-habits-only-for-today nil)
 #+end_src
-**** Configure Babel languages
+*** Configure Babel languages
 
 To execute or export code in org-mode code blocks, you’ll need to set up org-babel-load-languages
 for each language you’d like to use. [[https:orgmode.org/worg/org-contrib/babel/languages/index.html][This page]] documents all of the languages that you can use with
@@ -1119,7 +1177,7 @@ org-babel.
 (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
 #+end_src
 
-***** Structure templates
+**** Structure templates
 Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files
 in combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and
 then press =TAB=.  For example, to insert an empty =emacs-lisp= block below, you can type =<el= and
@@ -1139,8 +1197,8 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
   (add-to-list 'org-structure-template-alist '("ex" . "export"))
 #+end_src
 
-**** Fonts and bullets
-***** Bullets
+*** Fonts and bullets
+**** Bullets
 Use bullet characters instead of asterisks, plus set the header font sizes to something more palatable. A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
 #+begin_src emacs-lisp
   (use-package org-superstar
@@ -1148,7 +1206,7 @@ Use bullet characters instead of asterisks, plus set the header font sizes to so
   :hook (org-mode . org-superstar-mode))
 #+end_src
 
-***** Increase the size of various heading
+**** Increase the size of various heading
 I dont like how it is shown
 #+begin_src emacs-lisp :tangle no
 ;;(set-face-attribute 'org-document-title nil :font default-variable-pitch-font :weight 'bold :height 1.3)
@@ -1163,7 +1221,7 @@ I dont like how it is shown
   (set-face-attribute (car face) nil :font default-variable-pitch-font :weight 'medium :height (cdr face)))
 #+end_src
 
-***** Setting monospace fonts for required text
+**** Setting monospace fonts for required text
 #+begin_src emacs-lisp
 (require 'org-indent)
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -1178,7 +1236,7 @@ I dont like how it is shown
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 #+end_src
 
-**** Adding some key binding
+*** Adding some key binding
 
 #+begin_src emacs-lisp
   ;; function to search into the org folder
@@ -1209,12 +1267,12 @@ I dont like how it is shown
     "opt" '(set-pomodoro-timer :which-key "Set pomodoro timer")) 
 #+end_src
 
-**** Close org mode configuration
+*** Close org mode configuration
 #+begin_src emacs-lisp
   )
 #+end_src
 
-**** Org templates
+*** Org templates
 In this subsection, I will add some capture to the capture list, that are not   
 related with any workflow 
 #+begin_src emacs-lisp
@@ -1224,13 +1282,13 @@ related with any workflow
                    "| %U | %^{fondo1} | %^{fondo2} |" :kill-buffer t) t)
 #+end_src
 
-**** Org toc
+*** Org toc
 #+begin_src emacs-lisp
   (use-package toc-org                                                          
     :hook (org-mode . toc-org-mode))
 #+end_src
 
-**** Org-auto-tangle
+*** Org-auto-tangle
 Org  auto-tangle enable tangle the content of a document each time, you save the
 org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
 #+begin_src emacs-lisp
@@ -1252,11 +1310,11 @@ org file. You need to add the option ~#+auto_tangle: t~ in the header of the fil
     "ia" '(lem/insert-auto-tangle-tag :which-key "Insert auto-tangle header tag"))
 
 #+end_src
-*** Org roam mode
+** Org roam mode
 Org-roam is a tool for networked thought. It reproduces some of the Roam
 Research’s key features within Org-mode.
 
-**** Installation
+*** Installation
 The instalation process use the melpa or melpa stable package manager from emacs.
 
 #+begin_src emacs-lisp
@@ -1287,7 +1345,7 @@ The instalation process use the melpa or melpa stable package manager from emacs
 #+end_src
 
 Also the org roam is not close
-**** Configure org roam templates
+*** Configure org roam templates
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
  '(("f" "Fleeting" plain "%?"
@@ -1300,7 +1358,7 @@ Also the org roam is not close
     :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
     :unnarrowed t)))
 #+end_src
-**** Configure org roam completion
+*** Configure org roam completion
 
 If you’re using a vertical completion framework, such as Ivy, Org-roam supports
 the generation of an aligned, tabular completion interface. For example, to
@@ -1312,12 +1370,12 @@ include a column for tags, one can set org-roam-node-display-template as such:
               (propertize "${tags:*}" 'face 'org-tag)))
 #+end_src
 
-**** End of org roam
+*** End of org roam
 #+begin_src emacs-lisp
 )
 #+end_src
 
-**** Some functions used for customize org-roam
+*** Some functions used for customize org-roam
 #+begin_src emacs-lisp
   (defun my/org-roam-filter-by-tag (tag-name)
     (lambda (node)
@@ -1360,14 +1418,14 @@ include a column for tags, one can set org-roam-node-display-template as such:
                                                             ("Tasks"))
                                      :clock-in :clock-resume)
                                     ("m" "Meeting")
-                                    ("mp" "Prepare meeting" entry "**** Notes\n %?"
+                                    ("mp" "Prepare meeting" entry "** Notes\n %?"
                                      :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
                                                             "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
                                                             ("Meetings"))
                                      :target (file+olp+datetree "%<%Y%m%d%H%M%S>-${slug}.org" ("Meetings"))))))
 #+end_src
 
-**** Keybinding for org-roam
+*** Keybinding for org-roam
 #+begin_src emacs-lisp
   (lem/leader-key-def
     "or"  '(:ignore t :which-key "Org roam")
@@ -1377,7 +1435,7 @@ include a column for tags, one can set org-roam-node-display-template as such:
     "orI" '(org-roam-node-insert-immediate :which-key "Org roam insert immediately")
     "orc" 'my/org-roam-capture-task)
 #+end_src
-**** Zettelkasten
+*** Zettelkasten
 The zettelkasten methodology offers a set of rules to help you to organize your
 notes in a way that makes them easy to find. It is based on the idea of
 establishing links between atomic concepts (each note). On this way, breaks the
@@ -1386,7 +1444,7 @@ relate concepts
 
 There are 4 kind of notes:
 
-***** 1. Fleeting notes
+**** 1. Fleeting notes
 Fleeting notes are thinkings, ideas, concepts and sketch of future notes. They
 need to be processed and related with another notes. To make it simple, the name
 of this notes has a prefix with the current date and time, so can be many notes
@@ -1402,7 +1460,7 @@ instead of the concept.
                  :unnarrowed nil))
 #+end_src
 
-***** 2. Literature Notes
+**** 2. Literature Notes
 Literature notes are notes extracted from external source. These must include                                                                                                                                      
 the reference. These notes have summary or/and highlight from the source, and if
 it is possible, tray to indicate:                                               
@@ -1449,7 +1507,7 @@ content to your conclusion and ideas.
                 org-ref-cite-onclick-function (lambda (_)                       
                   (org-ref-citation-hydra/body))))
 #+end_src
-****** Citar                                                                       
+***** Citar                                                                       
                                                                                 
 [[https://github.com/emacs-citar/citar][Citar]] provides a highly-configurable completing-read front-end to browse and act
 on BibTeX, BibLaTeX, and CSL JSON bibliographic data, and LaTeX, markdown, and  
@@ -1461,7 +1519,7 @@ org-cite editing support.
     (citar-bibliography bibliography-files))                                    
 #+end_src                                                                       
 
-******* citar-org-roam                                                              
+****** citar-org-roam                                                              
                                                                                 
 This package use citar as base to improve the citation process.                 
                                                                                 
@@ -1490,7 +1548,7 @@ This package use citar as base to improve the citation process.
   (setq citar-org-roam-capture-template-key "r"))                                
 #+end_src   
 
-****** Import annotations from Zotero                                              
+***** Import annotations from Zotero                                              
                                                                                 
 #+begin_src emacs-lisp
   (defun lem/import-notes-from-zotero (citekey)                                 
@@ -1530,7 +1588,7 @@ entry will be added into the list with all the acronyms.
                                                                                 
 #+end_src
 
-***** 3. Permanent Notes
+**** 3. Permanent Notes
 Permanent notes are stand-alone ideas, that can be made without any direct      
 context to other sourced. Can be made as a recap or summary of the information, 
 but also can be thoughts that popped into your brain while you are working.     
@@ -1538,16 +1596,38 @@ but also can be thoughts that popped into your brain while you are working.
 The aim of permanent notes is to process the notes you have made and extract    
 ideas, related content and any kind of useful information for you. 
 
-***** 4. Index Notes
+**** 4. Index Notes
 Index notes are these notes used to group connected notes. Can be a TOC, a sort 
 description, or whatever you want.
 
-**** Org-roam-ui
+*** Org-roam-ui
 
 #+begin_src emacs-lisp
 (use-package org-roam-ui)
 #+end_src
 
+** PDFs
+[[https://github.com/vedang/pdf-tools][pdf-tools]] is a replacement of DocView for viewing PDF files inside Emacs.  It
+uses the ~poppler~ library, which also means that =pdf-tools= can by used to
+modify PDFs.  I use to disable ‘display-line-numbers-mode’ in ‘pdf-view-mode’
+because line numbers crash it.
+
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :defer t
+  :commands (pdf-loader-install)
+  :mode "\\.pdf\\'"
+  :bind (:map pdf-view-mode-map
+              ("j" . pdf-view-next-line-or-next-page)
+              ("k" . pdf-view-previous-line-or-previous-page)
+              ("C-=" . pdf-view-enlarge)
+              ("C--" . pdf-view-shrink))
+  :init (pdf-loader-install)
+  :config (add-to-list 'revert-without-query ".pdf"))
+
+;;(add-hook 'pdf-view-mode-hook #'dt/turn-off-line-numbers)
+(add-hook 'pdf-view-mode-hook #'(lambda () (interactive) (display-line-numbers-mode -1)))
+#+end_src
 * Dashboard
 Emacs Dashboard is an extensible startup screen showing you recent files,
 bookmarks, agenda items and an Emacs banner.
@@ -1593,9 +1673,16 @@ It need to be compiled, so you need to install first some dependencies
     :config
     (setq vterm-max-scrollback 10000))
 
-;;Still does not work
+  (add-to-list 'display-buffer-alist
+               '("\*vterm\*"
+                 (display-buffer-in-side-window)
+                 (window-height . 0.25)
+                 (side . bottom)
+                 (slot . 0)))
+  ;;Still does not work
   (add-hook 'vterm-mode-hook 'evil-emacs-state)
   (add-hook 'term-mode-hook 'evil-emacs-state)
+
 #+end_src
 
 * Development
@@ -1670,6 +1757,25 @@ Git gutter is a software which make easy to view the difference between a file a
       (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 #+end_src
 
+*** Ediff
+
+~ediff~ is a diff program that is built into Emacs.  By default, ‘ediff’ splits
+files vertically and places the ‘help’ frame in its own window.  I have changed
+this so the two files are split horizontally and the ~help~ frame appears as a
+lower split within the existing window.  Also, I create my own ‘dt-ediff-hook’
+where I add ~j/k~ for moving to next/prev diffs.  By default, this is set to
+~n/p~.
+#+begin_src emacs-lisp
+(setq ediff-split-window-function 'split-window-horizontally
+      ediff-window-setup-function 'ediff-setup-windows-plain)
+
+(defun dt-ediff-hook ()
+  (ediff-setup-keymap)
+  (define-key ediff-mode-map "j" 'ediff-next-difference)
+  (define-key ediff-mode-map "k" 'ediff-previous-difference))
+
+(add-hook 'ediff-mode-hook 'dt-ediff-hook)
+#+end_src
 ** Github copilot
 Github copilot use OpenAI Codex to suggest code. There is not an emacs' version,
 but there is an alternative based in the [[https://github.com/github/copilot.vim][official vim]] binaries
@@ -1683,7 +1789,6 @@ but there is an alternative based in the [[https://github.com/github/copilot.vim
 #+end_src
 
 ** Languages
-
 *** Language Server protocol
 
 #+begin_src emacs-lisp
@@ -1716,6 +1821,7 @@ but there is an alternative based in the [[https://github.com/github/copilot.vim
 #+end_src
 
 *** Debug Adapter Support
+
 #+begin_src emacs-lisp :tangle no
 (use-package dap-mode
   :straight t
@@ -1731,6 +1837,7 @@ but there is an alternative based in the [[https://github.com/github/copilot.vim
 *** TypeScript and JavaScript
 
 Configure TypeScript and JavaScript language modes
+
 #+begin_src emacs-lisp
   (use-package typescript-mode
     :mode "\\.ts\\'"
@@ -1764,6 +1871,8 @@ Configure TypeScript and JavaScript language modes
 #+end_src
 
 *** HTML/CSS mode
+
+Configure web mode
 #+begin_src emacs-lisp
     (use-package web-mode
       :config
@@ -1798,15 +1907,40 @@ Combine httpd server with impatient mode
 (use-package impatient-mode :straight t)
 #+end_src
 
-
 *** Python
+
+#+begin_src emacs-lisp
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . lsp-deferred)
+    :custom
+    (python-shell-interpreter "python3"))
+#+end_src
+
+Install lsp
+
+#+begin_src shell
+pip install --user "python-language-server[all]"
+#+end_src
+
+In debian system:
+#+begin_src shell
+sudo apt install python3-pylsp python3-pytest pylint python3-pyflakes
+#+end_src
+
+For virtualenv
+
+#+begin_src emacs-lisp
+(use-package pyvenv
+  :config
+  (pyvenv-mode 1))
+#+end_src
 
 *** Compilation
 
 Set up the compile package and ensure that compilation output automatically scrolls.
 
 #+begin_src emacs-lisp
-
 (use-package compile
   :straight nil
   :custom
@@ -1824,12 +1958,42 @@ Set up the compile package and ensure that compilation output automatically scro
 **** Syntax checking with flycheck
 #+begin_src emacs-lisp
 (use-package flycheck
-  :defer t
-  :hook (lsp-mode . flycheck-mode))
+    :ensure t
+    :defer t
+    :diminish
+    :init (global-flycheck-mode))
 #+end_src
 
-**** Smart parens
+**** Smart parents
 #+begin_src emacs-lisp :tangle no
 (use-package smartparens
   :hook (prog-mode . smartparens-mode))
+#+end_src
+
+* Applications
+
+** Calendar
+#+begin_src emacs-lisp
+(use-package calfw
+  :disabled
+  :commands cfw:open-org-calendar
+  :config
+  (setq cfw:fchar-junction ?╋
+        cfw:fchar-vertical-line ?┃
+        cfw:fchar-horizontal-line ?━
+        cfw:fchar-left-junction ?┣
+        cfw:fchar-right-junction ?┫
+        cfw:fchar-top-junction ?┯
+        cfw:fchar-top-left-corner ?┏
+        cfw:fchar-top-right-corner ?┓)
+    (setq cfw:org-overwrite-default-keybinding t))
+
+
+  (use-package calfw-org
+    :config
+    (setq cfw:org-agenda-schedule-args nil))
+
+(lem/leader-key-def
+  "cc"  '(cfw:open-org-calendar :which-key "calendar"))
+
 #+end_src

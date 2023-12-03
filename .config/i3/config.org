@@ -62,7 +62,7 @@ title_align center
 ** Gaps
 #+begin_src sh
 smart_gaps on
-gaps inner 2px
+gaps inner 10px
 gaps outer 2px
 #+end_src
 

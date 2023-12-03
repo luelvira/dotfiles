@@ -6,7 +6,7 @@ for_window [class   = ".*"] title_format "%class"
 title_align center
 
 smart_gaps on
-gaps inner 2px
+gaps inner 10px
 gaps outer 2px
 
 default_border pixel 1
