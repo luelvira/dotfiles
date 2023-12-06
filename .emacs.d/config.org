@@ -1954,30 +1954,3 @@ Set up the compile package and ensure that compilation output automatically scro
   :hook (prog-mode . smartparens-mode))
 #+end_src
 
-* Applications
-
-** Calendar
-#+begin_src emacs-lisp
-(use-package calfw
-  :disabled
-  :commands cfw:open-org-calendar
-  :config
-  (setq cfw:fchar-junction ?╋
-        cfw:fchar-vertical-line ?┃
-        cfw:fchar-horizontal-line ?━
-        cfw:fchar-left-junction ?┣
-        cfw:fchar-right-junction ?┫
-        cfw:fchar-top-junction ?┯
-        cfw:fchar-top-left-corner ?┏
-        cfw:fchar-top-right-corner ?┓)
-    (setq cfw:org-overwrite-default-keybinding t))
-
-
-  (use-package calfw-org
-    :config
-    (setq cfw:org-agenda-schedule-args nil))
-
-(lem/leader-key-def
-  "cc"  '(cfw:open-org-calendar :which-key "calendar"))
-
-#+end_src
