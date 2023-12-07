@@ -13,6 +13,9 @@
   - [[#disable-warnings][Disable warnings]]
   - [[#emacs-as-server][Emacs as server]]
   - [[#autorevert-buffers][Autorevert buffers]]
+  - [[#delete-current-file][Delete current file]]
+  - [[#remembering-minibuffer][Remembering minibuffer]]
+  - [[#remembering-the-last-place-you-visited-in-a-file][Remembering the last place you visited in a file]]
   - [[#sync-files][Sync files]]
 - [[#theming][Theming]]
   - [[#all-the-icons][All the icons]]
@@ -67,7 +70,10 @@
   - [[#org-roam-ui][Org-roam-ui]]
 
 * Enable literature configuration
-Emacs allows to export src blocks to a ~.el~ file and load them. This is a great option if you would like to describe each part of the configuation and explain a bit of them. To make them, you need to create a ~init.el~ file with the following code
+Emacs allows to export src blocks to a ~.el~ file and load them. This is a great
+option if you would like to describe each part of the configuation and explain a
+bit of them. To make them, you need to create a ~init.el~ file with the
+following code. 
 
 #+begin_example emacs-lisp :tangle init.el
 (org-babel-load-file
@@ -257,7 +263,7 @@ This command allow to run emacs as server, so all the startup can be done once t
 (global-auto-revert-mode 1)
 #+end_src
 
-*** Delete current file
+** Delete current file
 Emacs by default does not have a system to delete the current file. But you can use the delete-file function with the buffer-file-name
 
 #+begin_src emacs-lisp
@@ -274,6 +280,18 @@ Emacs by default does not have a system to delete the current file. But you can 
 
 #+end_src
 
+** Remembering minibuffer
+#+begin_src emacs-lisp
+;; Save what you enter into minibuffer prompts
+(setq history-length 25)
+(savehist-mode 1)
+#+end_src
+
+** Remembering the last place you visited in a file
+#+begin_src emacs-lisp
+;; Remember and restore the last cursor location of opened files
+(save-place-mode 1)
+#+end_src
 ** Sync files
 
 I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
@@ -777,7 +795,6 @@ We can set a sortcut to open the config file from the emacs directory
 #+end_src
 
 * Editing configuration
-
 
 ** Default tab width
 
