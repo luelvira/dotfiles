@@ -121,3 +121,7 @@ eval "$(pyenv virtualenv-init -)"
 
 # Created by `pipx` on 2023-11-26 16:36:55
 export PATH="$PATH:/home/lucas/.local/bin"
+
+# Set vim as editor
+export VISUAL=vim
+export EDITOR="$VISUAL"
