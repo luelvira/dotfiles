@@ -5,18 +5,16 @@
 * TOC                                                                   :TOC:
 - [[#enable-literature-configuration][Enable literature configuration]]
   - [[#lexical-binding][Lexical binding]]
+  - [[#startup-performance][Startup performance]]
 - [[#package-system][Package system]]
+  - [[#with-elpaca][With Elpaca]]
 - [[#keep-it-clean][Keep it clean]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
-  - [[#set-encding-by-default][Set encding by default]]
-  - [[#disable-warnings][Disable warnings]]
-  - [[#emacs-as-server][Emacs as server]]
-  - [[#autorevert-buffers][Autorevert buffers]]
+  - [[#standar-settings][Standar settings]]
   - [[#delete-current-file][Delete current file]]
-  - [[#remembering-minibuffer][Remembering minibuffer]]
-  - [[#remembering-the-last-place-you-visited-in-a-file][Remembering the last place you visited in a file]]
   - [[#sync-files][Sync files]]
+  - [[#highlight-matching-braces][Highlight Matching Braces]]
 - [[#theming][Theming]]
   - [[#all-the-icons][All the icons]]
   - [[#reduce-distractions][Reduce distractions]]
@@ -24,6 +22,7 @@
   - [[#enable-line-numbers][Enable line numbers]]
   - [[#color-theme][Color theme]]
   - [[#fonts][Fonts]]
+  - [[#doom-modeline][Doom modeline]]
 - [[#keyboard-binding][Keyboard binding]]
   - [[#esc-as-c-g][ESC as C-g]]
   - [[#setup-evil-mode][Setup evil mode]]
@@ -41,6 +40,7 @@
 - [[#editing-configuration][Editing configuration]]
   - [[#default-tab-width][Default tab width]]
 - [[#completion-system][Completion system]]
+  - [[#company][Company]]
   - [[#ivy-and-counsel][ivy and counsel]]
   - [[#helpul][helpul]]
 - [[#file-browser-with-dired][File browser with dired]]
@@ -48,6 +48,7 @@
   - [[#flyspell][Flyspell]]
   - [[#visual-fill-configuration][Visual fill configuration]]
   - [[#text-mode][Text mode]]
+  - [[#prettify-symbols][prettify symbols]]
 - [[#development][Development]]
   - [[#projectile-1][Projectile]]
   - [[#flycheck][Flycheck]]
@@ -58,10 +59,10 @@
   - [[#define-all-the-variables][Define all the variables]]
   - [[#gtd][GTD]]
   - [[#configure-babel-languages][Configure Babel languages]]
-  - [[#bullets][Bullets]]
   - [[#increase-the-size-of-various-heading][Increase the size of various heading]]
-  - [[#close-org-mode-configuration][Close org mode configuration]]
   - [[#setting-monospace-fonts-for-required-text][Setting monospace fonts for required text]]
+  - [[#close-org-mode-configuration][Close org mode configuration]]
+  - [[#bullets][Bullets]]
   - [[#custom-function][Custom function]]
   - [[#org-templates][Org templates]]
   - [[#org-auto-tangle][Org-auto-tangle]]
@@ -70,6 +71,7 @@
   - [[#org-roam-ui][Org-roam-ui]]
 
 * Enable literature configuration
+
 Emacs allows to export src blocks to a ~.el~ file and load them. This is a great
 option if you would like to describe each part of the configuation and explain a
 bit of them. To make them, you need to create a ~init.el~ file with the
@@ -89,9 +91,30 @@ Lexical binding is a mode that allows to use special features of the languages. 
 ;; -*- lexical-binding: t ;-*-
 #+end_src
 
+** Startup performance
+
+Make startup faster by reducing the frequency of garbage collection and then use a hook to measure Emacs startup time.
+
+#+begin_src emacs-lisp
+  ;; The default is 800 kilobytes.  Measured in bytes.
+  (setq gc-cons-threshold (* 50 1000 1000))
+
+  ;; Profile emacs startup
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (message "*** Emacs loaded in %s seconds with %d garbage collections."
+                       (emacs-init-time "%.2f")
+                       gcs-done)))
+#+end_src
+
 * Package system
 
+** With Elpaca
+
 I would try to use elpaca as package system.
+
+*Note* Elpaca has some problems with repos like org-pomodoro and
+org-superstar. Because that, I  will try awain straight.el
 
 #+begin_src emacs-lisp
 (defvar elpaca-installer-version 0.6)
@@ -137,7 +160,6 @@ Also, the elapaca repository page tells you to create a ~early-init.el~ file wit
 #+begin_src emacs-lisp :tangle early-init.el
 (setq package-enable-at-startup nil)
 #+end_src
-
 
 *** Elapaca with use-package
 
@@ -234,37 +256,46 @@ bookmarks, agenda items and an Emacs banner.
 #+end_src
 
 * General configuration
-** Set encding by default
+** Standar settings
+This section  contains a list of common and simple configuration
+
 #+begin_src emacs-lisp
+;; Set encding by default
 (set-default-coding-systems 'utf-8)
-#+end_src
-
-** Disable warnings
-
-#+begin_src emacs-lisp
+;; Disable warnings
 (setq native-comp-async-report-warnings-errors nil)
-#+end_src
 
-** Emacs as server
+;; Emacs as server
 
-This command allow to run emacs as server, so all the startup can be done once time and connect client to it each time you need.
-
-#+begin_src emacs-lisp
+;; This command allow to run emacs as server, so all the startup can be done
+;; once time and connect client to it each time you need.
 (server-start)
-#+end_src
 
-** Autorevert buffers
-
-#+begin_src emacs-lisp
+;; Autorevert buffers
 ;; Revert Dired and other buffers
 (setq global-auto-revert-non-file-buffers t)
-
 ;; Revert buffers when the underlying file has changed
 (global-auto-revert-mode 1)
+
+;; Remembering minibuffer
+;; Save what you enter into minibuffer prompts
+(setq history-length 25)
+(savehist-mode 1)
+;; Remember and restore the last cursor location of opened files
+(save-place-mode 1)
+
+;; change the custom file location
+;; Move customization variables to a separate file and load it
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
+
+;; Set default connection mode to SSH in tramp
+(setq tramp-default-method "ssh")
 #+end_src
 
 ** Delete current file
-Emacs by default does not have a system to delete the current file. But you can use the delete-file function with the buffer-file-name
+Emacs by default does not have a system to delete the current file. But you can
+use the delete-file function with the buffer-file-name
 
 #+begin_src emacs-lisp
   (defun lem/delete-file ()
@@ -280,21 +311,10 @@ Emacs by default does not have a system to delete the current file. But you can 
 
 #+end_src
 
-** Remembering minibuffer
-#+begin_src emacs-lisp
-;; Save what you enter into minibuffer prompts
-(setq history-length 25)
-(savehist-mode 1)
-#+end_src
-
-** Remembering the last place you visited in a file
-#+begin_src emacs-lisp
-;; Remember and restore the last cursor location of opened files
-(save-place-mode 1)
-#+end_src
 ** Sync files
 
-I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
+I have a script which try to keep sync with a repository on codeberg. This repo
+contains the org files only, and it is named sync.
 
 #+begin_src emacs-lisp
   (defun lem/sync (path)
@@ -311,8 +331,16 @@ I have a script which try to keep sync with a repository on codeberg. This repo 
     (lem/sync "~/Documents/git/dotfiles"))
 #+end_src
 
-* Theming
+** Highlight Matching Braces
+#+begin_src emacs-lisp
+(use-package paren
+  :elpaca nil
+  :config
+  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
+  (show-paren-mode 1))
 
+#+end_src
+* Theming
 ** All the icons
 
 This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
@@ -351,8 +379,8 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; only for non gnome desktop
 (unless (string= (getenv "DESKTOP_SESSION") "gnome")
-    (set-frame-parameter nil 'alpha '(100 . 100))
-    (add-to-list 'default-frame-alist '(alpha-background . 100)))
+    (set-frame-parameter nil 'alpha '(90 . 90))
+    (add-to-list 'default-frame-alist '(alpha-background . 90)))
 #+end_src
 
 ** Enable line numbers
@@ -369,7 +397,10 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 
 ** Color theme
 
-[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.  Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide which one you like best. You can also run =M-x counsel-load-theme= to choose between them easily.
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many
+different Emacs modes.  Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide
+which one you like best. You can also run =M-x counsel-load-theme= to choose
+between them easily.
 
 #+begin_src emacs-lisp
   (use-package doom-themes
@@ -382,6 +413,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
     ;; Corrects (and improves) org-mode's native fontification.
     (doom-themes-org-config)
     (doom-themes-visual-bell-config))
+
 #+end_src
 
 ** Fonts
@@ -449,7 +481,10 @@ Some fonts allow you to use ligatures in some modes. For that, I use the package
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
+
 #+end_src
+
+** Doom modeline
 
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
 configuration for Emacs.  The default configuration is quite good but you can
@@ -547,15 +582,13 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 
   (use-package evil-numbers
     :after evil
-    :hook 'lem/evil-mode-number-hook
     :config
   (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
   (define-key evil-normal-state-map (kbd "C-a g +") 'evil-numbers/inc-at-pt-incremental)
-  (define-key  evil-normal-state-map (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental))
+  (define-key evil-normal-state-map (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental))
 
   (use-package evil-surround
-    :ensure t
     :config
     (global-evil-surround-mode 1))
 #+end_src
@@ -748,20 +781,25 @@ We can set a sortcut to open the config file from the emacs directory
 
 ** Org shortcuts
 #+begin_src emacs-lisp
- (lem/leader-key-def
-    "o" '(:ignore t :which-key "org mode")
-    "oi" '(:ignore t :which-key "Insert")
-    "oil" '(org-insert-link :which-key "insert link")
-    "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
-    "os"  '(lem/org-search :which-key "search notes")
-    "oa" '(org-agenda :which-key "Status")
-    ;;"ot" '(org-todo-list :which-key "Show TODOs")
-    "oc" '(org-capture t :which-key "Capture")
-    "op" '(:ignore t :which-key "Pomodoro")
-    "ops" '(org-pomodoro :whick-key "Start org pomodoro")
-    "opt" '(set-pomodoro-timer :which-key "Set pomodoro timer")) 
+  (lem/leader-key-def
+     "o"   '(:ignore t :which-key "org mode")
+     "oi"  '(:ignore t :which-key "Insert")
+     "oil" '(org-insert-link :which-key "insert link")
+     "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
+     "os"  '(lem/org-search :which-key "search notes")
+     "oa"  '(org-agenda :which-key "Status")
+;;   "ot" '(org-todo-list :which-key "Show TODOs")
+     "oc" '(org-capture t :which-key "Capture")
+     "op" '(:ignore t :which-key "Pomodoro")
+     "ops" '(org-pomodoro :whick-key "Start org pomodoro")
+     "opt" '(set-pomodoro-timer :which-key "Set pomodoro timer") 
+     "ot"  '(:ignore t :which-key "Insert time stamp")
+     "ots" '(org-time-stamp :which-key "Insert active time stamp")
+     "oti" '(org-time-stamp-inactive :which-key "Insert inactive stamp"))
+
 #+end_src
 ** Org roam shortcut
+
 #+begin_src emacs-lisp
   (lem/leader-key-def
     "or"  '(:ignore t :which-key "Org roam")
@@ -771,7 +809,9 @@ We can set a sortcut to open the config file from the emacs directory
     "orI" '(org-roam-node-insert-immediate :which-key "Org roam insert immediately")
     "orc" 'my/org-roam-capture-task)
 #+end_src
+
 ** Toggle options
+
 #+begin_src emacs-lisp
   (lem/leader-key-def
     "t"  '(:ignore t :which-key "toggles")
@@ -789,6 +829,7 @@ We can set a sortcut to open the config file from the emacs directory
 #+end_src
 
 **  End of general parens
+
 #+begin_src emacs-lisp
 ;; end of general parents
 )
@@ -808,7 +849,11 @@ Default tab width is 8, which is too much. We can change it to 4.
 #+end_src
 
 * Completion system
-[[https://company-mode.github.io/][Company]] is a text completion framework for Emacs. The name stands for “complete anything”.  Completion will start automatically after you type a few letters. Use M-n and M-p to select, <return> to complete or <tab> to complete the common part.
+** Company
+[[https://company-mode.github.io/][Company]] is a text completion framework for Emacs. The name stands for “complete
+anything”.  Completion will start automatically after you type a few
+letters. Use M-n and M-p to select, <return> to complete or <tab> to complete
+the common part.
 
 #+begin_src emacs-lisp
 (use-package company
@@ -831,11 +876,18 @@ Default tab width is 8, which is too much. We can change it to 4.
 
 ** ivy and counsel
 
-ivy is a generic completion mechanism for Emacs. It is based on the idea of incremental narrowing: the list of candidates is filtered as you type more characters. It is similar to ido-mode, but is more powerful and flexible.
+ivy is a generic completion mechanism for Emacs. It is based on the idea of
+incremental narrowing: the list of candidates is filtered as you type more
+characters. It is similar to ido-mode, but is more powerful and flexible.
 
-[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet
+powerful selection menu that appears when you open files, switch buffers, and
+for many other tasks in Emacs.  Counsel is a customized set of commands to
+replace `find-file` with `counsel-find-file`, etc which provide useful commands
+for each of the default completion commands.
 
-[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more
+information about each item.
 
 #+begin_src emacs-lisp
   (use-package hydra
@@ -900,7 +952,8 @@ ivy is a generic completion mechanism for Emacs. It is based on the idea of incr
 #+end_src
 
 *** Counsel
-Counsel need to be installed before ivy. Also, Counsel provides ivy and swipper as dependencies, but I will install ivy manually
+Counsel need to be installed before ivy. Also, Counsel provides ivy and swipper
+as dependencies, but I will install ivy manually
 
 #+begin_src emacs-lisp
 
@@ -949,10 +1002,13 @@ Orderless improves candidate filtering create pattern by words separate with spa
   (completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
 
-
 ** helpul
 
-[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers.  For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration.  It is very useful for figuring out how things work in Emacs.
+[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-=
+command buffers.  For example, if you use =describe-function=, you will not only
+get the documentation about the function, you will also see the source code of
+the function and where it gets used in other places in the Emacs configuration.
+It is very useful for figuring out how things work in Emacs.
 
 
 #+begin_src emacs-lisp
@@ -969,10 +1025,10 @@ Orderless improves candidate filtering create pattern by words separate with spa
 
 * File browser with dired
 
+This block is deprecated. I keep it if I need it again
 #+begin_src emacs-lisp :tangle no
   (use-package dired
       :ensure nil
-      :elpaca nil
       :defer 1
       :config
       (setq dired-listing-swithces "--group-directories-first"
@@ -1032,15 +1088,16 @@ Orderless improves candidate filtering create pattern by words separate with spa
 ** Flyspell
 Fly spell is a mode that allows you to see typing errors. By default it is disable, but can be configure to be used on different kinds of situations.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flyspell
+      :elpaca nil
       :config
       (setq ispell-program-name "hunspell"
-	    ispell-default-dictionary "en_US")
+      ispell-default-dictionary "en_US")
       :hook (text-mode . flyspell-mode)
       :bind (("M-<f7>" . flyspell-buffer)
-	     ("<f7>" . flyspell-word)
-	     ("C-;" . flyspell-auto-correct-previous-word)))
+       ("<f7>" . flyspell-word)
+       ("C-;" . flyspell-auto-correct-previous-word)))
 
 #+end_src
 
@@ -1066,7 +1123,7 @@ mkdir -p ~/.local/lib/
 unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package langtool
      :config
      (setq langtool-language-tool-jar "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
@@ -1097,14 +1154,67 @@ Aditionaly to the last hook I will make more adjustement into the text view.
     (variable-pitch-mode 1)
     (auto-fill-mode 1)
     (visual-fill-column-mode 0)
-    (visual-line-mode)
     (setq evil-auto-indent nil))
 
   (add-hook 'text-mode-hook 'lem/text-mode-setup)
 #+end_src
 
-* Development
+** prettify symbols
 
+Emacs allows you to change some words to symbols like the lambda word to the λ
+symbol. To enable that you need to setup the prettify-symbols-alist var
+
+#+begin_src emacs-lisp :tangle no
+  ;; borrow from doom emacs/modules/ui/ligatures.el
+(setq prettify-symbols-alist 
+  '(;; org
+    ;;("name" . ?»)
+    ;;("#+src_block" . ?»)
+    ;;("src_block_end" . ?«)
+    ("#+begin_quote" . ?“)
+    ("#+end_quote" . ?”)
+    ;; Functional
+    ("lambda" . ?λ)
+    ("def" . ?ƒ)
+    ("composition" . ?∘)
+    ("map" . ?↦)
+		 ("|>"	.	"▷")
+		 ("<|"	.	"◁")
+		 ("->>"	.	"↠")
+		 ("->"	.	"→")
+		 ("<-"	.	"←")
+		 ("=>"	.	"⇒")
+		 ("<="	.	"≤")
+		 (">="	.	"≥")
+    ;; Types
+    ("null" . ?∅)
+    ("true" . ?𝕋)
+    ("false" . ?𝔽)
+    ("int" . ?ℤ)
+    ("float" . ?ℝ)
+    ("str" . ?𝕊)
+    ("bool" . ?𝔹)
+    ("list" . ?𝕃)
+    ;; Flow
+    ("not" . ?￢)
+    ("in" . ?∈)
+    ("not-in" . ?∉)
+    ("and" . ?∧)
+    ("or" . ?∨)
+    ("for" . ?∀)
+    ("some" . ?∃)
+    ("return" . ?⟼)
+    ("yield" . ?⟻)
+    ;; Other
+    ("union" . ?⋃)
+    ("intersect" . ?∩)
+    ("diff" . ?∖)
+    ("tuple" . ?⨂)
+    ("dot" . ?•)))
+
+#+end_src
+
+* Development
 ** Projectile
 
 #+begin_src emacs-lisp
@@ -1121,7 +1231,11 @@ Aditionaly to the last hook I will make more adjustement into the text view.
 
 ** Flycheck
 
-Install =luacheck= from your Linux distro's repositories for flycheck to work correctly with lua files.  Install =python-pylint= for flycheck to work with python files.  Haskell works with flycheck as long as =haskell-ghc= or =haskell-stack-ghc= is installed.  For more information on language support for flycheck, [[https://www.flycheck.org/en/latest/languages.html][read this]].
+Install =luacheck= from your Linux distro's repositories for flycheck to work
+correctly with lua files.  Install =python-pylint= for flycheck to work with
+python files.  Haskell works with flycheck as long as =haskell-ghc= or
+=haskell-stack-ghc= is installed.  For more information on language support for
+flycheck, [[https://www.flycheck.org/en/latest/languages.html][read this]].
 
 #+begin_src emacs-lisp
 (use-package flycheck
@@ -1135,8 +1249,9 @@ Install =luacheck= from your Linux distro's repositories for flycheck to work co
 *** Magit
 
 #+begin_src emacs-lisp
-(use-package seq)
-  (use-package magit)
+(if (version< emacs-version "29.0")
+  (use-package seq))
+(use-package magit)
 #+end_src
 
 *** Git gutter
@@ -1208,7 +1323,6 @@ It need to be compiled, so you need to install first some dependencies
 #+end_src
 
 * Org mode
-
 ** Enable table of content
 
 #+begin_src emacs-lisp
@@ -1230,7 +1344,7 @@ It need to be compiled, so you need to install first some dependencies
   :config
   (setq org-directory "~/Documents/Org/"
         org-default-notes-file (concat org-directory "Inbox.org")
-        org-ellipsis " ▾"
+        ;org-ellipsis " ▾"
         ;org-superstar-headline-bullets-list '("◉" "●" "○" "◆" "●" "○" "◆")
         ;org-superstar-item-bullet-alist '((?- . ?➤) (?+ . ?✦)) ; changes +/- symbols in item lists
         org-log-done 'time
@@ -1395,21 +1509,7 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
   (add-to-list 'org-structure-template-alist '("ex" . "export"))
 #+end_src
 
-** Bullets
-Use bullet characters instead of asterisks, plus set the header font sizes to
-something more palatable. A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this
-blog post]].
-#+begin_src emacs-lisp :tangle no
-  (use-package org-superstar
-    :after org
-    :hook (org-mode . org-superstar-mode)
-    :custom
-    (org-superstar-remove-leading-stars t)
-    (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
-#+end_src
-
 ** Increase the size of various heading
-
 
 #+begin_src emacs-lisp
 (set-face-attribute 'org-document-title nil :font default-variable-pitch-font :weight 'bold :height 1.3)
@@ -1424,12 +1524,8 @@ blog post]].
   (set-face-attribute (car face) nil :font default-variable-pitch-font :weight 'medium :height (cdr face)))
 #+end_src
 
-** Close org mode configuration
-#+begin_src emacs-lisp
-  )
-#+end_src
-
 ** Setting monospace fonts for required text
+
 #+begin_src emacs-lisp
 (require 'org-indent)
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -1442,6 +1538,25 @@ blog post]].
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+#+end_src
+
+** Close org mode configuration
+#+begin_src emacs-lisp
+  )
+#+end_src
+
+** Bullets
+Use bullet characters instead of asterisks, plus set the header font sizes to
+something more palatable. A fair amount of inspiration has been taken from
+[[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
+
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :after org
+    :hook (org-mode . org-superstar-mode)
+    :custom
+    (org-superstar-remove-leading-stars t)
+    (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
 
 ** Custom function
