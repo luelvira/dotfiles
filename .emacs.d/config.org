@@ -364,7 +364,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 (scroll-bar-mode -1)        ; Disable visible scrollbar
 (tool-bar-mode -1)          ; Disable the toolbar
 (tooltip-mode -1)           ; Disable tooltips
-(set-fringe-mode 0)        ; Give some breathing room (menu-bar-mode -1)            ; Disable the menu bar
+(set-fringe-mode 10)        ; Give some breathing room (menu-bar-mode -1)            ; Disable the menu bar
 (menu-bar-mode -1)
 ;; Set up the visible bell
 (setq visible-bell t)
@@ -379,7 +379,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; only for non gnome desktop
 (unless (string= (getenv "DESKTOP_SESSION") "gnome")
-    (set-frame-parameter nil 'alpha '(90 . 90))
+    (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
     (add-to-list 'default-frame-alist '(alpha-background . 90)))
 #+end_src
 
@@ -422,8 +422,8 @@ Defining the various fonts that Emacs will use.
 
 #+begin_src emacs-lisp
   ;; Set the font
-  (setq default-mono-font "Fira Code"
-	default-variable-pitch-font "Ubuntu")
+  (setq default-mono-font "JetBrains Mono"
+	default-variable-pitch-font "Iosevka")
 
   (set-face-attribute 'default nil
 		      :font default-mono-font
@@ -1505,7 +1505,7 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("js" . "src python"))
+  (add-to-list 'org-structure-template-alist '("js" . "src javascript"))
   (add-to-list 'org-structure-template-alist '("ex" . "export"))
 #+end_src
 
@@ -1651,9 +1651,7 @@ lso the org roam is not close
 
 *** Configure org roam completion
 
-If you’re using a vertical completion framework, such as Ivy, Org-roam supports
-the generation of an aligned, tabular completion interface. For example, to
-include a column for tags, one can set org-roam-node-display-template as such:
+If you’re using a vertical completion framework, such as Ivy, Org-roam supports the generation of an aligned, tabular completion interface. For example, to include a column for tags, one can set org-roam-node-display-template as such:
 
 #+begin_src emacs-lisp
 (setq org-roam-node-display-template
