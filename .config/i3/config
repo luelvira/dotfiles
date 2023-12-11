@@ -151,10 +151,10 @@ bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t ima
 bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
 bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png
 
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return  exec i3-sensible-terminal
 bindsym $mod+Shift+b exec --no-startup-id firefox
 bindsym $mod+Shift+t exec --no-startup-id telegram-desktop
-
+bindsym $mod+Shift+m exec  /usr/bin/emacsclient --a= -c
 exec_always "setxkbmap -option 'grp:alt_shift_toggle' -layout us,es"
 bindsym $mod+F1 exec  --no-startup-id ~/.local/bin/bluetooth.sh
 

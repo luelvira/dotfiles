@@ -320,6 +320,7 @@ bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection c
 #+end_src
 
 ** Launch Custom programs
+
 | action                     | shortcuts    |
 |----------------------------+--------------|
 | launch terminal            | $mod+return  |
@@ -333,13 +334,12 @@ bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection c
 |----------------------------+--------------|
 
 #+begin_src sh
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return  exec i3-sensible-terminal
 bindsym $mod+Shift+b exec --no-startup-id firefox
 bindsym $mod+Shift+t exec --no-startup-id telegram-desktop
-
+bindsym $mod+Shift+m exec  /usr/bin/emacsclient --a= -c
 exec_always "setxkbmap -option 'grp:alt_shift_toggle' -layout us,es"
 bindsym $mod+F1 exec  --no-startup-id ~/.local/bin/bluetooth.sh
-
 #+end_src
 
 * Setup workspace
@@ -388,11 +388,14 @@ for_window [class="Spotify"] move to workspace $ws3
 #+end_src
 
 ** I3 bar                                                       :DEPRECATED:
+:PROPERTIES:
+:HEADER-ARGS: :tangle no
+:END:
 
 Start i3bar to display a workspace bar (plus the system information
 i3status In the future, it will be replace to i3blocks or polybar
 
-``` i3config
+#+begin_src sh
 # finds out, if available)
 bar {
   colors {
@@ -408,8 +411,7 @@ bar {
   }
   status_command i3status
 }
-```
-
+#+end_src
 ** Polybar
 
 Launch polybar on each restart. The configuration file is [[file:../polybar/config.org][polybar.org]]

@@ -75,7 +75,7 @@ module-margin-left = 1
 module-margin-right = 1
 monitor=${env:MONITOR:}
 enable-ipc = true
-font-0 = Fira Code Nerd Font:size=12;4
+font-0 = "Fira Code Nerd Font:size=12;4"
 font-1 = Font Awesome:size=13;4
 font-2 = HackNerdFont:size=12;4
 font-3 = "Noto Sans:size=11;1"
@@ -112,7 +112,7 @@ tray-scale = 1.0
 inherit = bar/main
 monitor = HDMI-0
 modules-left = i3 uptime
-modules-right = filesystem memory cpu wired-network ip_vpn sshmenu
+modules-right = fs-root fs-home memory cpu wired-network ip_vpn sshmenu
 #+end_src
 
 * List of modules used
@@ -121,11 +121,11 @@ modules-right = filesystem memory cpu wired-network ip_vpn sshmenu
 #+begin_src conf
 [module/date]
 type = custom/script
-click-left= exec alacritty -e calcure
 interval = 1
 exec = echo $(date '+%a %b %d, %Y %H:%M')
-format-prefix = "📅 "
-format-foreground = ${colors.color4}
+format-prefix = " "
+format-foreground = ${colors.foreground}
+format-prefix-foreground = ${colors.color6}
 format-background = ${colors.background}
 format-underline = ${colors.color4}
 format-margin = 2
@@ -134,22 +134,36 @@ format = 🕓 <label>
 #+end_src
 
 ** Filesystem
+
+I create a base template for the file system module and then 2 instance of them,
+one per mount point. Without this little hack, I won't be able to customize the
+mount point view.
+
 #+begin_src conf
-[module/filesystem]
+[filesystem]
 type = internal/fs
 interval = 25
-mount-0 = /
-mount-1 = /home
-
 label-mounted = %mountpoint% %percentage_used%%
-label-unmounted = %mountpoint% not mounted
-
-format-mounted = <label-mounted>
-format-mounted-foreground = ${colors.color1}
-format-mounted-background = ${colors.background}
-format-mounted-underline = ${colors.color1}
-format-mounted-margin = 2
+format-mounted-margin = 0
 format-mounted-padding = 0
+format-mounted = <label-mounted>
+#+end_src
+
+For the root mount point
+
+#+begin_src conf
+[module/fs-root]
+inherit = filesystem
+mount-0 = /
+label-mounted = "%{F#8be9fd}󰨣%{F-} %percentage_used%%"
+#+end_src
+
+For the home mount point
+#+begin_src conf
+[module/fs-home]
+inherit = filesystem
+mount-0 = /home
+label-mounted = "%{F#8be9fd}󱂶%{F-} %percentage_used%%"
 #+end_src
 
 ** i3
@@ -168,31 +182,33 @@ strip-wsnumbers = true
 enable-click = true
 
 label-mode = %mode%
-label-mode-padding = 2
+label-mode-padding = 0
 
-label-focused = %icon% %name%
+label-focused = %name%
 label-focused-padding = 1
 label-focused-background = ${colors.background}
 label-focused-foreground = ${colors.color3}
 
-label-unfocused = %icon% %name%
+label-unfocused = %name%
 label-unfocused-padding = 1
 
-label-visible = %icon% %name%
+label-visible = %name%
 label-visible-padding = 1
 
-label-urgent = %icon% %name%
+label-urgent = %name%
 label-urgent-background = ${self.label-focused-background}
 label-urgent-padding = 1
+
 #+end_src
 
 ** Memory
 #+begin_src conf
 [module/memory]
 type = internal/memory
+format-prefix = " "
+format-prefix-foreground = ${colors.color6}
 interval = 2
-format-prefix = "RAM "
-format-foreground = ${colors.color11}
+format-foreground = ${colors.foreground}
 label = %used:2%
 #+end_src
 ** Pulseaudio
@@ -233,11 +249,12 @@ format-padding = 1
 type = custom/script
 exec = uptime | awk -F, '{sub(".*up ",x,$1);print $1}'
 interval = 100
-label = Uptime : %output%
-format-foreground = ${colors.color13}
+label = %output%
+format-foreground = ${colors.foreground}
 format-background = ${colors.background}
-format-prefix = "💻 "
-format-prefix-foreground = ${colors.color13}
+# format-prefix = "💻 "
+format-prefix = "󱦟 "
+format-prefix-foreground = ${colors.color6}
 format-underline = ${colors.color13}
 format-margin = 2
 format-padding = 0
@@ -258,16 +275,29 @@ interval=1
 
 ** xkeyboard
 #+begin_src conf 
-[module/xkeyboard]
-type = internal/xkeyboard
-blacklist-0 = num lock
-label-layout = %layout%
-label-layout-foreground = ${color.primary}
-label-indicator-padding = 2
-label-indicator-margin = 1
-label-indicator-foreground = ${colors.background}
-label-indicator-background = ${colors.secoundary}
+  [module/xkeyboard]
+  type = internal/xkeyboard
+  blacklist-0 = num lock
+  blacklist-1 = scroll lock
+  label-active-font = 3
+  layout-icon-default = 
+  layout-icon-0 = us;U
+  layout-icon-1 = es;E
+  label-indicator-on = %icon%
+  label-indicator-off = %icon%
+  label-layout = %layout%
+  label-layout-foreground = ${colors.foreground}
+  label-indicator-padding = 2
+  label-indicator-margin = 1
+  label-indicator-foreground = ${colors.background}
+  label-indicator-background = ${colors.foreground}
+
+  indicator-icon-default = 
+  indicator-icon-0 = caps lock;;󰪛
+  indicator-icon-1 = scroll lock;;+SL
+  indicator-icon-2 = num lock;-NL;+NL
 #+end_src
+
 ** xwindow
 
 #+begin_src conf
