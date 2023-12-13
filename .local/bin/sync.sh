@@ -16,13 +16,14 @@ fi
 localcommit=$(git rev-parse @)
 remotcommit=$(git rev-parse @{u})
 basecommit=$(git merge-base @ @{u})
+current_branch=$(git branch | grep '* ' | cut -d ' ' -f 2)
 
 if [ "$localcommit" == "$remotcommit" ]; then
     exit 0
 elif [ "$localcommit" == "$basecommit" ]; then
-    git pull origin main
+    git pull origin $current_branch
 elif [ "$remotcommit" == "$basecommit" ]; then
-    git push -u origin main
+    git push -u origin $current_branch
 else
     notify-send "Sync error" "The remote repo and the local have divergences"
     exit 1
