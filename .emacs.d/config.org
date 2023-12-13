@@ -14,6 +14,7 @@
 - [[#package-system][Package system]]
   - [[#with-elpaca][With Elpaca]]
   - [[#with-straight][With straight]]
+  - [[#list-of-package-to-be-installed][List of package to be installed]]
 - [[#keep-it-clean][Keep it clean]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
@@ -282,7 +283,7 @@ Using [[https://github.com/radian-software/straight.el][straight]] for package m
     (load bootstrap-file nil 'nomessage))
 #+end_src
 
-*** List of package to be installed
+** List of package to be installed
 
 Define a list of package make the process agnostic to the package managment I
 decide to use
@@ -683,7 +684,7 @@ Defining the various fonts that Emacs will use.
 
   (if (string= (system-name) "debian")
       (setq lem/mono-font "JetBrains Mono"
-            lem/variable-font "Iosevka Fixed")
+            lem/variable-font "Iosevka Aile")
     (setq lem/mono-font "Fira Code"
           lem/variable-font "Noto Sans Mono"))
 
@@ -693,31 +694,32 @@ Defining the various fonts that Emacs will use.
                       :height 110)
 
   (set-face-attribute 'fixed-pitch nil
-                      :family lem/mono-font
-                      :height 110)
+                      :inherit 'Monospace
+                      :height 110
+                      :family lem/mono-font)
+
 
   (set-face-attribute 'variable-pitch nil
-                      :family lem/variable-font
-                      :height 110)
+                      :inherit 'Sans\ Serif
+                      :height 110
+                      :family  lem/variable-font)
 
   ;; Makes commented text and keywords italics.
   ;; This is working in emacsclient but not emacs.
   ;; Your font must have an italic face available.
-  ;; (set-face-attribute 'font-lock-comment-face nil
-  ;;                        :slant 'italic)
-  ;;    (set-face-attribute 'font-lock-keyword-face nil
-  ;;                        :slant 'italic)
+  ;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+  ;; (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
   ;; This sets the default font on all graphical frames created after restarting Emacs.
   ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
   ;; are not right unless I also add this method of setting the default font.
-  ;; (add-to-list 'default-frame-alist '(font . lem/mono-font))
+  ;;(add-to-list 'default-frame-alist '(font . lem/mono-font))
   ;; Uncomment the following line if line spacing needs adjusting.
-  (setq-default line-spacing 0.12)
+  ;; (setq-default line-spacing 0.12)
 #+end_src
 
 *** Enable ligatures
 
-Some fonts allow you to use ligatures in some modes. For that, I use the package
+Some fonts allow you to use /ligatures/ in some modes. For that, I use the package
 [[https://github.com/mickeynp/ligature.el][ligature]]
 
 #+begin_src emacs-lisp :tangle no
@@ -1720,11 +1722,8 @@ Setup the web-mode
     :config
     (setq org-directory "~/Documents/Org/"
           org-default-notes-file (concat org-directory "Inbox.org")
-                                          ;org-ellipsis " ▾"
-                                          ;org-superstar-headline-bullets-list '("◉" "●" "○" "◆" "●" "○" "◆")
-                                          ;org-superstar-item-bullet-alist '((?- . ?➤) (?+ . ?✦)) ; changes +/- symbols in item lists
           org-log-done 'time
-          org-hide-emphasis-markers t
+          org-hide-emphasis-markers nil
           visual-line-mode 1
           org-table-convert-region-max-lines 20000
           org-src-fontify-natively t
@@ -1758,14 +1757,28 @@ workflow. The shortcut to select them is: =C-u C-u C-c C-t=; =C-s-RIGHT=;
 
 *** Workflow states
 - *TODO*: A task which should be done, but is not processed
+- *IN PROGRESS*: A task that start by it is not finished
 - *NEXT*: With the GTD flow, the next task to be done
 - *WAIT*: This task depends on other person, so it's not actionable
 - *DONE*: Need explication?
 
 #+begin_src emacs-lisp
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "IN PROGRESS(p)"  "NEXT(n)" "WAIT(w)"
+        '((sequence "TODO(t)" "STARTED(s)"  "NEXT(n)" "WAIT(w)"
                     "|" "DONE(d!)" "CANCELED(c!)")))
+#+end_src
+
+Also, we can make a hook to start clock in when a task state changes to *IN PROGRESS*
+
+#+begin_src emacs-lisp
+  (defun lem/start-task () 
+  "Start a clock when a task change the state from TOOD to IN PROGRESS."
+    (when (string= (org-get-todo-state) "STARTED")
+           (org-clock-in))
+    (when (and (string= (org-get-todo-state) "NEXT")
+               (not (org-entry-get nil "ACTIVATED")))
+    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+(add-hook 'org-after-todo-state-change-hook #'lem/start-task)
 #+end_src
 
 *** Tags
@@ -1789,10 +1802,15 @@ Configure the agenda views
 #+begin_src emacs-lisp
   (setq org-agenda-files
         (mapcar (lambda (file)
-                  (concat org-directory file)) '("Tasks.org" "Habits.org"))
+                  (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects.org"))
         org-agenda-window-setup 'current-window
         org-agenda-span 'week
         org-agenda-start-with-log-mode t
+        org-agenda-time-in-grid t
+        org-agenda-show-current-time-in-grid t
+        org-agenda-start-on-weekday 1
+        org-agenda-skip-deadline-if-done t
+        org-agenda-skip-scheduled-if-done t
         org-log-into-drawer t
         org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %20SCHEDULED %20DEADLINE %6CLOCKSUM(Clock) %TAGS")
 #+end_src
@@ -1801,7 +1819,6 @@ Org agenda is a mode of emacs that allows you to view the task for the week
 
 Note 1* You can shcedule the todos with org-shedule command or due time with
 org-deadline. To move around the date use ~Shift+arrows~
-
 
 Note 2*: We can get a repeat item ading to the deadline the period of time to
 be repeat, for example a birthday that is repeat each year (see the agenda file)
@@ -1839,6 +1856,23 @@ process for new tasks.
         org-habit-show-habits-only-for-today nil)
 #+end_src
 
+*** Define the agenda view
+We can customize who the agenda display the elements with the command ~org-agenda-custom-commands~
+
+#+begin_src emacs-lisp
+(setq org-agenda-custom-commands
+  '(("d" "My Dashboard"
+    ((agenda "" ((org-deadine-warning-days 7)))
+    (tags-todo "+PRIORITY=\"A\""
+      ((org-agenda-overriding-header "High Priority"))
+      (org-agenda-sorting-strategy '(priority-up effort-down))
+    (todo "STARTED"
+                ((org-agenda-overriding-header "Next Actions")
+                 (org-agenda-max-todos nil)))
+    (todo "TODO"
+      ((org-agenda-overriding-header "Unprocessed Inbox Tasks"))))))))
+#+end_src
+
 ** Configure Babel languages
 
 To execute or export code in org-mode code blocks, you’ll need to set up
@@ -1859,6 +1893,7 @@ org-babel-load-languages for each language you’d like to use.
 #+end_src
 
 *** Structure templates
+
 Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks
 into your Org files in combination with =org-tempo= by typing =<= followed by
 the template name like =el= or =py= and then press =TAB=.  For example, to
@@ -1882,8 +1917,7 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
 ** Fonts and bullets
 *** Bullets with org-superstar
 Use bullet characters instead of asterisks, plus set the header font sizes to
-something more palatable. A fair amount of inspiration has been taken from
-[[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
+something more palatable. A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
 
 #+begin_src emacs-lisp
   (use-package org-superstar
@@ -1896,7 +1930,7 @@ something more palatable. A fair amount of inspiration has been taken from
 
 *** Increase the size of various heading
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (set-face-attribute
    'org-document-title nil
    :font lem/variable-font :weight 'bold :height 1.5)
