@@ -645,6 +645,7 @@ Emacs programs.
 #+begin_src emacs-lisp
 (column-number-mode)
 
+(setq display-line-numbers-width-start 1)
 ;; Enable line numbers for some modes
 (dolist (mode '(text-mode-hook
                 prog-mode-hook
@@ -1495,12 +1496,12 @@ languages.
 
 ** Visual fill configuration
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; Wrap the text in a custom column size
   (defun lem/org-mode-visual-fill ()
   (interactive)
-    (setq visual-fill-column-width 100
-          fill-column 80
+    (setq visual-fill-column-width 110
+          fill-column 20
           visual-fill-column-center-text t))
 
   (use-package visual-fill-column
@@ -1516,7 +1517,7 @@ Aditionaly to the last hook I will make more adjustement into the text view.
     (setq fill-column 80)
     (variable-pitch-mode 1)
     (auto-fill-mode 1)
-    (visual-fill-column-mode 1)
+    ;(visual-fill-column-mode 1)
     (setq evil-auto-indent nil))
 
   (add-hook 'text-mode-hook 'lem/text-mode-setup)
@@ -1920,20 +1921,16 @@ Use bullet characters instead of asterisks, plus set the header font sizes to
 something more palatable. A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
 
 #+begin_src emacs-lisp
-  (use-package org-superstar
-    :after org
-    :hook (org-mode . org-superstar-mode)
-    :custom
-    (org-superstar-remove-leading-stars t)
-    (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (require 'org-superstar)
+  (setq org-superstar-remove-leading-stars t
+        org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
+  (add-hook 'org-mode-hook 'org-superstar-mode)
 #+end_src
 
 *** Increase the size of various heading
 
-#+begin_src emacs-lisp
-  (set-face-attribute
-   'org-document-title nil
-   :font lem/variable-font :weight 'bold :height 1.5)
+#+begin_src emacs-lisp :tangle no
+  (set-face-attribute 'org-document-title nil :font lem/variable-font :weight 'bold)
   (dolist (face '((org-level-1 . 1.3)
                   (org-level-2 . 1.25)
                   (org-level-3 . 1.2)
@@ -2272,7 +2269,7 @@ This package use citar as base to improve the citation process.
   (setq citar-org-roam-note-title-template "${author} - ${title}")
   (add-to-list 'org-roam-capture-templates
                '("r" "bibliography reference" plain "%?"
-                 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                 :if-new (file+head "%<%Y%m%d%H%M%S>-${citekey}.org"
                                     "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n")
                  :unnarrowed t) t)
   (setq citar-org-roam-capture-template-key "r"))
