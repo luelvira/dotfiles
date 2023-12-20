@@ -283,7 +283,7 @@ decide to use
         '(
           all-the-icons
           all-the-icons-dired
-          apheleia ;; like prettyfi but for all code
+;;          apheleia ;; like prettyfi but for all code
           citar
           citar-org-roam
           company
@@ -292,7 +292,7 @@ decide to use
           counsel
           counsel-projectile
           dashboard
-          deft
+;;          deft
           diminish
           dired-single
           dired-ranger
@@ -429,7 +429,6 @@ This section  contains a list of common and simple configuration
 #+begin_src emacs-lisp
 ;; Disable warnings
 (setq native-comp-async-report-warnings-errors nil)
-
 #+end_src
 
 *** Recovery
@@ -440,7 +439,6 @@ and type the command M-x recover-session. Here, we parameterize how files are
 saved in the background.
 
 #+begin_src emacs-lisp
-
 (setq auto-save-list-file-prefix ; Prefix for generating auto-save-list-file-name
       (expand-file-name ".auto-save-list/.saves-" user-emacs-directory)
       auto-save-default t        ; Auto-save every buffer that visits a file
@@ -635,14 +633,15 @@ Emacs programs.
 ** Enable line numbers
 
 #+begin_src emacs-lisp
-(column-number-mode)
+  (column-number-mode)
 
-(setq display-line-numbers-width-start 1)
-;; Enable line numbers for some modes
-(dolist (mode '(text-mode-hook
-                prog-mode-hook
-                conf-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+  (setq display-line-numbers-width-start 2
+         dispaly-line-numbers-width nil)
+  ;; Enable line numbers for some modes
+  (dolist (mode '(text-mode-hook
+                  prog-mode-hook
+                  conf-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 1))))
 #+end_src
 
 ** Color theme
@@ -652,18 +651,26 @@ different Emacs modes.  Taking a look at the [[https://github.com/hlissner/emacs
 which one you like best. You can also run =M-x counsel-load-theme= to choose
 between them easily.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package doom-themes
+    :straight t
     :config
     (setq doom-themes-enable-bold t  ; if nil, bold is universally disabled
           doom-themes-enable-italic t) ; if nil, italics is universally disabled
     (load-theme 'doom-dracula t)
     ;; Enable custom neotree theme (all-the-icons must be installed!)
-    (doom-themes-neotree-config)
+    ;;(doom-themes-neotree-config)
     ;; Corrects (and improves) org-mode's native fontification.
     (doom-themes-org-config)
     (doom-themes-visual-bell-config))
+#+end_src
 
+#+begin_src emacs-lisp
+  (require 'doom-themes)
+  (setq doom-themes-enable-bold t  ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-dracula t)
+  (doom-themes-visual-bell-config)
 #+end_src
 
 ** Fonts
@@ -700,7 +707,7 @@ Defining the various fonts that Emacs will use.
   ;; Makes commented text and keywords italics.
   ;; This is working in emacsclient but not emacs.
   ;; Your font must have an italic face available.
-  ;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+ (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
   ;; (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
   ;; This sets the default font on all graphical frames created after restarting Emacs.
   ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
@@ -1078,7 +1085,7 @@ We can set a sortcut to open the config file from the emacs directory
     "orf" '(org-roam-node-find :whick-key "Org roam node find")
     "ori" '(org-roam-node-insert :whick-key "Org roam node insert")
     "orI" '(org-roam-node-insert-immediate :which-key "Roam insert immediately")
-    "orc" 'my/org-roam-capture-task)
+    "orc" 'lem/org-roam-capture-task)
 #+end_src
 
 *** Sync scripts
@@ -1381,7 +1388,7 @@ the function and where it gets used in other places in the Emacs configuration.
 It is very useful for figuring out how things work in Emacs.
 
 
-#+begin_src emacs-lisp tangle no
+#+begin_src emacs-lisp
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -1945,7 +1952,7 @@ something more palatable. A fair amount of inspiration has been taken from [[htt
 
 *** Increase the size of various heading
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; (set-face-attribute 'org-document-title nil :font lem/variable-font :weight 'bold)
   (dolist (face '((org-level-1 . 1.3)
                   (org-level-2 . 1.25)
@@ -2068,7 +2075,7 @@ Research’s key features within Org-mode.
 The instalation process use the melpa or melpa stable package manager from
 emacs.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
     (use-package org-roam
       :straight t
       :custom
@@ -2095,8 +2102,14 @@ emacs.
       (my/org-roam-refresh-agenda-list)
 #+end_src
 
-The org roam declaration is not close
+#+begin_src emacs-lisp
+(require 'org-roam)
+(setq org-roam-directory (expand-file-name "roam" org-directory)
+      org-roam-db-autosync-mode t)
+#+end_src
+
 *** Configure org roam templates
+
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
  '(("f" "Fleeting" plain "%?"
@@ -2122,30 +2135,25 @@ include a column for tags, one can set org-roam-node-display-template as such:
               (propertize "${tags:30}" 'face 'org-tag)))
 #+end_src
 
-*** End of org roam
-#+begin_src emacs-lisp
-)
-#+end_src
-
 *** Some functions used for customize org-roam
 #+begin_src emacs-lisp
-  (defun my/org-roam-filter-by-tag (tag-name)
+  (defun lem/org-roam-filter-by-tag (tag-name)
     (lambda (node)
       (member tag-name (org-roam-node-tags node))))
 
-  (defun my/org-roam-list-notes-by-tag (tag-name)
+  (defun lem/org-roam-list-notes-by-tag (tag-name)
     (mapcar #'org-roam-node-file
             (seq-filter
-             (my/org-roam-filter-by-tag tag-name)
+             (lem/org-roam-filter-by-tag tag-name)
              (org-roam-node-list))))
-  (defun my/org-roam-refresh-agenda-list ()
+  (defun lem/org-roam-refresh-agenda-list ()
     (interactive)
-    (setq org-agenda-files (delete-dups (append org-agenda-files (my/org-roam-list-notes-by-tag "Project")))))
+    (setq org-agenda-files (delete-dups (append org-agenda-files (lem/org-roam-list-notes-by-tag "Project")))))
 
-  (defun my/org-roam-find-project ()
+  (defun lem/org-roam-find-project ()
     (interactive)
     ;; Add the project file to the agenda after capture is finished
-    (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+    (add-hook 'org-capture-after-finalize-hook #'lem/org-roam-project-finalize-hook)
 
     ;; Select a project file to open, creating it if necessary
     (org-roam-node-find
@@ -2159,11 +2167,11 @@ include a column for tags, one can set org-roam-node-display-template as such:
           (org-roam-capture-templates (list (append (car org-roam-capture-templates)
                                                     '(:immediate-finish t)))))
       (apply #'org-roam-node-insert args)))
-  (defun my/org-roam-capture-task ()
+  (defun lem/org-roam-capture-task ()
     (interactive)
     (org-roam-capture- :node (org-roam-node-read
                               nil
-                              (my/org-roam-filter-by-tag "Project"))
+                              (lem/org-roam-filter-by-tag "Project"))
                        :templates '(
                                     ("p" "project" plain "** TODO %?"
                                      :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
@@ -2180,10 +2188,14 @@ include a column for tags, one can set org-roam-node-display-template as such:
                                                             "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
                                                             ("Meetings"))
                                      :target (file+olp+datetree "%<%Y%m%d%H%M%S>-${slug}.org" ("Meetings"))))))
+
+; initialize the functions
+(lem/org-roam-refresh-agenda-list)
 #+end_src
 
 
 ** Zettelkasten
+
 The zettelkasten methodology offers a set of rules to help you to organize your
 notes in a way that makes them easy to find. It is based on the idea of
 establishing links between atomic concepts (each note). On this way, breaks the
@@ -2211,7 +2223,10 @@ because when it run, the org-roam package is not full load
                  :unnarrowed nil))
 #+end_src
 
-*** 2. Literature Notes
+*** 2. Literature Notes                                            :INACTIVE:
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp: :tangle no
+:END:
 Literature notes are notes extracted from external source. These must include
 the reference. These notes have summary or/and highlight from the source, and if
 it is possible, tray to indicate:
@@ -2225,8 +2240,7 @@ another note with the explanation. This allows you to keep separate the original
 content to your conclusion and ideas.
 
 #+begin_src emacs-lisp
-  (setq bibliography-files '("~/Documents/Org/bibliography.bib"
-                             "~/Documents/Org/phd.bib"))
+  (setq bibliography-files '("~/Documents/Org/bibliography.bib" "~/Documents/Org/phd.bib"))
   (require 'ivy-bibtex)
   (setq bibtex-completion-bibliography bibliography-files)
 
@@ -2263,9 +2277,8 @@ on BibTeX, BibLaTeX, and CSL JSON bibliographic data, and LaTeX, markdown, and
 org-cite editing support.
 
 #+begin_src emacs-lisp
-  (use-package citar
-    :custom
-    (citar-bibliography bibliography-files))
+  (require 'citar)
+  (setq citar-bibliography lem/bibliography-files)
 #+end_src
 
 ****** citar-org-roam
@@ -2336,6 +2349,120 @@ entry will be added into the list with all the acronyms.
        nil "~/Documents/Org/roam/glossary.tex" 'append)))
 
 #+end_src
+
+*** 2. Literature Notes
+
+Literature notes are notes extracted from external source. These must include
+the reference. These notes have summary or/and highlight from the source, and if
+it is possible, tray to indicate:
+1. Why this content is relevant?
+2. When you read the source?
+3. In which content do you think it can be useful?
+
+To answer this question, you can use meta-data as header from of the note, a
+link to the project/area which you think that can be useful and a link to
+another note with the explanation. This allows you to keep separate the original
+content to your conclusion and ideas.
+
+**** Completion system
+
+#+begin_src emacs-lisp
+  (require 'ivy-bibtex)
+  (setq lem/bibliography-files '("~/Documents/Org/bibliography.bib" "~/Documents/Org/phd.bib"))
+  (setq bibtex-completion-additional-search-fields '(keywords abstract))
+  (setq bibtex-completion-bibliography lem/bibliography-files)
+
+  (setq bibtex-completion-format-citation-functions
+  	    '((org-mode . bibtex-completion-format-citation-org-title-link-to-PDF)
+  	      (latex-mode . bibtex-completion-format-citation-cite)
+  	      (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+  	      (python-mode . bibtex-completion-format-citation-sphinxcontrib-bibtex)
+  	      (rst-mode . bibtex-completion-format-citation-sphinxcontrib-bibtex)
+  	      (default . bibtex-completion-format-citation-default)))
+#+end_src
+
+**** Citar
+
+[[https://github.com/emacs-citar/citar][Citar]] provides a highly-configurable completing-read front-end to browse and act
+on BibTeX, BibLaTeX, and CSL JSON bibliographic data, and LaTeX, markdown, and
+org-cite editing support.
+
+#+begin_src emacs-lisp
+  (require 'citar)
+  (require 'citar-org-roam)
+  (setq citar-bibliography lem/bibliography-files
+        org-cite-global-bibliography lem/bibliography-files
+        citar-notes-paths org-roam-directory
+        citar-notes-source 'orb-citar-source
+        citar-org-roam-note-title-template "${author} - ${title}")
+
+(citar-register-notes-source 'orb-citar-source
+                                 (list :name "Org-Roam Notes"
+                                       :category 'org-roam-node
+                                       :items #'citar-org-roam--get-candidates
+                                       :hasitems #'citar-org-roam-has-notes
+                                       :open #'citar-org-roam-open-note
+                                       :create #'orb-citar-edit-note
+                                       :annotate #'citar-org-roam--annotate))
+#+end_src
+
+***** Org roam and bibtext
+#+begin_src emacs-lisp
+(require 'org-roam-bibtex)
+(org-roam-bibtex-mode 1)
+(setq org-inser-interface 'ivy-bibtex
+      orb-note-actions-interface 'ivy
+      orb-preformat-keywords '("citekey" "author" "date" "entry-type" "keywords" "url" "file")
+      citar-notes-source 'orb-citar-source)
+
+(add-to-list 'org-roam-capture-templates
+               '("r" "bibliography reference" plain "%?"
+                 :if-new (file+head "%<%Y%m%d%H%M%S>-${citekey}.org"
+                                    "#+TITLE: ${title}\n#+AUTHOR: ${author}\n#+filetags: Literature\n#+cite-key: ${citekey}\n#+cite-date: ${date} \n#+created: %U\n\n* ${title}\n\n")
+                 :unnarrowed t) t)
+#+end_src
+
+
+***** Import annotations from Zotero
+
+#+begin_src emacs-lisp
+  (defun lem/import-notes-from-zotero (citekey)
+  (interactive "sCiteKey: ")
+    (let* ((entry (bibtex-completion-get-entry citekey))
+           (note (bibtex-completion-get-value "note" entry ""))
+           (pandoc-command "pandoc --from latex --to org")
+           result)
+      (with-temp-buffer
+        (shell-command (format "echo \"%s\" | %s" note pandoc-command)
+                       (current-buffer))
+        (setq result (buffer-substring-no-properties (point-min) (point-max))))
+      (insert result)))
+#+end_src
+
+I need if I add a new acronym, this will not be added only on the top of the
+current buffer, such happens with org-ref. I need the acronym or the glossary
+entry will be added into the list with all the acronyms.
+
+#+begin_src emacs-lisp
+  (defun lem/add-acronym (label abbrv full)
+    (interactive "sLabel: \nsAccronym: \nsFull text: ")
+    (save-excursion
+      (re-search-backward "#\\+latex_header" nil t)
+      (forward-line)
+      (when (not (looking-at "^$"))
+        (beginning-of-line)
+        (insert "\n")
+        (forward-line -1))
+      (insert (format "#+latex_header_extra: \\newacronym{%s}{%s}{%s}\n"
+                      label abbrv full))
+    (write-region
+       (format
+        "\\newacronym{%s}{%s}{%s}\n"
+        label abbrv full)
+       nil "~/Documents/Org/roam/glossary.tex" 'append)))
+
+#+end_src
+
 
 *** 3. Permanent Notes
 Permanent notes are stand-alone ideas, that can be made without any direct
