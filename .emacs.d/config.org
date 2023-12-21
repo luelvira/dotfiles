@@ -626,7 +626,7 @@ Emacs programs.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; only for non gnome desktop
 (unless (string= (getenv "DESKTOP_SESSION") "gnome")
-    (set-frame-parameter nil 'alpha '(90 . 90))
+    (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
     (add-to-list 'default-frame-alist '(alpha-background . 90)))
 #+end_src
 
@@ -687,6 +687,7 @@ Defining the various fonts that Emacs will use.
             lem/variable-font "Iosevka Aile")
     (setq lem/mono-font "Fira Code"
           lem/variable-font "Noto Sans Mono"))
+
 
   (set-face-attribute 'default nil
                       :font lem/mono-font
@@ -2125,9 +2126,7 @@ emacs.
 
 *** Configure org roam completion
 
-If you’re using a vertical completion framework, such as Ivy, Org-roam supports
-the generation of an aligned, tabular completion interface. For example, to
-include a column for tags, one can set org-roam-node-display-template as such:
+If you’re using a vertical completion framework, such as Ivy, Org-roam supports the generation of an aligned, tabular completion interface. For example, to include a column for tags, one can set org-roam-node-display-template as such:
 
 #+begin_src emacs-lisp
 (setq org-roam-node-display-template
