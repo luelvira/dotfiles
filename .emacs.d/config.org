@@ -32,6 +32,7 @@
   - [[#fonts][Fonts]]
   - [[#doom-modeline][Doom modeline]]
   - [[#create-frame-hook][create frame hook]]
+  - [[#rainbow-delimeters][Rainbow delimeters]]
 - [[#keyboard-binding][Keyboard binding]]
   - [[#esc-as-c-g][ESC as C-g]]
   - [[#setup-evil-mode][Setup evil mode]]
@@ -367,15 +368,19 @@ decide to use
 
 * Keep it clean
 
-First I define the default emacs back-up where all the cache files will be stored
+First I define the default emacs back-up where all the cache files will be
+stored. I set the emacs directory in early-init to prevent emacs install staffs
+inside the config folder
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle early-init.el
 ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
 (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
       url-history-file (expand-file-name "url/history" user-emacs-directory))
-;;
-;; Use no-littering to automatically set common paths to the new user-emacs-directory
+#+end_src
 
+Use no-littering to automatically set common paths to the new user-emacs-directory
+
+#+begin_src emacs-lisp
 (use-package no-littering)
 #+end_src
 
@@ -392,10 +397,10 @@ Then define where will be store the temporal files
   )
 #+end_src
 
-Also I will change the location of the ~custom-file.el~
+Also I will change the location of the ~custom-file.el~, setting it in the config folder
 
 #+begin_src emacs-lisp
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(setq custom-file (expand-file-name "custom-vars.el" "~/.emacs.d/"))
 (load custom-file 'noerror 'nomessage)
 #+end_src
 
@@ -752,6 +757,11 @@ current frame
                                             
 #+end_src
 
+** Rainbow delimeters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :hook (emacs-lisp-mode . rainbow-delimiters-mode))
+#+end_src
 * Keyboard binding
 
 ** ESC as C-g
@@ -1126,10 +1136,17 @@ Default tab width is 8, which is too much. We can change it to 4.
 * Work Spaces
 
 #+begin_src emacs-lisp
-(use-package perspective
-  :custom
-   (persp-mode-prefix-key (kbd "C-x x"))
-  :init (persp-mode))
+  (use-package perspective
+    :custom
+    (persp-mode-prefix-key (kbd "C-x x"))
+    :init (persp-mode)
+    :config
+    (setq persp-state-default-file (expand-file-name "sessions" user-emacs-directory)
+          ;; Use ibuffer with perspective
+          :hook (ibuffer . (lambda ()
+                             ((persp-ibuffer-set-filter-groups)
+                              (unless (eq ibuffer-sorting-mode 'alphabetic)
+                                (ibuffer-do-sort-by-alphabetic)))))))
 #+end_src
  
 * Completion system
@@ -1156,19 +1173,21 @@ the common part.
   :diminish
   :hook (company-mode . company-box-mode))
 #+end_src
+
 ** Corfu
 #+begin_src emacs-lisp
   (use-package corfu
     :bind (:map corfu-map
-                ("C-n" . corfu-next)
-                ("C-p" . corfu-previous)
+                ("C-j" . corfu-next)
+                ("C-k" . corfu-previous)
                 ("C-f" . corfu-insert))
     :custom
     (corfu-cycle t)
-    (corfu-auto t)
+    (corfu-auto nil) ;; if active make it to slow
     :init
     (global-corfu-mode))
 #+end_src
+
 ** Cape
 Cape is a completion at point extension.
 
@@ -1180,9 +1199,10 @@ Cape is a completion at point extension.
     (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 #+end_src
 
-Overwrite the completion at point shortcut of evil-mode
+Overwrite the completion at point shortcut of evil-mode. The default system
+works better to your use.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (define-key evil-insert-state-map "\C-n" 'corfu-next)
 (define-key evil-insert-state-map "\C-p" 'corfu-previous)
 #+end_src
@@ -1798,7 +1818,7 @@ Setup the web-mode
 
 #+begin_src emacs-lisp
   (defun lem/org-mode-hook ()
-    (org-indent-mode)
+    ;(org-indent-mode)
     (variable-pitch-mode)
     (visual-line-mode 0)
     (setq evil-auto-indent nil)
