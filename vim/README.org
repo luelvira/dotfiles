@@ -1,0 +1,595 @@
+:PROPERTIES:
+:HEADER-ARGS:conf: :tangle .vimrc
+:END:
+#+date: 2023-04-02
+#+AUTHOR: Lucas Elvira Martín
+#+auto_tangle: t 
+#+DESCRIPTION: simple vim config
+
+* My vim configuration
+
+This is my custom vim configuration written in markdown and tangle to vimscript
+using vim-tangle plugin.
+
+** :TOC:
+- [[#my-vim-configuration][My vim configuration]]
+  - [[#set-up-common-settings][Set up common settings]]
+  - [[#install-plugins][Install plugins]]
+  - [[#set-a-custom-theme][Set a custom theme]]
+  - [[#set-local-settings][Set local settings]]
+  - [[#custom-function][Custom function]]
+
+** Set up common settings
+*** Default values
+First we need to load the default vim because, if we don't do that, we
+will loss some of the default settings
+
+#+begin_src conf
+source $VIMRUNTIME/defaults.vim
+#+end_src
+
+Next there is some of the global variables and mode
+
+#+begin_src conf
+syntax on
+filetype on
+filetype plugin indent on
+#+end_src
+
+*** Global rules
+This rules enable in this order:
+
+1. Read the first of last line with vim setting for the current buffer
+2. Display numbers
+3. Disable highlight after search something
+4. Allow incremental search
+5. Disable mouse
+6. Disable wrap lines
+7. Display a line in the column number 80
+8. Add space to the hidden characters that can be displayed
+9. Display line and column on the bottom
+
+#+begin_src conf
+set modelines=1
+set number
+set nohlsearch
+set incsearch
+set mouse=c
+set nowrap
+set cc=80
+set listchars+=space:·,tab:»\ ,trail:~,extends:>,precedes:<,nbsp:·
+set ruler
+set termguicolors
+#+end_src
+
+**** Indent and folding rules
+
+#+begin_src conf
+" indent
+set expandtab
+set copyindent
+set preserveindent
+set softtabstop=4
+set tabstop=4
+set shiftwidth=4
+set autoindent 
+
+" foldint
+set foldenable
+set foldmethod=syntax
+set foldlevel=99
+set foldnestmax=10
+#+end_src
+
+**** Disable status line
+
+#+begin_src conf
+" status bar
+set noshowmode
+set noshowcmd
+set laststatus=0
+#+end_src
+
+Compatibility mode has some problems with new plugins
+
+#+begin_src conf
+set nocompatible
+#+end_src
+
+*** Custom mapping
+I don't like to use arrows keys in insert mode because it is a reference
+of the mode I am in. So I disable them.
+
+#+begin_src conf
+" disable arrows keys in insert mode
+inoremap <left> <nop>
+inoremap <right> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+#+end_src
+
+#+begin_src conf
+vnoremap <C-r> "hy:%s/<C-r>h//gc<Left><left><left>
+vnoremap <silent> <Leader>y :w !xclip -i -sel c<CR>
+nnoremap <F3> :setlocal relativenumber!<CR>
+nnoremap <F4> :setlocal list!<CR>
+nnoremap <F5> :setlocal spell<CR>:set spelllang=es<CR>
+nnoremap <F6> :setlocal spell<CR>:set spelllang=en<CR>
+nnoremap <F7> :setlocal spell!<CR>
+#+end_src
+
+** Install plugins
+
+For the plugin management I use Pluged. To install it for vim:
+
+#+begin_src sh
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+#+end_src
+
+To install in neovim
+
+#+begin_src sh
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+#+end_src
+
+*** List of plugins
+
+#+begin_src conf
+call plug#begin()
+
+" snippets
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+"Plug 'mattn/emmet-vim'
+
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
+
+"git
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+
+" navigation
+" Plug 'preservim/nerdtree'
+" Plug 'christoomey/vim-tmux-navigator'
+
+" lsp
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'dense-analysis/ale'
+
+" languages
+" Plug 'lervag/vimtex'
+Plug 'sheerun/vim-polyglot'
+Plug 'davidhalter/jedi-vim'
+Plug 'aklt/plantuml-syntax'
+
+
+" Personal wiki
+Plug 'lervag/wiki.vim'
+" Plug 'lervag/lists.vim'
+" Plug 'vimwiki/vimwiki'
+" Plug 'blindFS/vim-taskwarrior'
+" Plug 'tools-life/taskwiki'
+
+"Plug 'vimwiki/vimwiki'
+
+" Time managment
+
+" themes
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'arcticicestudio/nord-vim'
+Plug 'morhetz/gruvbox'
+
+" fluzzy finder
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" project management
+Plug 'mhinz/vim-startify'
+Plug 'tpope/vim-obsession'
+
+" ctags
+" Plug 'ludovicchabant/vim-gutentags'
+
+
+" vim-table-mode
+Plug 'dhruvasagar/vim-table-mode'
+
+
+" custom pluging
+Plug 'luelvira/vim-tangle'
+call plug#end()
+#+end_src
+
+*** Configure UltiSnip
+
+#+begin_src conf
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+let g:UltiSnipsListSnippets="<C-l>"
+#+end_src
+
+*** Configure repeat
+This plugin allows to repeat commands more complex, like the committed by another
+plugins like ~surround~
+
+#+begin_src conf
+silent! call repeat#set("\<Plug>MyWonderfulMap", v:count)
+#+end_src
+
+*** NerdTree
+
+Display a file manager on the left panel and allows navigation over it. At this
+moment I don't use it
+#+begin_src conf :tangle no
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Open the existing NERDTree on each new tab.
+autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
+nnoremap <C-n> :NERDTreeToggle<CR>
+
+#+end_src
+
+*** Vimtext
+
+This plugin improves the experience of writing in latex with vim and preview the
+result.
+
+#+begin_src conf
+let g:vimtex_view_method = 'zathura'
+let g:vimtex_quickfix_mode = 0
+let g:tex_flavor = 'latex'
+" hidden latex code when the pointer is over it
+set conceallevel=1
+#+end_src
+
+*** jsdoc
+
+A love who jsdoc works and why not use it here?
+
+#+begin_src conf
+let g:javascript_plugin_jsdoc = 1
+#+end_src
+
+*** Coc
+:PROPERTIES:
+:HEADER-ARGS:conf: :tangle no
+:END:
+
+*Disclaimer:* This plugin make the computer a lot more slowly. I disable it for
+the moment
+
+Coc is a lsp plugin. It uses nodejs as backend and has its own package manager.
+To call it, you run `:CocInstall ` followed for the name of the package.
+
+#+begin_src conf
+set encoding=utf-8
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+set updatetime=300
+set signcolumn=yes
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+#+end_src
+
+Also, Coc has a problem with the color scheme if you don't use a theme
+
+#+begin_src conf
+" Colorscheme for coc
+func! s:my_colors_setup() abort
+  highlight CocFloating ctermbg=Black " For background color
+endfunc
+
+augroup colorscheme_coc_setup | au!
+  au VimEnter * call s:my_colors_setup()
+augroup END
+#+end_src
+
+** Set a custom theme
+:PROPERTIES:
+:HEADER-ARGS:conf: :tangle no
+:END:
+The themes are installed with vim-plug. To set a theme, you need to add
+the following line to your vimrc with the name of the theme you want to
+use. I use nord theme.
+
+=colorscheme themename=
+
+*IMPORTANT*
+
+Most of themes in terminal have some problems with some kind of fonts
+like italic. To prevent it, /before/ set the it is necessary to setup
+some vars
+
+#+begin_src conf
+if $HOSTNAME == "fedora-pc"
+    colorscheme gruvbox
+    colorscheme nord
+else
+    colorscheme gruvbox
+    colorscheme nord
+endif
+#+end_src
+
+*** Configure the theme
+#+begin_src conf
+if exists("colors_name")
+    if colors_name == "nord"
+        " nord theme
+        set cursorline
+        let g:nord_cursor_line_number_background = 1
+        let g:nord_bold = 1
+        let g:nord_italic = 1
+        let g:nord_italic_comments = 1
+        let g:nord_underline = 1
+        set background=dark
+        " reload the theme to apply settings
+        colorscheme nord
+    elseif colors_name == "gruvbox"
+        set background=dark
+        set cursorline
+        let g:gruvbox_cursor_line_number_background = 1
+        let g:gruvbox_bold = 1
+        let g:gruvbox_italic = 1
+        let g:gruvbox_italic_comments = 1
+        let g:gruvbox_underline = 1
+    endif
+endif
+#+end_src
+
+*** Gutentags
+This plugin allows to generate tags for the current project. It uses
+ctags and cscope.
+
+#+begin_src conf
+"let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
+"let g:gutentags_cache_dir = '~/.cache/gutentags'
+"let g:gutentags_ctags_tagfile = '.tags'
+"let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
+"let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
+#+end_src
+
+*** vim table mode
+To start the table mode =leader+tm= (leader + table mode). Then you need
+to write the header delimite each item with =|= The plugin is in charge
+of give a space between the pipe and the words.
+
+Once you get the header and, without leaving Insert mode, enter =||= and
+a horizontal line will be displayed matched with the length of the
+table. Then you just need to write the content of your table
+
+*** vim wiki
+:PROPERTIES:
+:HEADER-ARGS:conf: :tangle no
+:END:
+*** wikivm pluggin
+**** Changing Wiki syntax
+vimwiki currently ships with 3 syntaxes: VimWiki, Markdown and
+MediaWiki. I would like to keep using markdown
+
+Also I set the path of the wiki folder
+
+#+begin_src
+" for vimwiki
+let g:vimwiki_list = [{'path': '~/Documents/Obsidian_vault/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+#+end_src
+
+To prevent vim treats all markdown as vimwiki
+
+#+begin_src :tangle no
+let g:vimwiki_global_ext = 0
+let g:vimwiki_table_mappings=0
+#+end_src
+
+*** vimwiki from lervag
+The first is to customize the root folder and the journal folder
+
+#+begin_src conf
+let g:wiki_root = '~/Documents/Obsidian_vault'
+let g:wiki_journal = { 'name': '05_DAILY_NOTES', 'root': '', 'frequency': 'daily'}
+#+end_src
+
+Now we will setup some custom keybinding
+
+#+begin_src conf
+let g:vimwiki_key_mappings = { 'table_mappings': 0, }
+nnoremap <leader>ww :WikiIndex<CR>
+nnoremap <leader>wj :WikiJournal<CR>
+nnoremap <leader>ff :WikiPages<CR>
+nnoremap <leader>fo :WikiOpen<CR>
+#+end_src
+
+Also could be interesting get a function which generate a unique ID as
+prefix for the file. To do it, the file must be open with =WikiOpen=
+
+#+begin_src conf :tangle no
+let g:wiki_map_create_page = 'AddDateAsPrefix'
+
+function AddDateAsPrefix(name) abort
+    let l:name = wiki#get_root . '/' . a:name
+
+    " If the tile is new, then append the current date
+    return filereadable(l:name) ? a:name : strftime(%Y%m%d%H%M%S') . '_' .  a:name
+endfunction
+#+end_src
+
+*Need to be completed this part*
+
+*** vim-taskwarrior
+This plugin is an interface to the [[task warrior]] program. In order to
+view the pending task: =:TW=. More info in
+[[https://github.com/blindFS/vim-taskwarrior][vim-taskwarrior]]
+
+** Set local settings
+With autocm you can enable or disable some settings for the current
+buffer.
+
+#+begin_src conf :tangle no
+" text mode
+autocm BufNewFile,BufRead *.md,*.tex,*.org setlocal
+    \ textwidth=80
+    \ fileformat=unix
+    \ cc=80
+    \ spell
+    \ spelllang=es
+    \ wrap
+
+" au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn,mdx} set filetype=markdown
+" autocmd BufNewFile *.md 0r ~/.vim/skeletons/headers.md
+
+" spell check for gitcommit
+autocmd FileType gitcommit setlocal spell spelllang=en_us
+#+end_src
+
+*** Templates
+Vim file templates (known as skeleton) are file that can be read when a
+file with some pattern is created and write the content of the template
+inside the fil. It is useful for markdown headers or html common parts
+
+To enable it you need to put in your config file:
+
+#+begin_example
+autocmd BufNewFile <pattern> 0r <path of the file>
+#+end_example
+
+- =autocmd= is a command to run automatically on some events
+- =BufNewFile=: Vim's new file events
+- =0r= read into the buffer starting at line 0 source:
+  [[https://vimtricks.com/p/vim-file-templates/][vim templates]]
+
+#+begin_src conf
+autocmd BufNewFile *.sh,bash 0r ~/.vim/templates/bash_template.sh
+autocmd BufNewFile *.html 0r ~/.vim/templates/index.html
+#+end_src
+
+**** Template definitions
+
+***** Template for shell script
+:PROPERTIES:
+:HEADER-ARGS:shell: :tangle templates/bash_template.sh
+:END:
+
+First define the header
+
+#+begin_src shell
+  #!/usr/bin/env bash
+  ################################################################################
+  #
+  # Script: Some description
+  # Author: Lucas Elvira Martín
+  # Changelog:
+  #
+  #
+  ################################################################################
+
+#+end_src
+
+Then start defining the functions used
+
+#+begin_src shell
+  function usage {
+      path=$(readlink -f $0)
+      dir=$(dirname ${path})
+      name=$(basename ${path})
+      echo "
+      usage: $name [options]
+
+      -h  optional Print this help
+      "
+      exit 0
+  }
+#+end_src
+
+Sometimes I need to use arguments for define the behavior of the script. In this
+[[https://stackoverflow.com/questions/16483119/an-example-of-how-to-use-getopts-in-bash][stackoverflow question]], they explain it very well.
+
+Here is an example:
+- OPTSTRING is string with list of expected arguments,
+  - h - check for option -h without parameters; gives error on unsupported
+    options;
+  - h: - check for option -h with parameter; gives errors on unsupported options;
+  - abc - check for options -a, -b, -c; gives errors on unsupported options;
+  - :abc - check for options -a, -b, -c; silences errors on unsupported options
+
+#+begin_src  shell
+  ## Process flags
+  ## uncomment (and customice) if you need that
+  #while getopt  OPTSTRING args; do
+  #    case $args in
+  #        p) echo "p is ${OPTARGS}"
+  #            ;;
+  #        h)
+  #            usage
+  #            ;;
+  #    esac
+  #done
+
+  function usage {
+      path=$(readlink -f $0)
+      dir=$(dirname ${path})
+      name=$(basename ${path})
+      echo "
+      usage: `basename ${(readlink -f $0)}` [options]
+
+      -h  optional Print this help
+      "
+      exit 0
+  }
+#+end_src
+
+
+***** Templates for html
+:PROPERTIES:
+:HEADER-ARGS:html: :tangle templates/index.html
+:END:
+
+#+begin_src html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="author" content="">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+
+
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
+#+end_src
+
+
+** Custom function
+Each time I want to write in vim in English, I need to change the
+spelllang option. This command will automatically at it to the last line
