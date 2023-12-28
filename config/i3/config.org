@@ -25,6 +25,7 @@
   - [[#polybar][Polybar]]
   - [[#binding-workspace-to-monitors][Binding workspace to monitors]]
   - [[#run-programs-on-startup][Run programs on startup]]
+- [[#how-to-exit][How to exit]]
 
 * I3 CONFIG
 
@@ -130,8 +131,8 @@ bindsym $mod+5 workspace number $ws5
 bindsym $mod+6 workspace number $ws6
 bindsym $mod+7 workspace number $ws7
 bindsym $mod+8 workspace number $ws8
-bindsym $mod+9 workspace number $ws9
-bindsym $mod+0 workspace number $ws10
+#bindsym $mod+9 workspace number $ws9
+#bindsym $mod+0 workspace number $ws10
 #+end_src
 
 ** Move container to another workspace
@@ -362,9 +363,9 @@ set $ws5    "5:"
 set $ws6    "6:"
 set $ws7    "7:"
 set $ws8    "8:"
-set $ws9    "9:"
-set $ws10   "10:"
-set $ws11   scratchpad
+#set $ws9    "9:"
+#set $ws10   "10:"
+#set $ws11   scratchpad
 #+end_src
 
 *** Send programs to custom WS
@@ -412,6 +413,7 @@ bar {
   status_command i3status
 }
 #+end_src
+
 ** Polybar
 
 Launch polybar on each restart. The configuration file is [[file:../polybar/config.org][polybar.org]]
@@ -426,12 +428,12 @@ workspace $ws1 output DP-1
 workspace $ws3 output DP-1
 workspace $ws5 output DP-1
 workspace $ws7 output DP-1
-workspace $ws9 output DP-1
+#workspace $ws9 output DP-1
 workspace $ws2 output HDMI-0
 workspace $ws4 output HDMI-0
 workspace $ws6 output HDMI-0
 workspace $ws8 output HDMI-0
-workspace $ws10 output HDMI-0
+#workspace $ws10 output HDMI-0
 #+end_src
 
 ** Run programs on startup
@@ -455,3 +457,25 @@ exec --no-startup-id i3-sensible-terminal
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id dex ~/.config/autostart/emacs-server.desktop
 #+end_src
+
+* How to exit
+
+#+begin_src sh
+bindsym $mod+0 mode "$mode_system"
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id i3exit lock, mode "default"
+    bindsym s exec --no-startup-id i3exit suspend, mode "default"
+    bindsym u exec --no-startup-id i3exit switch_user, mode "default"
+    bindsym e exec --no-startup-id i3exit logout, mode "default"
+    bindsym h exec --no-startup-id i3exit hibernate, mode "default"
+    bindsym r exec --no-startup-id i3exit reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id i3exit shutdown, mode "default"
+
+    # exit system mode: "Enter" or "Escape"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+#+end_src
+

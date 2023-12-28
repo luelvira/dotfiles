@@ -80,6 +80,7 @@
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#auto-show-markup-symbols][Auto show markup symbols]]
   - [[#org-evil][org evil]]
+  - [[#presentations][Presentations]]
   - [[#org-present][Org present]]
 - [[#org-roam][Org roam]]
   - [[#zettelkasten][Zettelkasten]]
@@ -286,6 +287,7 @@ Using [[https://github.com/radian-software/straight.el][straight]] for package m
 ** List of package to be installed                                 :INACTIVE:
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp: :tangle no
+:VISIBILITY: folded
 :END:
 
 Define a list of package make the process agnostic to the package managment I
@@ -411,7 +413,7 @@ Then define where will be store the temporal files
 Also I will change the location of the ~custom-file.el~, setting it in the config folder
 
 #+begin_src emacs-lisp
-(setq custom-file (expand-file-name "custom-vars.el" "~/.emacs.d/"))
+(setq custom-file (expand-file-name "custom-vars.el" user-emacs-directory))
 (load custom-file 'noerror 'nomessage)
 #+end_src
 
@@ -435,11 +437,11 @@ time and connect client to it each time you need.
 (global-auto-revert-mode 1)
 #+end_src
 
-* Dashboard
+* Dashboard                                                        :INACTIVE:
 Emacs Dashboard is an extensible startup screen showing you recent files,
 bookmarks, agenda items and an Emacs banner.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package dashboard
     :init      ;; tweak dashboard config before loading it
     (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
@@ -533,33 +535,6 @@ Save every possible history
 (setq history-length 25)
 (savehist-mode 1))
 
-(setq kill-ring-max 25
-      history-length 25)
-
-(setq savehist-additional-variables
-      '(kill-ring
-        command-history
-        set-variable-value-history
-        custom-variable-history
-        query-replace-history
-        read-expression-history
-        minibuffer-history
-        read-char-history
-        face-name-history
-        bookmark-history
-        file-name-history))
-
- (put 'minibuffer-history         'history-length 25)
- (put 'file-name-history          'history-length 25)
- (put 'set-variable-value-history 'history-length 25)
- (put 'custom-variable-history    'history-length 25)
- (put 'query-replace-history      'history-length 25)
- (put 'read-expression-history    'history-length 25)
- (put 'read-char-history          'history-length 25)
- (put 'face-name-history          'history-length 25)
- (put 'bookmark-history           'history-length 25)
-
-
 ;; Remember and restore the last cursor location of opened files
 (save-place-mode 1)
 #+end_src
@@ -634,7 +609,7 @@ contains the org files only, and it is named sync.
 (scroll-bar-mode -1)        ; Disable visible scrollbar
 (tool-bar-mode -1)          ; Disable the toolbar
 (tooltip-mode -1)           ; Disable tooltips
-(set-fringe-mode 10)        ; Give some breathing room
+(set-fringe-mode 0)        ; Give some breathing room
 (menu-bar-mode -1)            ; Disable the menu bar
 ;; Set up the visible bell
 (setq visible-bell t)
@@ -688,7 +663,7 @@ Resolve symlinks when opening files, so that any operations are conducted from t
       (add-hook mode (lambda () (display-line-numbers-mode 1))))
 #+end_src
 
-** Highlight current line
+** Highlight current line                                           :INACTIVE:
 #+begin_src emacs-lisp
   (use-package hl-line
     :straight nil
@@ -761,25 +736,50 @@ would like to have a different fonts for the interface and the code. The package
 Defining the various fonts that Emacs will use.
 
 #+begin_src emacs-lisp
-(defvar lem-default "FiraCodeNerdFont")
+  (defgroup lem ()
+    "Group for all my custom vars."
+    :version '0.0.1
+    :prefix 'lem)
+  (defcustom lem-fixed "FiraCodeNerdFont"
+    "Font string for fixed pitch modes"
+    :type '(string)
+    :group 'lem)
+  (defcustom lem-default "Monospace"
+    "Font string for UI fonts"
+    :type '(string)
+    :group 'lem)
+  (defcustom lem-variable "Iosevka Aile"
+    "Font string for variable pitch texts"
+    :type '(string)
+    :group 'lem)
+
+
   (defun lem/set-fonts (frame)
     (select-frame frame)
     (set-face-attribute 'default nil
-                        :family "Monospace"
+                        :family lem-default
                         :width 'normal
-                        :weight 'normal
                         :weight 'normal
                         :height 110)
 
     (set-face-attribute 'fixed-pitch nil
                         :inherit 'default
-                        :family lem-default)
+                        :weight 'medium
+                        :height 1.0
+                        :family lem-fixed)
 
     (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Aile"
+                        :family  lem-variable
                         :inherit 'default
-                        :weight 'light
+                        :weight 'regular
                         ))
+  ;; Makes commented text and keywords italics.
+  ;; This is working in emacsclient but not emacs.
+  ;; Your font must have an italic face available.
+  (set-face-attribute 'font-lock-comment-face nil
+                      :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+                      :slant 'italic)
   (add-to-list 'default-frame-alist '(family . lem-default))
 #+end_src
 
@@ -797,10 +797,8 @@ correctly.
   (setq display-time-format "%H:%M %b %y"
         display-time-default-load-average nil)
   (display-time-mode 1)
-  (timeclock-mode-line-display 1)
   ;; Dimish modeline clutter hides pesky minor modes
   (use-package diminish)
-
 #+end_src
 
 Above there is the config for the doom-modeline
@@ -1117,7 +1115,7 @@ We can set a sortcut to open the config file from the emacs directory
 *** Perspective
 #+begin_src emacs-lisp
 (lem/leader-key-def
- "=" '(perspective-map :which-key "map"))
+ "TAB" '(perspective-map :which-key "map"))
 #+end_src
 
 *** Projectile
@@ -1215,7 +1213,7 @@ keep the default behavior of vi, I need to rebind it.
 Default tab width is 8, which is too much. We can change it to 4.
 
 #+begin_src emacs-lisp
-(setq-default tab-width 2)
+(setq-default tab-width 4)
 (setq-default evil-shift-width tab-width)
 ;; use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -1542,12 +1540,22 @@ It is very useful for figuring out how things work in Emacs.
 
 ** Snippets
 
-#+begin_src emacs-lisp :tangle no
+Snippets are a short text which is enabled to be expanded. yasnippet provide the
+mechanism, but does not have the snippets. You need to lead them. I will try
+with yasnippet-snippets and doom-snippets. The first one use the ~<~ character at
+the begin of the text, while doom-snippets not.
+
+#+begin_src emacs-lisp
   (use-package yasnippet
+    :defer t
     :config
-    (use-package yasnippet-snippets)
-    (yas-reload-all)
+    (delq 'yas-dropdown-prompt yas-prompt-functions)
     (yas-global-mode 1))
+
+  (use-package yasnippet-snippets)
+  (use-package doom-snippets
+    :after yasnippet
+    :straight (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*")))
 #+end_src
 
 * File browser with dired
@@ -1749,18 +1757,12 @@ and the last commit from the same file
 #+begin_src emacs-lisp
     (use-package git-gutter
       :straight t
+      :commands git-gutter:revert-hunk git-gutter:stage-hunk git-gutter:previous-hunk git-gutter:next-hunk
       :diminish
       :hook ((prog-mode . git-gutter-mode)
              (text-mode . git-gutter-mode))
       :config
       (setq git-gutter:update-interval 0.2))
-
-    (use-package git-gutter-fringe
-      :straight t
-      :config
-      (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-      (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-      (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 #+end_src
 
 *** Ediff
@@ -1797,7 +1799,8 @@ It need to be compiled, so you need to install first some dependencies
   (use-package vterm
     :commands vterm
     :config
-    (setq vterm-max-scrollback 10000))
+    (setq vterm-max-scrollback 10000)
+    (setq vterm-kill-buffer-on-exit t))
 
   (add-to-list 'display-buffer-alist
                '("\*vterm\*"
@@ -1805,9 +1808,6 @@ It need to be compiled, so you need to install first some dependencies
                  (window-height . 0.25)
                  (side . bottom)
                  (slot . 0)))
-  ;;Still does not work
-  (add-hook 'vterm-mode-hook 'evil-emacs-state)
-  (add-hook 'term-mode-hook 'evil-emacs-state)
 #+end_src
 
 *** vterm toggle
@@ -1833,7 +1833,7 @@ It need to be compiled, so you need to install first some dependencies
                   ;;(direction . bottom)
                   ;;(dedicated . t) ;dedicated is supported in emacs27
                   (reusable-frames . visible)
-                  (window-height . 0.4))))
+                  (window-height . 0.3))))
 
 #+end_src
 
@@ -1842,7 +1842,7 @@ It need to be compiled, so you need to install first some dependencies
 (use-package multi-vterm)
 #+end_src
 
-** SUDO EDIT
+** SUDO EDIT                                                        :INACTIVE:
 
 sudo-edit gives us the ability to open files with sudo privileges or switch over to editing with sudo privileges if we initially opened the file without such privileges.
 
@@ -1902,49 +1902,63 @@ Setup the web-mode
 (add-hook 'web-mode-hook 'lem/custom-web-mode)
 #+end_src
 
+Also we can enable [[https://github.com/skeeto/emacs-web-server/tree/master][simple-http]] to create a server in the current path and use
+[[https://github.com/skeeto/impatient-mode/tree/master][impatient mode]] like a live server.
+
+Also [[https://github.com/skeeto/skewer-mode/tree/master][skewer]] provides a live interaction with JavaScript, CSS, and HTML.
+
+#+begin_src emacs-lisp
+(use-package simple-httpd :defer t)
+(use-package impatient-mode :defer t)
+(use-package skewer-mode :defer t)
+#+end_src
+
 * Org mode
 ** Enable table of content
 
 #+begin_src emacs-lisp
-(use-package toc-org
+  (use-package toc-org
     :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+    :init (add-hook 'org-mode-hook 'toc-org-enable)
+    )
 #+end_src
 
 ** Define all the variables
 
 #+begin_src emacs-lisp
-  (defun lem/org-mode-hook ()
-    ;(org-indent-mode)
-    (variable-pitch-mode)
-    (visual-line-mode 0)
-    (setq evil-auto-indent nil)
-    (diminish org-indent-mode))
+(defun lem/org-mode-hook ()
+                                        ;(org-indent-mode)
+  (variable-pitch-mode)
+  (visual-line-mode 1)
+  (auto-fill-mode 0)
+  (setq evil-auto-indent nil)
+  (diminish org-indent-mode))
 
-  (use-package org
-    :defer t
-    :hook (org-mode . lem/org-mode-hook)
-    :config
-    (setq org-directory "~/Documents/Org/"
-          org-default-notes-file (concat org-directory "Inbox.org")
-          org-log-done 'time
-          org-hide-emphasis-markers t
-          org-table-convert-region-max-lines 20000
-          org-src-fontify-natively t
-          org-fontify-quote-and-verse-blocks t
-          org-src-tab-acts-natively t
-          org-edit-src-content-indentation 2
-          org-hide-block-startup nil
-          org-src-preserve-indentation nil
-          org-cycle-separator-lines 2
-          org-refile-targets '((nil :maxlevel . 2)
-                               (org-agenda-files :maxlevel . 1))
-          org-outline-path-complete-in-steps nil
-          org-refile-use-outline-path t
-          org-latex-create-formula-image-program 'dvisvgm
-          org-link-frame-setup '((file . find-file)) ;; open file in the same window
-          org-startup-folded 'showall ;; when emacs set as default the value showeverithing, overwrite custom visibilities
-          )
+(use-package org
+  :defer t
+  :hook ((org-mode . lem/org-mode-hook)
+         (org-mode . org-indent-mode))
+         :config
+         (setq org-directory "~/Documents/Org/"
+               org-default-notes-file (concat org-directory "Inbox.org")
+               org-log-done 'time
+               org-hide-emphasis-markers t
+               org-table-convert-region-max-lines 20000
+               org-src-fontify-natively t
+               org-fontify-quote-and-verse-blocks t
+               org-src-tab-acts-natively t
+               org-edit-src-content-indentation 0
+               org-hide-block-startup nil
+               org-src-preserve-indentation nil
+               org-cycle-separator-lines 2
+               org-refile-targets '((nil :maxlevel . 2)
+                                    (org-agenda-files :maxlevel . 1))
+               org-outline-path-complete-in-steps nil
+               org-refile-use-outline-path t
+               org-latex-create-formula-image-program 'dvisvgm
+               org-link-frame-setup '((file . find-file)) ;; open file in the same window
+               org-startup-folded 'showall ;; when emacs set as default the value showeverithing, overwrite custom visibilities
+               )
 
 #+end_src
 
@@ -2055,7 +2069,7 @@ Configure the agenda views
         org-agenda-start-with-log-mode t
         org-agenda-time-in-grid t
         org-agenda-show-current-time-in-grid t
-        org-agenda-start-on-weekday 1
+;;        org-agenda-start-on-weekday 1
         org-agenda-skip-deadline-if-done t
         org-agenda-skip-scheduled-if-done t
         org-log-into-drawer t
@@ -2111,7 +2125,7 @@ We can customize who the agenda display the elements with the command ~org-agend
         `(("d" "Dashboard" 
            ((agenda ""
                     ((org-deadline-warning-days 7)
-                     (org-agenda-span 'day)
+                     (org-agenda-span 10)
                      (org-agenda-overriding-header "Agenda")
                      ))
             (alltodo ""
@@ -2119,7 +2133,7 @@ We can customize who the agenda display the elements with the command ~org-agend
                       (org-agenda-sorting-strategy '(priority-down)))
                      (org-agenda-todo-ignore-scheduled 'all)
                      (org-agenda-todo-ignore-scheduled 'all)
-                     org-agenda-skip-function '(org-agenda-skip-entry-if 'timestamp)))
+                     org-agenda-skip-function '(org-agenda-skip-entry-if 'timestamp))
            (todo "ACTIVATED"
                  ((org-agenda-overriding-header "Next Actions")
                   (org-agenda-max-todos nil)))
@@ -2127,7 +2141,7 @@ We can customize who the agenda display the elements with the command ~org-agend
                  ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
                   (org-agenda-files '(,(concat org-directory "Tasks.org")))
                   (org-agenda-text-search-extra-files nil)))
-           )))
+           ))))
 #+end_src
 
 ** Configure Babel languages
@@ -2143,6 +2157,7 @@ org-babel-load-languages for each language you’d like to use.
    (python . t)
    (js . t)
    (shell . t)
+   (eshell . t)
    (gnuplot . t)))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
@@ -2299,16 +2314,46 @@ This package show the markup symbols when the cursors is between the symbols
 ** org evil
 
 #+begin_src emacs-lisp
-  (use-package evil-org
-    :after org
-    :hook ((org-mode . evil-org-mode)
-          (org-agenda-mode . evil-org-mode))
-    :config
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys))
+(use-package evil-org
+  :after org
+  :hook ((org-mode . evil-org-mode)
+         (org-agenda-mode . evil-org-mode)
+         (org-capture-mode . evil-insert-state)
+         (evil-org-mode . (lambda () (evil-org-set-key-theme '(navigation todo insert textobjects additional)))))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 #+end_src
 
-** Org present                                                    :INACTIVE:
+** Presentations
+Org allows you to export the content and create a custom presentation views. In this section I will test [[https://github.com/hakimel/reveal.js][reveal.js]] and [[https://github.com/yjwen/org-reveal][org-reveal]].
+
+*** Revel.js
+
+Is an FOSS html presentation framework with a powerful feature set. The author suggests you to download the full version by npm or git
+
+#+begin_src shell
+git clone https://github.com/hakimel/reveal.js.git
+cd reveal.js && npm install
+npm start
+#+end_src
+
+#+begin_src shell
+npm install reveal.js
+#+end_src
+
+*** org-reveal
+
+This is a module that enables you to export an org-file to reveal.js, so it does not need the full config. I can download the zip and include the files associated while export.
+
+#+begin_src emacs-lisp
+(use-package org-reveal
+  :defer t
+  :config
+  (setq org-reveal-root "file:///home/lucas/.cache/emacs/reveal/reveal.js-master"))
+#+end_src
+
+** Org present                                                      :INACTIVE:
 :PROPERTIES:
 :VISIBILITY: folded
 :END:
