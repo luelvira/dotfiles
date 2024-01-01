@@ -27,7 +27,7 @@
   - [[#highlight-current-line][Highlight current line]]
 - [[#theming][Theming]]
   - [[#maximize-windows-by-default-and-setup-transparency][Maximize windows by default and setup transparency]]
-  - [[#all-the-icons][All the icons]]
+  - [[#setup-icons][Setup icons]]
   - [[#color-theme][Color theme]]
   - [[#fonts][Fonts]]
   - [[#doom-modeline][Doom modeline]]
@@ -299,6 +299,7 @@ Add the lisp script to the path
 (add-to-list 'load-path "~/.config/emacs/lisp/")
 (require 'lem_conf)
 #+end_src
+
 * Keep it clean
 
 First I define the default emacs back-up where all the cache files will be
@@ -318,7 +319,7 @@ Use no-littering to automatically set common paths to the new user-emacs-directo
 Then define where will be store the temporal files
 
 #+begin_src emacs-lisp
-(setq backup-directory-alist '(("." . "~/.cache/emacs/backup/"))
+(setq backup-directory-alist `(("." . ,(expand-file-name "backup" user-emacs-directory)))
       backup-by-copying t   ; instead of renaming current file (clobbers links)
       create-lockfiles nil
       make-backup-files t    ; Backup of a file the first time it is saved.
@@ -327,15 +328,12 @@ Then define where will be store the temporal files
       delete-old-versions t  ; Automatically delete excess backups
       kept-new-versions 6   ; how many of the newest versions to keep
       kept-old-versions 5    ; and how many of the old
-      )
-
-(setq auto-save-default t
+      auto-save-default t
       ;; Don't auto-disable auto-save after deleting big chunks. This defeats
       ;; the purpose of a failsafe. This adds the risk of losing the data we
       ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
-      auto-save-include-big-deletions t)
-
-(setq require-final-newline t)
+      auto-save-include-big-deletions t
+      require-final-newline t)
 #+end_src
 
 Also I will change the location of the ~custom-file.el~, setting it in the config folder
@@ -558,7 +556,7 @@ Resolve symlinks when opening files, so that any operations are conducted from t
       (add-hook mode (lambda () (display-line-numbers-mode 1))))
 #+end_src
 
-** Highlight current line
+** Highlight current line                                          :INACTIVE:
 :PROPERTIES:
 :VISIBILITY: folded
 :END:
@@ -568,7 +566,6 @@ Resolve symlinks when opening files, so that any operations are conducted from t
     :hook ((prog-mode . hl-line-mode)
            (text-mode . hl-line-mode)
            (conf-mode . hl-line-mode)))
-
 #+end_src
 
 * Theming
@@ -578,26 +575,43 @@ Resolve symlinks when opening files, so that any operations are conducted from t
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; only for non gnome desktop
-(defun lem/set-background (frame)
+(defun lem/set-background ( &optional frame)
   (unless (string= (getenv "DESKTOP_SESSION") "gnome")
     (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
     (add-to-list 'default-frame-alist '(alpha-background . 90))))
 #+end_src
 
-** All the icons
+** Setup icons
 
 This is an icon set that can be used with dashboard, dired, ibuffer and other
 Emacs programs.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package all-the-icons
+  :disabled
   :if (display-graphic-p))
 
 (use-package all-the-icons-dired
+  :disabled
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
-  (use-package minions
-    :hook (doom-modeline-mode . minions-mode))
+(use-package minions
+  :disabled
+  :hook (doom-modeline-mode . minions-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package nerd-icons)
+(use-package nerd-icons-dired
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+(use-package nerd-icons-completion
+  :config
+  (nerd-icons-completion-mode))
+
+(defcustom lem/icons-completion-function
+:group 'lem
+:type '(symbol))
 #+end_src
 
 ** Color theme
@@ -635,40 +649,43 @@ would like to have a different fonts for the interface and the code. The package
 Defining the various fonts that Emacs will use.
 
 #+begin_src emacs-lisp
-  (defvar lem-fixed "FiraCodeNerdFont"
-    "Font string for fixed pitch modes")
-  (defvar lem-default "Monospace"
-    "Font string for UI fonts")
-  (defvar lem-variable "Iosevka Aile"
-    "Font string for variable pitch texts")
+(defvar lem-fixed "FiraCodeNerdFont"
+  "Font string for fixed pitch modes")
+(defvar lem-default "Monospace"
+  "Font string for UI fonts")
+(defvar lem-variable "Iosevka Aile"
+  "Font string for variable pitch texts")
 
-  (defun lem/set-fonts (frame)
-    (select-frame frame)
-    (set-face-attribute 'default nil
-                        :family lem-default
-                        :width 'normal
-                        :weight 'normal
-                        :height 110)
+(defun lem/set--fonts ()
+  (set-face-attribute 'default nil
+                      :family lem-default
+                      :width 'normal
+                      :weight 'normal
+                      :height 110)
 
-    (set-face-attribute 'fixed-pitch nil
-                        :inherit 'default
-                        :weight 'medium
-                        :height 1.0
-                        :family lem-fixed)
+  (set-face-attribute 'fixed-pitch nil
+                      :inherit 'default
+                      :weight 'medium
+                      :height 1.0
+                      :family lem-fixed)
 
-    (set-face-attribute 'variable-pitch nil
-                        :family  lem-variable
-                        :inherit 'default
-                        :weight 'regular
-                        ))
-  ;; Makes commented text and keywords italics.
-  ;; This is working in emacsclient but not emacs.
-  ;; Your font must have an italic face available.
-  (set-face-attribute 'font-lock-comment-face nil
-                      :slant 'italic)
-  (set-face-attribute 'font-lock-keyword-face nil
-                      :slant 'italic)
-  (add-to-list 'default-frame-alist '(family . lem-default))
+  (set-face-attribute 'variable-pitch nil
+                      :family  lem-variable
+                      :inherit 'default
+                      :weight 'regular
+                      ))
+(defun lem/set-fonts (frame)
+  (select-frame frame)
+(lem/set--fonts))
+
+;; Makes commented text and keywords italics.
+;; This is working in emacsclient but not emacs.
+;; Your font must have an italic face available.
+(set-face-attribute 'font-lock-comment-face nil
+                    :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil
+                    :slant 'italic)
+(add-to-list 'default-frame-alist '(family . lem-default))
 #+end_src
 
 ** Doom modeline
@@ -710,6 +727,17 @@ Above there is the config for the doom-modeline
           doom-modeline-default-eol-type 0))
 #+end_src
 
+[[https://github.com/victorteokw/emacs-anzu][Anzu]] is a port of [[https://github.com/osyo-manga/vim-anzu][vim-anzu]], whicjh provides a minor mode to display /current match/ and /total matches/ in the modeline.
+
+#+begin_src emacs-lisp
+(use-package! anzu
+    :after-call isearch-mode)
+
+(use-package! evil-anzu
+    :after-call evil-ex-start-search evil-ex-start-word-search evil-ex-search-activate-highlight
+    :config (global-anzu-mode +1))
+#+end_src
+
 ** create frame hook
 
 Emacs in daemon mode has a problem loading the fonts. By default, the init file
@@ -721,11 +749,15 @@ call a function after a frame is created. This function receive as argument the
 current frame
 
 #+begin_src emacs-lisp
-(when (daemonp)
+(if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame)
                 (lem/set-fonts frame)
-                (lem/set-background frame))))
+                (lem/set-background frame)))
+  (add-hook 'after-init-hook
+            (lambda ()
+              (lem/set--fonts)
+              (lem/set-background))))
 #+end_src
 
 ** Rainbow delimeters
@@ -806,10 +838,10 @@ Evil collection is a package that provide evil keybindings for a lot of modes
   (use-package evil-numbers
     :after evil
     :config
-    (define-key evil-normal-state-map (kbd "C-a +") 'evil-numbers/inc-at-pt)
-    (define-key evil-normal-state-map (kbd "C-a -") 'evil-numbers/dec-at-pt)
-    (define-key evil-normal-state-map (kbd "C-a g +") 'evil-numbers/inc-at-pt-incremental)
-    (define-key evil-normal-state-map (kbd "C-a g -") 'evil-numbers/dec-at-pt-incremental))
+    (define-key evil-normal-state-map (kbd "g +") 'evil-numbers/inc-at-pt)
+    (define-key evil-normal-state-map (kbd "g -") 'evil-numbers/dec-at-pt)
+    (define-key evil-visual-state-map (kbd "g +") 'evil-numbers/inc-at-pt-incremental)
+    (define-key evil-visual-state-map (kbd "g -") 'evil-numbers/dec-at-pt-incremental))
 
   (use-package evil-surround
     :config
@@ -818,12 +850,10 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 
 ** Which Key
 
-[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key
-binding in Emacs to offer you all possible completions for the prefix. For
-example, if you press =C-c= (hold control and press the letter =c=), a panel will
-appear at the bottom of the frame displaying all of the bindings under that
-prefix and which command they run. This is very useful for learning the possible
-key bindings in the mode of your current buffer.
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to offer you all possible
+completions for the prefix. For example, if you press =C-c= (hold control and press the letter =c=), a panel will appear at
+the bottom of the frame displaying all of the bindings under that prefix and which command they run. This is very useful
+for learning the possible key bindings in the mode of your current buffer.
 
 #+begin_src emacs-lisp
   (use-package which-key
@@ -864,21 +894,20 @@ Use 'SPC b' for keybinings related to bookmarks and buffers
 
 | COMMAND         | DESCRIPTION                              | KEYBINDING |
 |-----------------+------------------------------------------+------------|
-| list-bookmarks  | /List bookmarks/                         | SPC b L    |
-| bookmark-set    | /Set bookmark/                           | SPC b m    |
-| bookmark-delete | /Delete bookmark/                        | SPC b M    |
-| bookmark-save   | /Save current bookmark to bookmark file/ | SPC b w    |
+| list-bookmarks  | List bookmarks                           | SPC b L    |
+| bookmark-set    | Set bookmark                             | SPC b m    |
+| bookmark-delete | Delete bookmark                          | SPC b M    |
+| bookmark-save   | Save current bookmark to bookmark file   | SPC b w    |
 
 #+begin_src emacs-lisp
 (setq bookmark-default-file
       (expand-file-name "bookmarks" user-emacs-directory))
 (lem/leader-key-def
   "b" '(:ignore t :which-key "buffers/bookmarks")
-  "bl" '(list-bookmarks :which-key "List bookmarks")
+  "bl" '(bookmark-jump :which-key "List bookmarks")
   "bm" '(bookmark-set :which-key "Set bookmark")
   "bd" '(bookmark-delete :which-key "Delete bookmark")
   "bw" '(bookmark-save :which-key "Save current bookmark to bookmark file"))
-
 #+end_src
 
 **** Buffers
@@ -956,15 +985,28 @@ allowing you to navigate between them and filter them.
 We can set a sortcut to open the config file from the emacs directory
 
 #+begin_src emacs-lisp
-  (lem/leader-key-def
-    "fp" '((lambda ()
-             (interactive)
-             (counsel-find-file lem/dotfiles))
-           :which-key "Config")
-    "fc" '((lambda ()
-             (interactive)
-             (find-file (expand-file-name "emacs/config.org" lem/dotfiles)))
-           :which-key "Emacs Config file"))
+(defun lem/interactive-find-file (dir)
+  (let ((default-directory dir))
+    (call-interactively 'find-file)))
+
+(lem/leader-key-def
+  "fp" '((lambda ()
+           (interactive)
+           (lem/interactive-find-file lem/dotfiles))
+         :which-key "Config")
+  "fe" '(:ignore t :which-key "Emacs files")
+  "fec" '((lambda ()
+            (interactive)
+            (find-file (expand-file-name "config.org" private-emacs-directory)))
+          :which-key "Emacs Config file")
+  "fei" '((lambda ()
+            (interactive)
+            (find-file (expand-file-name "init.el" private-emacs-directory)))
+          :which-key "Emacs init file")
+  "fel" '((lambda ()
+            (interactive)
+            (lem/interactive-find-file (expand-file-name "lisp" private-emacs-directory)))
+          :which-key "Custom libraries"))
 #+end_src
 
 *** Git
@@ -1013,7 +1055,7 @@ We can set a sortcut to open the config file from the emacs directory
       "p"  '(:ignore t :which-key "Projectile")
       "pf" '(projectile-find-file :which-key "Projectile find file")
       "ps" '(projectile-switch-project :which-key "Projectile switch project")
-      "pF" '(counsel-projectile-rg :which-key "Rip grep")
+      "pF" '(consult-ripgrep :which-key "Rip grep")
       "pc" '(projectile-compile-project :which-key "Compile Project")
       "pd" '(projectile-dired :which-key "Projectile dired")
       "pp" '(counsel-projetile :which-key "Counsel projectile"))
@@ -1101,10 +1143,10 @@ keep the default behavior of vi, I need to rebind it.
 Default tab width is 8, which is too much. We can change it to 4.
 
 #+begin_src emacs-lisp
-(setq-default tab-width 4)
-(setq-default evil-shift-width tab-width)
-;; use spaces instead of tabs
-(setq-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil  ;; space insetead of tabs
+              tab-always-indent 'complete ;;first tab and then complete
+              tab-width 4
+              evil-shift-width tab-width)
 #+end_src
 
 * Work Spaces
@@ -1172,7 +1214,10 @@ works better to your use.
 (define-key evil-insert-state-map "\C-p" 'corfu-previous)
 #+end_src
 
-** ivy and counsel
+** ivy and counsel                                                 :INACTIVE:
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
 
 ivy is a generic completion mechanism for Emacs. It is based on the idea of
 incremental narrowing: the list of candidates is filtered as you type more
@@ -1284,10 +1329,7 @@ knowing what it begins with though.
 (setq ivy-initial-inputs-alist nil)
 #+end_src
 
-** Vertico completion system                                       :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
+** Vertico completion system
 
 An alternative to ivy and counsel
 *** Vertico
@@ -1342,15 +1384,18 @@ Consult provides a lot of useful completion commands similar to Ivy’s Counsel.
 
 (use-package consult
   :demand t
-  :bind (("C-s" . consult-line)
+  :bind (("C-s" . my/consult-line)
          ("C-M-l" . consult-imenu)
          ("C-M-j" . persp-switch-to-buffer*)
          :map minibuffer-local-map
          ("C-r" . consult-history))
   ([remap bookmark-jump] . consult-bookmark)
+  ([remap goto-line] . consult-goto-line)
   ([remap load-theme] . consult-theme)
   ([remap recentf-open-files] . consult-recent-file)
   ([remap switch-to-buffer] . consult-buffer)
+  ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
+  ([remap switch-to-buffer-other-frame] . consult-buffer-other-frame)
   :custom
   (consult-project-root-function #'lem/get-project-root)
   (completion-in-region-function #'consult-completion-in-region)
@@ -1359,8 +1404,43 @@ Consult provides a lot of useful completion commands similar to Ivy’s Counsel.
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file))
+#+end_src
 
+**** Consult hacks
 
+For the [[help:consult-goto-line][consult-goto-line]] and ~consult-line~ commands, we define our owns with live preview (independently of the
+[[help:consult-preview-key][consult-preview-key]]) ([[https://github.com/rougier/dotemacs/blob/37a22e94b39bc0c2965c40b3ec331438f04d1efe/dotemacs.org?plain=1#L2007][Example from rougier]])
+
+#+name: my/consult-line
+#+begin_src emacs-lisp
+(defun my/consult-line ()
+  "Consult line with live preview"
+  (interactive)
+  (let ((consult-preview-key 'any)
+        (mini-frame-resize 'grow-only)) ;; !! Important
+    (consult-line)))
+
+(defun my/consult-goto-line ()
+  "Consult goto line with live preview"
+  (interactive)
+  (let ((consult-preview-key 'any))
+    (consult-goto-line)))
+#+end_src
+
+The consult wiki has a demo for the find file function with preview
+
+#+begin_src emacs-lisp :tangle no
+(setq read-file-name-function #'consult-find-file-with-preview)
+
+(defun consult-find-file-with-preview (prompt &optional dir default mustmatch initial pred)
+  (interactive)
+  (let ((default-directory (or dir default-directory))
+        (minibuffer-completing-file-name t))
+    (consult--read #'read-file-name-internal :state (consult--file-preview)
+                   :prompt prompt
+                   :initial initial
+                   :require-match mustmatch
+                   :predicate pred)))
 #+end_src
 
 **** Consult-dir
@@ -1376,17 +1456,18 @@ Consult provides a lot of useful completion commands similar to Ivy’s Counsel.
 #+end_src
 
 *** Marginalia
-Like ivy-rich but for vertico
 
+[[https://github.com/minad/marginalia][Marginalia]] add annotations at the margin of the minibuffer, like ivy-rich, but for [[*Vertico][vertico]]
 #+begin_src emacs-lisp
 (use-package marginalia
   :after vertico
   :custom (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :hook (marginalia-mode . lem/icons-completion-function)
   :config
   (setq-default marginalia--ellipsis "…"    ; Nicer ellipsis
                 marginalia-align 'right     ; right alignment
                 marginalia-align-offset -1) ; one space on the right
-
+  :init
   (marginalia-mode))
 #+end_src
 
@@ -1400,16 +1481,14 @@ Like ivy-rich but for vertico
           (which-key--show-keymap "Embark" map nil nil 'no-paging)
           #'which-key--hide-popup-ignore-command)
         embark-become-indicator embark-action-indicator)
-  :init
-  (setq which-key-use-C-h-commands nil
-        prefix-help-command #'embark-prefix-help-command)
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+
   :bind
-  ([remap describe-bindings] . embark-bindings)
-  (("C-;" . embark-act)
-   :map minibuffer-local-map
-   ("C-;" . embark-act)
-   ("C-c C-;" . embark-export)
-   ("C-c C-l" . embark-collect)))
+  (("C-;" . embark-act)))
 
 (use-package embark-consult
   :after embark)
@@ -1419,12 +1498,16 @@ Like ivy-rich but for vertico
 
 #+begin_src emacs-lisp
 (use-package corfu
+  :config
+  (setq corfu-cycle t
+        corfu-separator ?\s
+        corfu-preselect-first nil
+        corfu-preselect 'prompt
+        tab-always-indent 'complete)
   :bind (:map corfu-map
-         ("C-j" . corfu-next)
-         ("C-k" . corfu-previous)
-         ("C-f" . corfu-insert))
-  :custom
-  (corfu-cycle t)
+              ("C-j" . corfu-next)
+              ("C-k" . corfu-previous)
+              ("C-f" . corfu-insert))
   :init
   (global-corfu-mode))
 #+end_src
@@ -1441,7 +1524,7 @@ Smex is a package that makes M-x remember out history
 
 ** Orderless
 
-Orderless improves candidate filtering create pattern by words separate with
+[[https://github.com/oantolin/orderless][Orderless]] improves candidate filtering create pattern by words separate with
 spaces and display any command which has the same words in any order
 
 #+begin_src emacs-lisp
@@ -1452,13 +1535,12 @@ spaces and display any command which has the same words in any order
         completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
 
-** helpul
+** helpul                                                          :INACTIVE:
 
-[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-=
-command buffers.  For example, if you use =describe-function=, you will not only
-get the documentation about the function, you will also see the source code of
-the function and where it gets used in other places in the Emacs configuration.
-It is very useful for figuring out how things work in Emacs.
+[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers. For example, if you use
+=describe-function=, you will not only get the documentation about the function, you will also see the source code of the
+function and where it gets used in other places in the Emacs configuration. It is very useful for figuring out how
+things work in Emacs.
 
 
 #+begin_src emacs-lisp
@@ -1513,7 +1595,6 @@ the begin of the text, while doom-snippets not.
               (lambda () (interactive)
                 (dired-omit-mode 1)
                 (dired-hide-details-mode 1)
-                (all-the-icons-dired-mode 1)
                 (hl-line-mode 1))))
 
   (use-package dired-single :defer t)
@@ -1656,6 +1737,7 @@ For some reason, emacs has not a  markdown mode enable by default
     :demand t)
 
   (use-package counsel-projectile
+    :disabled
     :after projectile
     :bind (("C-M-p" . counsel-projectile-find-file))
     :config
@@ -2197,7 +2279,8 @@ call them, you should use the ~SPC-o-s~ shortcuts
   ;; function to search into the org folder
   (defun lem/org-search ()
     (interactive)
-    (counsel-rg "" org-directory nil "Search notes: "))
+    (let ((consult-ripgrep-command "rg --type org --line-buffered --color=always --max-columns=500 --line-number . -e ARG OPTS"))
+    (consult-ripgrep org-directory)))
 #+end_src
 
 ** Org-auto-tangle
@@ -2407,6 +2490,7 @@ emacs.
   :straight t
   :config
   (setq org-roam-directory (expand-file-name "roam" org-directory)
+        org-roam-completion-everywhere t
         org-roam-db-autosync-mode t)
 #+end_src
 
@@ -2428,16 +2512,28 @@ emacs.
          :unnarrowed t)))
 #+end_src
 
-*** Configure org roam completion
+*** Configure org roam completion find function
 
 If you’re using a vertical completion framework, such as Ivy, Org-roam supports
 the generation of an aligned, tabular completion interface. For example, to
 include a column for tags, one can set org-roam-node-display-template as such:
 
 #+begin_src emacs-lisp
+(cl-defmethod org-roam-node-date ((node org-roam-node)) (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node)))
+
 (setq org-roam-node-display-template
       (concat "${title:*} "
-              (propertize "${tags:30}" 'face 'org-tag)))
+              (propertize "${tags:30}" 'face 'org-tag)
+              (propertize "${date:10}" 'face 'org-date)
+))
+#+end_src
+
+*** Configure Org-roam-dailies-notes
+
+#+begin_src emacs-lisp
+(setq org-roam-dailies-capture-templates
+  '(("d" "default" entry "* %<%I:%M %p>:\n%?"
+:if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n#+filetags: jouranl\n\n"))))
 #+end_src
 
 *** Close org roam package declaration
@@ -2569,7 +2665,6 @@ bibliographic data, and LaTeX, markdown, and org-cite editing support.
 
 **** Citar-org-roam
 
-
 This package provides a better integration between citar and org-roam
 
 #+begin_src emacs-lisp
@@ -2604,6 +2699,12 @@ I can change the default note title output
 #+begin_src emacs-lisp
 )
 #+end_src
+
+References from:
+- [[https://www.reddit.com/r/emacs/comments/18qtno9/how_to_autopopulate_journal_name_and_year_from/]]
+- [[https://www.reddit.com/r/emacs/comments/15uu70g/how_to_capture_orgroam_template_from_bibliography/]]
+- [[https://github.com/org-roam/org-roam-bibtex/discussions/253]]
+- [[https://github.com/orgs/emacs-citar/discussions/678]]
 
 **** Import annotations from zotero
 
