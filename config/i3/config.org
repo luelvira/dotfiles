@@ -355,17 +355,17 @@ In this block we define names for the default layout and store it in
 variables to avoid repeating the names in multiple places
 
 #+begin_src sh
-set $ws1    "1: "
-set $ws2    "2: "
-set $ws3    "3:"
-set $ws4    "4:"
-set $ws5    "5:"
-set $ws6    "6:"
-set $ws7    "7:"
-set $ws8    "8:"
-#set $ws9    "9:"
-#set $ws10   "10:"
-#set $ws11   scratchpad
+set $ws1    1
+set $ws2    2
+set $ws3    3
+set $ws4    4
+set $ws5    5
+set $ws6    6
+set $ws7    7
+set $ws8    8
+#set $ws9   9
+#set $ws10  10
+set $ws11  scratchpad
 #+end_src
 
 *** Send programs to custom WS
@@ -388,9 +388,9 @@ another method
 for_window [class="Spotify"] move to workspace $ws3
 #+end_src
 
-** I3 bar                                                       :DEPRECATED:
+** I3 bar
 :PROPERTIES:
-:HEADER-ARGS: :tangle no
+:header-args: :tangle no
 :END:
 
 Start i3bar to display a workspace bar (plus the system information
@@ -421,6 +421,7 @@ Launch polybar on each restart. The configuration file is [[file:../polybar/conf
 #+begin_src sh
 exec_always --no-startup-id /home/lucas/.config/polybar/launch.sh
 #+end_src
+
 ** Binding workspace to monitors
 
 #+begin_src sh

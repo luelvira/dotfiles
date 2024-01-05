@@ -6,13 +6,37 @@
 
 ;;; Code:
 
-
 (defgroup lem ()
   "Group for some personal variables."
   :group 'emacs
   :prefix 'lem
   :version '0.0.1)
 
+(defcustom lem/sync_script_path
+  (let ((
+         file-name (expand-file-name "sync.sh" "~/.local/bin/")))
+    (if (file-exists-p file-name) file-name nil))
+  "The path where the sync file is stored."
+  :group 'lem
+  :type '(file :must-match t))
+
+(defcustom lem/dotfiles "~/Documents/git/dotfiles/"
+  "The path where the dotfiles git repo is stored."
+  :group 'lem
+  :type '(directory :must-match t))
+
+(defcustom lem/bibliography-files '("~/Documents/Org/bibliography.bib" "~/Documents/Org/phd.bib")
+  "List of the .bib to get the bibliography."
+  :group 'lem
+  :type '(repeat :tag "List of bib files" file :must-match t))
+
+(defcustom lem/alpha-value 90
+  "The default value of transparency used for the current frame."
+  :group 'lem
+  :type '(number))
+
+(defvar lem/is-transparent t
+  "If the frame is transparent or not.")
 
 (defun lem/delete-this-file ()
   "Delete the current file and kill the buffer."
@@ -65,37 +89,14 @@ PATH: is the dir where the git repo is"
         (set-frame-parameter frame 'alpha tuple)
         (add-to-list 'default-frame-alist '(alpha-background . lem/alpha-value))))))
 
-(defcustom lem/sync_script_path
-  (let ((
-         file-name (expand-file-name "sync.sh" "~/.local/bin/")))
-    (if (file-exists-p file-name) file-name nil))
-  "The path where the sync file is stored."
-  :group 'lem
-  :type '(file :must-match t))
-
-(defcustom lem/dotfiles "~/Documents/git/dotfiles/"
-  "The path where the dotfiles git repo is stored."
-  :group 'lem
-  :type '(directory :must-match t))
-
-(defcustom lem/bibliography-files '("~/Documents/Org/bibliography.bib" "~/Documents/Org/phd.bib")
-  "List of the .bib to get the bibliography."
-  :group 'lem
-  :type '(repeat :tag "List of bib files" file :must-match t))
-
-(defcustom lem/fill-column 110
-  "The default number of columns used for wrap the text.
-By default  takes the middle of the screen."
-  :set #'(lambda (symb val) (setq lem/fill-column val
-                                  fill-column lem/fill-column))
-  :group 'lem
-  :type '(number))
-
-(defcustom lem/alpha-value 90
-  "The default value of transparency used for the current frame."
-  :set #'(lambda (symb val) (setq lem/alpha-value val) (lem/set-background))
-  :group 'lem
-  :type '(number))
+(defun lem/toggle-transparency ()
+  "Toggle the state of the transparency for all the frames."
+  (interactive)
+  (let ((alpha (if lem/is-transparent 100 lem/alpha-value)))
+    (let ((tuple `(,alpha . ,alpha)))
+      (set-frame-parameter nil 'alpha tuple)
+      (add-to-list 'default-frame-alist '(alpha-background . lem/alpha-value))))
+  (setq-default lem/is-transparent (not lem/is-transparent)))
 
 
 (provide 'lem_conf)
