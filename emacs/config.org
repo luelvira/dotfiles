@@ -85,6 +85,7 @@
   - [[#org-evil][org evil]]
   - [[#org-present][Org present]]
   - [[#org-ref][Org ref]]
+  - [[#org-gnuplot][org gnuplot]]
 - [[#org-roam][Org roam]]
   - [[#zettelkasten][Zettelkasten]]
   - [[#org-roam-ui][Org-roam-ui]]
@@ -918,9 +919,15 @@ Regarding /buffers/, the text you are editing in Emacs resides in an object call
 **** Dired keys
 
 #+begin_src emacs-lisp
-  (lem/leader-key-def
-    "d" '(:ignore t :wk "Dired")
-    "d d" '(dired :wk "Open dired"))
+(lem/leader-key-def
+  "d"  '(:ignore t  :which-key "Dired")
+  "dd" '(dired      :which-key "Open dired")
+  "dj" '(dired-jump :which-key "Dired jump to current")
+  "dp" '((lambda ()
+           (interactive)
+           (dired lem/dotfiles))
+         :which-key "Go to dotfiles folder")
+  )
 #+end_src
 
 **** Eval expressions
@@ -1565,36 +1572,34 @@ Snippets are a short text which is enabled to be expanded. yasnippet provide the
 * File browser with dired
 
 #+begin_src emacs-lisp
-  (use-package dired
-    :ensure nil
-    :straight nil
-    :defer 1
-    :config
-    (setq dired-listing-swithces "--group-directories-first"
-          dired-omit-files "^\\.[^.].*"
-          delete-by-moving-to-trash t)
-    (autoload 'dired-omit-mode "dired-x")
-    (add-hook 'dired-load-hook
-              (lambda ()
-                (interactive)
-                (dired-collapse)))
-    (add-hook 'dired-mode-hook
-              (lambda () (interactive)
-                (dired-omit-mode 1)
-                (dired-hide-details-mode 1)
-                (hl-line-mode 1))))
-
-  (use-package dired-single :defer t)
-  (use-package dired-ranger :defer t)
-  (use-package dired-collapse :defer t)
-
+(use-package dired-single :defer t)
+(use-package dired-ranger :defer t)
+(use-package dired-collapse :defer t)
+(use-package dired
+  :ensure nil
+  :straight nil
+  :defer 1
+  :config
+  (setq dired-listing-swithces "--group-directories-first"
+        dired-omit-files "^\\.[^.].*"
+        delete-by-moving-to-trash t)
+  (autoload 'dired-omit-mode "dired-x")
+  (add-hook 'dired-load-hook
+            (lambda ()
+              (interactive)
+              (dired-collapse)))
+  (add-hook 'dired-mode-hook
+            (lambda () (interactive)
+              (dired-omit-mode 1)
+              (dired-hide-details-mode 1)
+              (hl-line-mode 1)))
   (evil-collection-define-key 'normal 'dired-mode-map
     "h" 'dired-single-up-directory
     "H" 'dired-omit-mode
     "l" 'dired-single-buffer
     "y" 'dired-ranger-copy
     "X" 'dired-ranger-move
-    "p" 'dired-ranger-paste)
+    "p" 'dired-ranger-paste))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2086,9 +2091,7 @@ Another package that could be helpful
         )
 #+end_src
 
-*note* the variable org-startup-folded should be different to ~showeverithing~
-because, this value overwrite other visibility properties for local blocks like
-~visibility: hidden~ or ~org-hide-block-startu~
+*note* the variable org-startup-folded should be different to ~showeverithing~ because, this value overwrite other visibility properties for local blocks like ~visibility: hidden~ or ~org-hide-block-startu~
 
 Add some vars borrow from doom-emacs
 
@@ -2106,14 +2109,9 @@ The org mode is not close
 
 ** GTD
 *** Multiple  keyword sets in one file
-From [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]],
-sometimes you want to use different sets of TODO keywords in
-parallel. For example a set for task that could be =DONE= or =TODO=, other task
-that could depends on other and include the keyword =WAITING= and so on.
+From [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]], sometimes you want to use different sets of TODO keywords in parallel. For example a set for task that could be =DONE= or =TODO=, other task that could depends on other and include the keyword =WAITING= and so on.
 
-IMPORTANT* You can only use set at time, so you need first to select the correct
-workflow. The shortcut to select them is: =C-u C-u C-c C-t=; =C-s-RIGHT=;
-=C-s-LEFT=
+IMPORTANT* You can only use set at time, so you need first to select the correct workflow. The shortcut to select them is: =C-u C-u C-c C-t=; =C-s-RIGHT=; =C-s-LEFT=
 
 *** Workflow states
 - *TODO*: A task workflowhich should be done, but is not processed
@@ -2344,16 +2342,21 @@ Use bullet characters instead of asterisks, plus set the header font sizes to so
 
 ** Org templates
 
-In this subsection, I will add some capture to the capture list, that are not
-related with any workflow
+In this subsection, I will add some capture to the capture list, that are not related with any workflow
+
 #+begin_src emacs-lisp
 (setq org-capture-templates
       (append org-capture-templates
               `(("m" "Fondos" table-line
                  (file+headline
                   ,(expand-file-name "Metrics.org" org-directory) "Fondos")
-                 "| %U | %^{fondo1} | %^{fondo2} |" :kill-buffer t)
-                ("j" "Journal" entry
+                 "| %U | %^{fondo1} | %^{fondo2} |")
+                ("j" "Journals")
+                ("jj" "Journal entry" entry
+                 (file+olp+datetree
+                  ,(expand-file-name "Journal.org" org-directory) "Notes")
+                 "\n* %<%H:%m>\n%?" :empty-lines 1)
+                ("jl" "Journal with link" entry
                  (file+olp+datetree
                   ,(expand-file-name "Journal.org" org-directory) "Notes")
                  "\n* %<%H:%m>\nFrom: %a\n%?" :empty-lines 1)
@@ -2603,6 +2606,13 @@ Now register the hooks and install the package (if it already is not installed)
 (use-package org-ref)
 #+end_src
 
+** org gnuplot
+
+gnuplot is a declarative language that allows you to print graphics in a easy way.
+
+#+begin_src emacs-lisp
+(use-package gnuplot)
+#+end_src
 * Org roam
 
 Org-roam is a tool for networked thought. It reproduces some of the Roam
@@ -2623,11 +2633,8 @@ The instalation process use the melpa or melpa stable package manager from emacs
 
 *** Configure org roam templates
 
-#+begin_src emacs-lisp
-(setq org-roam-capture-templates '(("d" "default" plain "%?" :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n#+author: %n\n") :unnarrowed t)))
-#+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (setq org-roam-capture-templates
       '(("f" "Fleeting" plain "%?"
                        :if-new
@@ -2752,13 +2759,6 @@ Literature notes are notes extracted from external source. These must include th
 3. In which content do you think it can be useful?
 
 To answer this question, you can use meta-data as header from of the note, a link to the project/area which you think that can be useful and a link to another note with the explanation. This allows you to keep separate the original content to your conclusion and ideas.
-
-#+begin_src emacs-lisp
-(defcustom lem/bibliography-files '("~/Documents/Org/bibliography.bib" "~/Documents/Org/phd.bib")
-"List of files with the bibliography entries."
-:group 'lem
-:type '(list))
-#+end_src
 
 **** Citar
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=Rclone mount google drive
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rclone mount --config "/home/lucas/.config/rclone/rclone.conf"  --dir-cache-time 15m drive: /home/lucas/Documents/drive/
+ExecStop=/usr/bin/fusermount -uz /home/usuario/Documents/drive
+Restart=on-abort
+
+[Install]
+WantedBy=default.target
