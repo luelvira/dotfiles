@@ -30,8 +30,21 @@
   :group 'lem
   :type '(repeat :tag "List of bib files" file :must-match t))
 
+(defcustom lem/org-directory nil
+  "The directory for the Org repository."
+  :set (lambda (k v)
+         (set-default k v)
+         (setq org-directory v
+               org-default-notes-file (concat org-directory "Inbox.org")
+               org-roam-directory (expand-file-name "roam" org-directory)))
+  :group 'lem
+  :type '(directory :must-match t))
+
 (defcustom lem/alpha-value 90
   "The default value of transparency used for the current frame."
+  :set (lambda (k v)
+         (set-default k v)
+         (when (fboundp 'lem/set-background) (lem/set-background)))
   :group 'lem
   :type '(number))
 

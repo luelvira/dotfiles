@@ -31,7 +31,8 @@
   - [[#setup-icons][Setup icons]]
   - [[#color-theme][Color theme]]
   - [[#fonts][Fonts]]
-  - [[#doom-modeline][Doom modeline]]
+  - [[#modeline][modeline]]
+  - [[#anzu-and-vim-anzu][Anzu and vim anzu]]
   - [[#create-frame-hook][create frame hook]]
   - [[#rainbow-delimeters][Rainbow delimeters]]
 - [[#keyboard-binding][Keyboard binding]]
@@ -89,6 +90,9 @@
   - [[#org-roam-ui][Org-roam-ui]]
 
 * Enable literature configuration
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
 
 Emacs allows to export src blocks to a ~.el~ file and load them. This is a great option if you would like to describe each part of the configuation and explain a bit of them. To make them, you need to create a ~init.el~ file with the following code.
 
@@ -102,6 +106,9 @@ Emacs allows to export src blocks to a ~.el~ file and load them. This is a great
  #+end_example
 
 * Lexical binding
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
 Lexical binding is a mode that allows to use special features of the languages. It options tell the configuration that works as a program more than just a simple configuration
 
 This will generate a header at the top of the tangled file to indicate it is generated and is not meant to be modified directly.
@@ -166,14 +173,14 @@ Make startup faster by reducing the frequency of garbage collection and then use
             (setq gc-cons-threshold (* 8 1024 1024))))
 #+end_src
 
-
 * System settings
 
 This part aims to setting some special configuration based on the system Emacs is running
 
 #+begin_src emacs-lisp
 (defvar is-termux
-  (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a"))))
+  (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
+"Boolean variable to determinate if emacs is runing into termux system.")
 (setq user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
       user-full-name    (string-trim (shell-command-to-string "git config --global user.name")))
 #+end_src
@@ -214,20 +221,20 @@ Then define where will be store the temporal files
 
 #+begin_src emacs-lisp
 (setq backup-directory-alist `(("." . ,(expand-file-name "backup" user-emacs-directory)))
-      backup-by-copying t   ; instead of renaming current file (clobbers links)
-      create-lockfiles nil
-      make-backup-files t    ; Backup of a file the first time it is saved.
-      backup-by-copying t    ; Don't delink hardlinks
-      version-control t      ; Use version numbers on backups
-      delete-old-versions t  ; Automatically delete excess backups
-      kept-new-versions 6   ; how many of the newest versions to keep
-      kept-old-versions 5    ; and how many of the old
-      auto-save-default t
+      backup-by-copying      t   ; instead of renaming current file (clobbers links)
+      create-lockfiles       nil
+      make-backup-files      t   ; Backup of a file the first time it is saved.
+      backup-by-copying      t   ; Don't delink hardlinks
+      version-control        t   ; Use version numbers on backups
+      delete-old-versions    t   ; Automatically delete excess backups
+      kept-new-versions      6   ; how many of the newest versions to keep
+      kept-old-versions      5   ; and how many of the old
+      auto-save-default      t
       ;; Don't auto-disable auto-save after deleting big chunks. This defeats
       ;; the purpose of a failsafe. This adds the risk of losing the data we
       ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
       auto-save-include-big-deletions t
-      require-final-newline t)
+      require-final-newline           t)
 #+end_src
 
 Also I will change the location of the ~custom-file.el~, setting it in the config folder
@@ -243,7 +250,8 @@ This command allow to run emacs as server, so all the startup can be done once t
 
 #+begin_src emacs-lisp
 (require 'server)
-(unless (server-running-p)
+(unless (or is-termux
+            (server-running-p))
   (server-start))
 #+end_src
 
@@ -256,28 +264,33 @@ This command allow to run emacs as server, so all the startup can be done once t
 (global-auto-revert-mode 1)
 #+end_src
 
-* Dashboard                                                        :INACTIVE:
+* Dashboard
 Emacs Dashboard is an extensible startup screen showing you recent files,
 bookmarks, agenda items and an Emacs banner.
 
 #+begin_src emacs-lisp
-(use-package page-break-lines)
+(use-package page-break-lines
+  :diminish
+  :init (global-page-break-lines-mode))
+
 (use-package dashboard
+  :demand
+  :diminish (dashboard-mode page-break-lines-mode)
   :init      ;; tweak dashboard config before loading it
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (setq dashboard-banner-logo-title "Close the world. Open the nExt.")
+  (setq dashboard-set-navigator t)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
-  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
-  (setq dashboard-startup-banner 3)
+  ;(setq dashboard-startup-banner 3)
   (setq dashboard-center-content t)
-  (setq dashboard-items '((recents . 5)
-                          (agenda . 5 )
-                          (projects . 3)
+  (setq dashboard-items '((recents   . 5)
+                          (agenda    . 5 )
+                          (projects  . 3)
                           (bookmarks . 3)))
   (setq dashboard-set-navigator t)
   (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
   (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
-  :diminish (dashboard-mode page-break-lines-mode)
   :config
   (dashboard-setup-startup-hook)
   :custom
@@ -317,10 +330,7 @@ This section  contains a list of common and simple configuration
 
  *Recovery*
 
-If Emacs or the computer crashes, you can recover the files you were editing at
-the time of the crash from their auto-save files. To do this, start Emacs again
-and type the command M-x recover-session. Here, we parameterize how files are
-saved in the background.
+If Emacs or the computer crashes, you can recover the files you were editing at the time of the crash from their auto-save files. To do this, start Emacs again and type the command M-x recover-session. Here, we parameterize how files are saved in the background.
 
 #+begin_src emacs-lisp
 (setq auto-save-list-file-prefix ; Prefix for generating auto-save-list-file-name
@@ -477,10 +487,6 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 (use-package all-the-icons-dired
   :disabled
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
-
-(use-package minions
-  :disabled
-  :hook (doom-modeline-mode . minions-mode))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -495,11 +501,10 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 
 ** Color theme
 
-[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes. Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide which one you like best.
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.
 
 #+begin_src emacs-lisp
 (use-package doom-themes
-  :unless is-termux
   :defer t
   :init
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -564,13 +569,9 @@ Defining the various fonts that Emacs will use.
 (add-to-list 'default-frame-alist '(family . lem-default))
 #+end_src
 
-*** Ligatures                                                      :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
+*** Ligatures
 
 #+begin_src emacs-lisp
-
 (defvar lem/ligatures-extra-symbols
   '(
     ;; Functional
@@ -616,15 +617,11 @@ Defining the various fonts that Emacs will use.
   ;; (ligature-set-ligatures 't lem/ligatures-extra-symbols)
  (global-ligature-mode t))
 #+end_src
-** Doom modeline
 
-[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
-configuration for Emacs.  The default configuration is quite good but you can
-check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+** modeline
 
-*NOTE:* The first time you load your configuration on a new machine, you'll need
-to run `M-x all-the-icons-install-fonts` so that mode line icons display
-correctly.
+
+*NOTE:* The first time you load your configuration on a new machine, you'll need to run `M-x all-the-icons-install-fonts` so that mode line icons display correctly.
 
 #+begin_src emacs-lisp
   (setq display-time-format "%H:%M %b %y"
@@ -634,26 +631,41 @@ correctly.
   (use-package diminish)
 #+end_src
 
+*** Minions
+
+Minions is a package that implements a nested menu which gives access to all known minor modes
+
+#+begin_src emacs-lisp
+(use-package minions
+  :hook (doom-modeline-mode . minions-mode))
+#+end_src
+
+*** Doom modeline
+
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+
 Above there is the config for the doom-modeline
 
 #+begin_src emacs-lisp
-  (use-package doom-modeline
-    :hook (after-init . doom-modeline-mode)
-    :init
-    (setq projectile-dynamic-mode-line nil)
-    ;; Set these early so they don't trigger variable watchers
-    (setq doom-modeline-bar-width 3
-          doom-modeline-github nil
-          doom-modeline-mu4e nil
-          doom-modeline-minor-modes nil
-          doom-modeline-persp-name nil
-          doom-modeline-major-mode-icon nil
-          doom-modeline-buffer-file-name-style 'relative-from-project
-          ;; Only show file encoding if it's non-UTF-8 and different line endings
-          ;; than the current OSes preference
-          doom-modeline-buffer-encoding 'nondefault
-          doom-modeline-default-eol-type 0))
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq projectile-dynamic-mode-line nil)
+  ;; Set these early so they don't trigger variable watchers
+  (setq doom-modeline-bar-width 3
+        doom-modeline-github nil
+        doom-modeline-mu4e nil
+        doom-modeline-minor-modes t
+        doom-modeline-persp-name nil
+        doom-modeline-major-mode-icon t
+        doom-modeline-buffer-file-name-style 'relative-from-project
+        ;; Only show file encoding if it's non-UTF-8 and different line endings
+        ;; than the current OSes preference
+        doom-modeline-buffer-encoding 'nondefault
+        doom-modeline-default-eol-type 0))
 #+end_src
+
+** Anzu and vim anzu
 
 [[https://github.com/victorteokw/emacs-anzu][Anzu]] is a port of [[https://github.com/osyo-manga/vim-anzu][vim-anzu]], whicjh provides a minor mode to display /current match/ and /total matches/ in the modeline.
 
@@ -742,6 +754,14 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
   (evil-set-initial-state 'dashboard-mode 'normal)
   ;;; Disable arrow keys in insert mode
   (unless is-termux
+    (define-key evil-visual-state-map (kbd "<left>")  'rune/dont-arrow-me-bro)
+    (define-key evil-visual-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
+    (define-key evil-visual-state-map (kbd "<down>")  'rune/dont-arrow-me-bro)
+    (define-key evil-visual-state-map (kbd "<up>")    'rune/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<left>")  'rune/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<down>")  'rune/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<up>")    'rune/dont-arrow-me-bro)
     (define-key evil-insert-state-map (kbd "<left>")  'rune/dont-arrow-me-bro)
     (define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
     (define-key evil-insert-state-map (kbd "<down>")  'rune/dont-arrow-me-bro)
@@ -784,6 +804,37 @@ Evil collection is a package that provide evil keybindings for a lot of modes
   (define-key evil-normal-state-map (kbd "C-S-/") 'evilnc-comment-or-uncomment-lines))
 #+end_src
 
+
+*** evil-pro(g) mode
+
+I define a custom minor mode to enable/disable the navigation with the arrows. Depend's of the context I prefer using one set of keys or another
+
+#+begin_src emacs-lisp
+(defun enable-evil-pro-mode ()
+  "Disable the arrow navigation"
+  (dolist (key '("<left>" "<right>" "<down>" "<up>"))
+    (define-key evil-visual-state-map (kbd key) 'rune/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd key) 'rune/dont-arrow-me-bro)
+    (define-key evil-insert-state-map (kbd key) 'rune/dont-arrow-me-bro)))
+
+(defun disable-evil-pro-mode ()
+   (define-key evil-normal-state-map (kbd "<left>")  'evil-backward-char)
+   (define-key evil-normal-state-map (kbd "<right>") 'evil-forward-char)
+   (define-key evil-normal-state-map (kbd "<up>")    'evil-previous-line)
+   (define-key evil-normal-state-map (kbd "<down>")  'evil-next-line))
+
+(define-minor-mode evil-pro-mode
+"Minor mode to enable or disable the navigation throw the arrows key.
+When the pro mode is enable, you can't navigate with these keys.
+Enable it only for the most braves :;"
+  :init-value nil
+  :lighter " evil-pro"
+  :interactive t
+  :group 'lem
+  (if evil-pro-mode
+      (enable-evil-pro-mode)
+    (disable-evil-pro-mode)))
+#+end_src
 ** Which Key
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to offer you all possible completions for the prefix. For example, if you press =C-c= (hold control and press the letter =c=), a panel will appear at the bottom of the frame displaying all of the bindings under that prefix and which command they run. This is very useful for learning the possible key bindings in the mode of your current buffer.
@@ -1565,8 +1616,8 @@ Fly spell is a mode that allows you to see typing errors. By default it is disab
 #+begin_src emacs-lisp
 (use-package flyspell
   :config
-  (setq ispell-program-name "hunspell"
-        ispell-default-dictionary "en_US"
+   (when (file-exists-p "/usr/bin/hunspell") (setq ispell-program-name "hunspell"))
+   (setq ispell-default-dictionary "en_US"
         ispell-current-dictionary ispell-default-dictionary)
   :hook (text-mode . flyspell-mode)
   :bind (("M-<f7>" . flyspell-buffer)
@@ -2013,7 +2064,7 @@ Another package that could be helpful
   :hook ((org-mode . lem/org-mode-hook)
          (org-mode . org-indent-mode))
   :config
-  (setq org-directory "~/Documents/Org/"
+  (setq org-directory lem/org-directory
         org-default-notes-file (concat org-directory "Inbox.org")
         org-log-done 'time
         org-hide-emphasis-markers t
@@ -2154,10 +2205,10 @@ Emacs give you a way to capture the time you spends on each task. You only need 
 The following templates should be used to customize the behavior of the capture process for new tasks.
 
 #+begin_src emacs-lisp
-  (setq org-capture-templates
-        `(("t" "Task" entry
-           (file+headline ,(concat org-directory "Tasks.org") "Inbox")
-           "* TODO %?\nAdded at: %U" :empty-lines 1)))
+(setq org-capture-templates
+      `(("t" "Task" entry
+         (file+headline ,(concat org-directory "Tasks.org") "Inbox")
+         "* TODO %?\nAdded at: %U" :empty-lines 1)))
 #+end_src
 
 *** Habit
@@ -2677,7 +2728,7 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
                                    :target (file+olp+datetree "%<%Y%m%d%H%M%S>-${slug}.org" ("Meetings"))))))
 
                                         ; initialize the functions
-;;(lem/org-roam-refresh-agenda-list)
+(lem/org-roam-refresh-agenda-list)
 #+end_src
 
 
@@ -2825,5 +2876,3 @@ Index notes are these notes used to group connected notes. Can be a TOC, a sort 
 #+begin_src emacs-lisp
 (use-package org-roam-ui)
 #+end_src
-
-

@@ -213,7 +213,6 @@ label-visible-foreground = ${colors.color4}
 label-urgent = %icon%
 label-urgent-foreground = ${colors.color9}
 label-urgent-padding = 1
-
 #+end_src
 
 ** Memory

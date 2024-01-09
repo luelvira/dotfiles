@@ -130,3 +130,6 @@ export EDITOR="$VISUAL"
 if [ -f ~/.bash_completion ]; then
     source ~/.bash_completion/alacritty
 fi
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
