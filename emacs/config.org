@@ -552,13 +552,13 @@ Defining the various fonts that Emacs will use.
                       :family lem-fixed)
 
   (set-face-attribute 'variable-pitch nil
-                      :family  lem-variable
+                      :family  lem-fixed
                       :inherit 'default
                       :weight 'regular
                       ))
 (defun lem/set-fonts (frame)
   (select-frame frame)
-(lem/set--fonts))
+  (lem/set--fonts))
 
 ;; Makes commented text and keywords italics.
 ;; This is working in emacsclient but not emacs.
