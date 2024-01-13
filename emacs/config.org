@@ -77,7 +77,6 @@
   - [[#fonts-and-bullets][Fonts and bullets]]
   - [[#org-templates][Org templates]]
   - [[#close-org-mode-configuration][Close org mode configuration]]
-  - [[#org-link-abbreviation][Org link abbreviation]]
   - [[#pomodoro][Pomodoro]]
   - [[#search-function][Search function]]
   - [[#org-auto-tangle][Org-auto-tangle]]
@@ -383,8 +382,7 @@ Confirmation prompts
 
 ** Sync files
 
-I have a script which try to keep sync with a repository on codeberg. This repo
-contains the org files only, and it is named sync.
+I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
 
 ** Highlight Matching Braces
 #+begin_src emacs-lisp
@@ -467,8 +465,7 @@ Resolve symlinks when opening files, so that any operations are conducted from t
 ** Maximize windows by default and setup transparency
 
 
-In order of maximize the frame and change the transparency I use the ~set-frame-parameter~ expression and the ~add-to-list
-'default-frame-alist~. The function have been moved to the lisp library
+In order of maximize the frame and change the transparency I use the ~set-frame-parameter~ expression and the ~add-to-list 'default-frame-alist~. The function have been moved to the lisp library
 
 #+begin_src emacs-lisp
 (unless is-termux
@@ -518,9 +515,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 
 ** Fonts
 *** fixed pitch
-For some reason, emacs use defaults font in all buffer, also in prog-mode. I
-would like to have a different fonts for the interface and the code. The package
-[[https://github.com/cstby/fixed-pitch-mode][fixed-pitch-mode]] allows that.
+For some reason, emacs use defaults font in all buffer, also in prog-mode. I would like to have a different fonts for the interface and the code. The package [[https://github.com/cstby/fixed-pitch-mode][fixed-pitch-mode]] allows that.
 
 #+begin_src emacs-lisp
 (use-package fixed-pitch
@@ -1126,6 +1121,14 @@ Emacs by default use C-u for the universal-argument command, so if I want to kee
      "u" '(universal-argument :which-key "Universal argument"))
 #+end_src
 
+*** vterm commands
+#+begin_src emacs-lisp
+(lem/leader-key-def
+  "v" '(:ignore t :which-key "Vterminal")
+  "vt" '(multi-vterm :which-key "Open vterm in same window")
+  "vT" '(vterm-other-window :which-key "Open vterm in other window"))
+#+end_src
+
 *** End of general block
 
 #+begin_src emacs-lisp
@@ -1728,7 +1731,6 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
   (kill-local-variable 'visual-fill-column-extra-text-width)
   (setq display-line-numbers t))
 
-
 (defgroup zen ()
   "Some documentation."
   :group 'lem
@@ -1838,21 +1840,35 @@ It need to be compiled, so you need to install first some dependencies
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package vterm
-    :commands vterm
-    :config
-    (setq vterm-max-scrollback 10000)
-    (setq vterm-kill-buffer-on-exit t))
+(use-package vterm
+  :commands vterm
+  :init (add-hook 'vterm-exit-functions
+                  (lambda (_ _)
+                    (let* ((buffer (current-buffer))
+                           (window (get-buffer-window buffer)))
+                      (when (not (one-window-p))
+                        (delete-window window))
+                      (kill-buffer buffer))))
+  :preface
+  (when noninteractive
+    (advice-add #'vterm-module-compile :override #'ignore)
+    (provide 'vterm-module))
+  :config
+  (setq vterm-max-scrollback 10000
+        vterm-kill-buffer-on-exit t))
 
-  (add-to-list 'display-buffer-alist
-               '("\*vterm\*"
-                 (display-buffer-in-side-window)
-                 (window-height . 0.25)
-                 (side . bottom)
-                 (slot . 0)))
+(add-to-list 'display-buffer-alist
+             '("\*vterm"
+               (display-buffer-in-side-window)
+               (window-height . 0.25)
+               (side . bottom)
+               (slot . 0)))
 #+end_src
 
-*** vterm toggle
+*** vterm toggle                                                   :INACTIVE:
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
 
 #+begin_src emacs-lisp
 (use-package vterm-toggle
@@ -2091,7 +2107,7 @@ Another package that could be helpful
         )
 #+end_src
 
-*note* the variable org-startup-folded should be different to ~showeverithing~ because, this value overwrite other visibility properties for local blocks like ~visibility: hidden~ or ~org-hide-block-startu~
+*Note* the variable org-startup-folded should be different to ~showeverithing~ because, this value overwrite other visibility properties for local blocks like ~visibility: hidden~ or ~org-hide-block-startu~
 
 Add some vars borrow from doom-emacs
 
@@ -2365,30 +2381,25 @@ In this subsection, I will add some capture to the capture list, that are not re
 
 ** Close org mode configuration
 #+begin_src emacs-lisp
-  )
-#+end_src
-
-** Org link abbreviation
-#+begin_src emacs-lisp
-(setq org-link-abbrev-alist '(("github" . "https://github.com/%s/")))
+)
 #+end_src
 
 ** Pomodoro
 #+begin_src emacs-lisp
-  (use-package org-pomodoro
+(use-package org-pomodoro
   :config
   (setq
-    alert-user-configuration
-    (quote ((((:category . "org-pomodoro")) libnotify nil)))
+   alert-user-configuration
+   (quote ((((:category . "org-pomodoro")) libnotify nil)))
    org-pomodoro-length 90
    org-pomodoro-short-break-length 10
    org-pomodoro-long-break-length 20
    org-pomodoro-clock-break t
    org-pomodoro-manual-break t))
 
-  (defun set-pomodoro-timer (minutes)
-    (interactive "nMinutes: ")
-    (setq org-pomodoro-length minutes))
+(defun set-pomodoro-timer (minutes)
+  (interactive "nMinutes: ")
+  (setq org-pomodoro-length minutes))
 
 #+end_src
 
@@ -2800,7 +2811,8 @@ loaded or after.
 #+begin_src emacs-lisp
 (add-to-list 'org-roam-capture-templates
              '("r" "Bibliography reference" plain "* ${citar-title}\n%?"
-               :if-new (file+head "%<%Y%m%d%H%M%S>-${citar-citekey}.org" "#+TITLE: ${citar-citekey}\n#+AUTHOR: ${citar-author}\n#+cite-date: ${citar-date}\n#+date: %U\n")
+               :if-new (file+head "%<%Y%m%d%H%M%S>-${citar-citekey}.org"
+                                  "#+TITLE: ${citar-citekey}\n#+AUTHOR: ${citar-author}\n#+cite-date: ${citar-date}\n#+filetags: :LITERATURE:\n#+date: %U\n")
                :unnarrowed t) t)
 #+end_src
 
@@ -2809,8 +2821,8 @@ loaded or after.
 I can change the default note title output
 
 #+begin_src emacs-lisp
-(setq citar-org-roam-note-title-template "${author} - ${title}")
-(setq citar-org-roam-capture-template-key "r")
+(setq citar-org-roam-note-title-template "${author} - ${title}"
+      citar-org-roam-capture-template-key "r")
 #+end_src
 
 ***** Close citar-org-roam

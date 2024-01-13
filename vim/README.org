@@ -17,6 +17,7 @@ using vim-tangle plugin.
   - [[#install-plugins][Install plugins]]
   - [[#set-a-custom-theme][Set a custom theme]]
   - [[#set-local-settings][Set local settings]]
+  - [[#templates][Templates]]
   - [[#custom-function][Custom function]]
 
 ** Set up common settings
@@ -142,21 +143,17 @@ call plug#begin()
 " snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-"Plug 'mattn/emmet-vim'
-
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
-
-"git
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
 " navigation
-" Plug 'preservim/nerdtree'
+Plug 'preservim/nerdtree'
 " Plug 'christoomey/vim-tmux-navigator'
 
 " lsp
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'dense-analysis/ale'
 
 " languages
@@ -164,19 +161,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'sheerun/vim-polyglot'
 Plug 'davidhalter/jedi-vim'
 Plug 'aklt/plantuml-syntax'
-
-
-" Personal wiki
-Plug 'lervag/wiki.vim'
-" Plug 'lervag/lists.vim'
-" Plug 'vimwiki/vimwiki'
-" Plug 'blindFS/vim-taskwarrior'
-" Plug 'tools-life/taskwiki'
-
-"Plug 'vimwiki/vimwiki'
-
-" Time managment
-
 " themes
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'arcticicestudio/nord-vim'
@@ -185,21 +169,10 @@ Plug 'morhetz/gruvbox'
 " fluzzy finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-
-" project management
-Plug 'mhinz/vim-startify'
-Plug 'tpope/vim-obsession'
-
 " ctags
-" Plug 'ludovicchabant/vim-gutentags'
-
-
+Plug 'ludovicchabant/vim-gutentags'
 " vim-table-mode
 Plug 'dhruvasagar/vim-table-mode'
-
-
-" custom pluging
-Plug 'luelvira/vim-tangle'
 call plug#end()
 #+end_src
 
@@ -256,9 +229,6 @@ let g:javascript_plugin_jsdoc = 1
 #+end_src
 
 *** Coc
-:PROPERTIES:
-:HEADER-ARGS:conf: :tangle no
-:END:
 
 *Disclaimer:* This plugin make the computer a lot more slowly. I disable it for
 the moment
@@ -311,9 +281,6 @@ augroup END
 #+end_src
 
 ** Set a custom theme
-:PROPERTIES:
-:HEADER-ARGS:conf: :tangle no
-:END:
 The themes are installed with vim-plug. To set a theme, you need to add
 the following line to your vimrc with the name of the theme you want to
 use. I use nord theme.
@@ -367,11 +334,11 @@ This plugin allows to generate tags for the current project. It uses
 ctags and cscope.
 
 #+begin_src conf
-"let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
-"let g:gutentags_cache_dir = '~/.cache/gutentags'
-"let g:gutentags_ctags_tagfile = '.tags'
-"let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
-"let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
+let g:gutentangs_project_root = ['.git', '.hg', '.svn', '.root', '.project']
+let g:gutentags_cache_dir = '~/.cache/gutentags'
+let g:gutentags_ctags_tagfile = '.tags'
+let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
+let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
 #+end_src
 
 *** vim table mode
@@ -387,8 +354,8 @@ table. Then you just need to write the content of your table
 :PROPERTIES:
 :HEADER-ARGS:conf: :tangle no
 :END:
-*** wikivm pluggin
-**** Changing Wiki syntax
+**** wikivm pluggin
+***** Changing Wiki syntax
 vimwiki currently ships with 3 syntaxes: VimWiki, Markdown and
 MediaWiki. I would like to keep using markdown
 
@@ -407,7 +374,7 @@ let g:vimwiki_global_ext = 0
 let g:vimwiki_table_mappings=0
 #+end_src
 
-*** vimwiki from lervag
+**** vimwiki from lervag
 The first is to customize the root folder and the journal folder
 
 #+begin_src conf
@@ -441,7 +408,7 @@ endfunction
 
 *Need to be completed this part*
 
-*** vim-taskwarrior
+**** vim-taskwarrior
 This plugin is an interface to the [[task warrior]] program. In order to
 view the pending task: =:TW=. More info in
 [[https://github.com/blindFS/vim-taskwarrior][vim-taskwarrior]]
@@ -467,7 +434,7 @@ autocm BufNewFile,BufRead *.md,*.tex,*.org setlocal
 autocmd FileType gitcommit setlocal spell spelllang=en_us
 #+end_src
 
-*** Templates
+** Templates
 Vim file templates (known as skeleton) are file that can be read when a
 file with some pattern is created and write the content of the template
 inside the fil. It is useful for markdown headers or html common parts
@@ -488,9 +455,9 @@ autocmd BufNewFile *.sh,bash 0r ~/.vim/templates/bash_template.sh
 autocmd BufNewFile *.html 0r ~/.vim/templates/index.html
 #+end_src
 
-**** Template definitions
+*** Template definitions
 
-***** Template for shell script
+**** Template for shell script
 :PROPERTIES:
 :HEADER-ARGS:shell: :tangle templates/bash_template.sh
 :END:
@@ -564,7 +531,7 @@ Here is an example:
 #+end_src
 
 
-***** Templates for html
+**** Templates for html
 :PROPERTIES:
 :HEADER-ARGS:html: :tangle templates/index.html
 :END:

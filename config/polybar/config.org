@@ -122,11 +122,22 @@ tray-scale = 1.0
 inherit = bar/main
 monitor = HDMI-0
 modules-left = i3 uptime
-modules-right = fs-root fs-home memory cpu wired-network ip_vpn sshmenu
+modules-right = fs-root fs-home memory cpu wired-network
 #+end_src
 
 * List of modules used
 
+** Bluetooth
+#+begin_src emacs-lisp
+[module/bluetooth]
+type = custom/script
+exec = ~/.local/bin/bluetooth.sh
+click-left = ~/.local/bin/bluetooth.sh --toggle
+click-right = "~/.local/bin/bluetooth.sh --state"
+tail = true
+format-padding = 3
+#+end_src
+** TODO CPU
 ** Date
 #+begin_src conf
 [module/date]

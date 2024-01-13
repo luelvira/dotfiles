@@ -2,7 +2,7 @@
 #+AUTHOR: Lucas Elvira Martín
 #+DATE: [2023-11-26 Sun]
 #+PROPERTY: header-args :tangle config
-#+auto_tangle: t 
+#+auto_tangle: t
 * Table of Content                                                      :TOC:
 - [[#i3-config][I3 CONFIG]]
 - [[#setup-mod-key][Setup mod key]]
@@ -99,14 +99,14 @@ Here are some custom shortcut used with rofi
 #+begin_src sh
 bindsym $mod+d exec --no-startup-id $rofi appmenu
 bindsym $mod+Shift+d exec --no-startup-id $rofi tabmenu
-bindsym $mod+Shift+e exec --no-startup-id $rofi powermenu 
-bindsym $mod+t exec --no-startup-id $rofi run 
+bindsym $mod+Shift+e exec --no-startup-id $rofi powermenu
+bindsym $mod+t exec --no-startup-id $rofi run
 #+end_src
 
 ** Reload/restart i3
 
 Something needed when you are customize the WM is to be enable of reload the
-configuration quickly. So, you can do it with 
+configuration quickly. So, you can do it with
 
 | Shortcut         | Command | Description                                                      |
 |------------------+---------+------------------------------------------------------------------|
@@ -138,6 +138,7 @@ bindsym $mod+8 workspace number $ws8
 ** Move container to another workspace
 
 To move container to another WS use ~$mode+Shift+N~, where N is the  name of the WS.
+
 #+begin_src sh
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
@@ -161,19 +162,15 @@ exec --no-startup-id dex-autostart --autostart --environment i3
 
 *** Setup some programs to control de WM
 
-The combination of xss-lock, nm-applet and pactl is a popular choice, so
-they are included here as an example. Modify as you see fit.
+The combination of xss-lock, nm-applet and pactl is a popular choice, so they are included here as an example. Modify as you see fit.
 
-xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock
-the screen before suspend. Use loginctl lock-session to lock your
-screen.
+xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the screen before suspend. Use loginctl lock-session to lock your screen.
 
 #+begin_src sh
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 #+end_src
-NetworkManager is the most popular way to manage wireless networks on
-Linux, and nm-applet is a desktop environment-independent system tray
-GUI for it.
+
+NetworkManager is the most popular way to manage wireless networks on Linux, and nm-applet is a desktop environment-independent system tray GUI for it.
 
 #+begin_src sh
 exec --no-startup-id nm-applet
@@ -329,9 +326,6 @@ bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection c
 | Launch telegram            | $mod+shift+t |
 | Connect headphones         | $mod+F1      |
 | Change keyboard layout     | alt+shift    |
-| Connect UC3M vpn           | $mod+F2      |
-| open wiki.vim home         | $mod+alt+w   |
-| open wiki.vim journal home | $mod+alt+j   |
 |----------------------------+--------------|
 
 #+begin_src sh
