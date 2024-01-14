@@ -5,3 +5,4 @@ config/i3/config
 config/polybar/config.ini
 emacs/init.el
 emacs/early-init.el
+.cfg
