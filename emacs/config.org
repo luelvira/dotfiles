@@ -18,9 +18,18 @@
 - [[#package-system][Package system]]
   - [[#with-straight][With straight]]
 - [[#keep-it-clean][Keep it clean]]
+    - [[#emacs-as-server][Emacs as server]]
+    - [[#auto-revert-buffers][Auto revert buffers]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
-  - [[#standar-settings][Standar settings]]
+  - [[#standard-settings][Standard settings]]
+    - [[#startup-screen][Startup screen]]
+    - [[#default-encoding][Default encoding]]
+    - [[#disable-warnings][Disable warnings]]
+    - [[#recovery][Recovery]]
+    - [[#history][History]]
+    - [[#confirmation-prompts][Confirmation prompts]]
+    - [[#defaults][Defaults]]
   - [[#sync-files][Sync files]]
   - [[#highlight-matching-braces][Highlight Matching Braces]]
   - [[#enable-line-numbers][Enable line numbers]]
@@ -31,23 +40,55 @@
   - [[#setup-icons][Setup icons]]
   - [[#color-theme][Color theme]]
   - [[#fonts][Fonts]]
+    - [[#fixed-pitch][fixed pitch]]
+    - [[#fonts-definition][Fonts definition]]
+    - [[#ligatures][Ligatures]]
   - [[#modeline][modeline]]
+    - [[#minions][Minions]]
+    - [[#doom-modeline][Doom modeline]]
   - [[#anzu-and-vim-anzu][Anzu and vim anzu]]
   - [[#create-frame-hook][create frame hook]]
   - [[#rainbow-delimeters][Rainbow delimeters]]
 - [[#keyboard-binding][Keyboard binding]]
   - [[#esc-as-c-g][ESC as C-g]]
   - [[#setup-evil-mode][Setup evil mode]]
+    - [[#set-the-undo-system][Set the undo system]]
+    - [[#set-the-major-mode][Set the major mode]]
+    - [[#install-evil-related-packages][Install evil related packages]]
+    - [[#evil-prog-mode][evil-pro(g) mode]]
   - [[#which-key][Which Key]]
   - [[#custom-shortcut-with-general][Custom shortcut with general]]
+    - [[#bookmarks-and-buffer][Bookmarks and buffer]]
+      - [[#buffers][Buffers]]
+      - [[#dired-keys][Dired keys]]
+      - [[#eval-expressions][Eval expressions]]
+      - [[#files-operations][Files operations]]
+    - [[#configuration-file][Configuration file]]
+    - [[#git][Git]]
+    - [[#perspective][Perspective]]
+    - [[#projectile][Projectile]]
+    - [[#org-shortcuts][Org shortcuts]]
+    - [[#org-roam-shortcut][Org roam shortcut]]
+    - [[#sync-scripts][Sync scripts]]
+    - [[#toggle-options][Toggle options]]
+    - [[#rebind-c-u][Rebind C-u]]
+    - [[#vterm-commands][vterm commands]]
+    - [[#end-of-general-block][End of general block]]
 - [[#editing-configuration][Editing configuration]]
-  - [[#default-tab-width][Default tab width]]
 - [[#work-spaces][Work Spaces]]
 - [[#completion-system][Completion system]]
   - [[#company][Company]]
   - [[#cape][Cape]]
   - [[#ivy-and-counsel][ivy and counsel]]
+    - [[#counsel][Counsel]]
+    - [[#disable--of-m-x][Disable '^' of M-x]]
   - [[#vertico-completion-system][Vertico completion system]]
+    - [[#vertico][Vertico]]
+    - [[#consult][Consult]]
+      - [[#consult-hacks][Consult hacks]]
+      - [[#consult-dir][Consult-dir]]
+    - [[#marginalia][Marginalia]]
+    - [[#completion-action-with-embark][Completion action with Embark]]
   - [[#completion-in-regions-with-corfu][Completion in Regions with Corfu]]
   - [[#install-smex][Install Smex]]
   - [[#orderless][Orderless]]
@@ -56,25 +97,50 @@
 - [[#file-browser-with-dired][File browser with dired]]
 - [[#writting][Writting]]
   - [[#flyspell][Flyspell]]
+    - [[#language-tool][Language tool]]
   - [[#visual-fill-configuration][Visual fill configuration]]
   - [[#text-mode][Text mode]]
   - [[#markdown][Markdown]]
   - [[#zen-mode][zen mode]]
 - [[#development][Development]]
-  - [[#projectile][Projectile]]
+  - [[#projectile-1][Projectile]]
   - [[#flycheck][Flycheck]]
-  - [[#git][Git]]
+  - [[#git-1][Git]]
+    - [[#magit][Magit]]
+    - [[#git-gutter][Git gutter]]
+    - [[#git-commit][Git commit]]
+    - [[#ediff][Ediff]]
   - [[#vterm][vterm]]
+    - [[#vterm-toggle][vterm toggle]]
+    - [[#multi-term][multi term]]
   - [[#compilation][Compilation]]
   - [[#language-server-protocol][Language server protocol]]
+    - [[#lsp-mode][LSP MODE]]
+      - [[#debug-adapter-support-dap][Debug adapter support (DAP)]]
+    - [[#eglot][EGLOT]]
   - [[#language-support][Language support]]
+    - [[#python][Python]]
+    - [[#elisp-mode][elisp mode]]
+    - [[#javascripttypescript][JavaScript/TypeScript]]
+    - [[#html-and-css][HTML and CSS]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-content][Enable table of content]]
   - [[#define-all-the-variables][Define all the variables]]
   - [[#gtd][GTD]]
+    - [[#multiple--keyword-sets-in-one-file][Multiple  keyword sets in one file]]
+    - [[#workflow-states][Workflow states]]
+    - [[#tags][Tags]]
+    - [[#agendas][Agendas]]
+    - [[#control-time-per-task][Control time per task]]
+    - [[#capture-template-for-task][Capture template for task]]
+    - [[#habit][Habit]]
+    - [[#define-the-agenda-view][Define the agenda view]]
   - [[#configure-babel-languages][Configure Babel languages]]
   - [[#structure-templates][Structure templates]]
   - [[#fonts-and-bullets][Fonts and bullets]]
+    - [[#bullets-with-org-superstar][Bullets with org-superstar]]
+    - [[#increase-the-size-of-various-heading][Increase the size of various heading]]
+    - [[#setting-monospace-fonts-for-required-text][Setting monospace fonts for required text]]
   - [[#org-templates][Org templates]]
   - [[#close-org-mode-configuration][Close org mode configuration]]
   - [[#pomodoro][Pomodoro]]
@@ -82,11 +148,31 @@
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#auto-show-markup-symbols][Auto show markup symbols]]
   - [[#org-evil][org evil]]
-  - [[#org-present][Org present]]
   - [[#org-ref][Org ref]]
   - [[#org-gnuplot][org gnuplot]]
+  - [[#org-wild-notifier][org wild notifier]]
+  - [[#org-present][Org present]]
+    - [[#keep-it-order][Keep it order]]
+    - [[#increase-font-size][Increase font size]]
+      - [[#define-faces][Define faces]]
+      - [[#setting-faces][Setting faces]]
+    - [[#define-the-hook-of-the-presentation-mode][Define the hook of the presentation mode]]
 - [[#org-roam][Org roam]]
+  - [[#installation][Installation]]
+  - [[#configure-org-roam-templates][Configure org roam templates]]
+    - [[#configure-org-roam-completion-find-function][Configure org roam completion find function]]
+    - [[#configure-org-roam-dailies-notes][Configure Org-roam-dailies-notes]]
+    - [[#close-org-roam-package-declaration][Close org roam package declaration]]
+    - [[#some-functions-used-for-customize-org-roam][Some functions used for customize org-roam]]
   - [[#zettelkasten][Zettelkasten]]
+    - [[#1-fleeting-notes][1. Fleeting notes]]
+    - [[#2-literature-notes][2. Literature Notes]]
+      - [[#citar][Citar]]
+      - [[#citar-org-roam][Citar-org-roam]]
+      - [[#import-annotations-from-zotero][Import annotations from zotero]]
+      - [[#custom-acronym][Custom acronym]]
+    - [[#3-permanent-notes][3. Permanent Notes]]
+    - [[#4-index-notes][4. Index Notes]]
   - [[#org-roam-ui][Org-roam-ui]]
 
 * Enable literature configuration
@@ -145,7 +231,7 @@ This will generate a header at the top of the tangled file to indicate it is gen
 :HEADER-ARGS:emacs-lisp: :tangle early-init.el
 :END:
 
-The early-init file is loaded before any process of emacs, either the package system. I use straight as package manager, so I need to disable the default behavior before the package.el is loaded
+The early-init file is loaded before any process of emacs, either the package system. I use straight as package manager, so I need to disable the default behavior before the ~package.el~ is loaded
 
 #+begin_src emacs-lisp
 (defvar private-emacs-directory nil
@@ -240,8 +326,12 @@ Then define where will be store the temporal files
 Also I will change the location of the ~custom-file.el~, setting it in the config folder
 
 #+begin_src emacs-lisp
-(setq custom-file (expand-file-name "custom.el" private-emacs-directory))
-(load custom-file 'noerror 'nomessage)
+(use-package cus-edit
+  :straight nil
+  :custom (custom-file (expand-file-name "custom.el" private-emacs-directory))
+  :config
+  (when (file-exists-p custom-file)
+    (load custom-file 'noerror 'nomessage)))
 #+end_src
 
 *** Emacs as server
@@ -265,17 +355,13 @@ This command allow to run emacs as server, so all the startup can be done once t
 #+end_src
 
 * Dashboard
-Emacs Dashboard is an extensible startup screen showing you recent files,
-bookmarks, agenda items and an Emacs banner.
+
+Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
 
 #+begin_src emacs-lisp
-(use-package page-break-lines
-  :diminish
-  :init (global-page-break-lines-mode))
-
 (use-package dashboard
   :demand
-  :diminish (dashboard-mode page-break-lines-mode)
+  :diminish (dashboard-mode)
   :init      ;; tweak dashboard config before loading it
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (setq dashboard-banner-logo-title "Close the world. Open the nExt.")
@@ -286,8 +372,7 @@ bookmarks, agenda items and an Emacs banner.
   (setq dashboard-center-content t)
   (setq dashboard-items '((recents   . 5)
                           (agenda    . 5 )
-                          (projects  . 3)
-                          (bookmarks . 3)))
+                          (projects  . 3)))
   (setq dashboard-set-navigator t)
   (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
   (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
@@ -300,18 +385,18 @@ bookmarks, agenda items and an Emacs banner.
 
 * General configuration
 
-** Standar settings
+** Standard settings
 
 This section  contains a list of common and simple configuration
 
-*Startup screen*
+*** Startup screen
 
 #+begin_src emacs-lisp
 (setq inhibit-startup-screen t
       inhibit-startup-echo-area-message user-full-name)
 #+end_src
 
-*Default encoding*
+*** Default encoding
 
 #+begin_src emacs-lisp
 ;; Set encding by default
@@ -322,13 +407,13 @@ This section  contains a list of common and simple configuration
 (set-language-environment "English")    ; Set up multilingual environment
 #+end_src
 
- *Disable warnings*
+*** Disable warnings
 #+begin_src emacs-lisp
 ;; Disable warnings
 (setq native-comp-async-report-warnings-errors nil)
 #+end_src
 
- *Recovery*
+*** Recovery
 
 If Emacs or the computer crashes, you can recover the files you were editing at the time of the crash from their auto-save files. To do this, start Emacs again and type the command M-x recover-session. Here, we parameterize how files are saved in the background.
 
@@ -341,7 +426,7 @@ If Emacs or the computer crashes, you can recover the files you were editing at 
 
 #+end_src
 
- *History*
+*** History
 
 Remove text properties for kill ring entries (see https://emacs.stackexchange.com/questions/4187). This saves a lot of time when loading it.
 
@@ -359,7 +444,6 @@ Save every possible history
  :config
 (setq history-length 25)
 (savehist-mode 1))
-
 ;; Remember and restore the last cursor location of opened files
 (save-place-mode 1)
 #+end_src
@@ -372,7 +456,7 @@ No duplicates in history
   (savehist-mode))
 #+end_src
 
-Confirmation prompts
+*** Confirmation prompts
 
 #+begin_src emacs-lisp
 (setq-default use-short-answers t                     ; Replace yes/no prompts with y/n
@@ -380,11 +464,28 @@ Confirmation prompts
               confirm-kill-emacs #'y-or-n-p)          ; Confirm before kill emacs
 #+end_src
 
+*** Defaults
+
+#+begin_src emacs-lisp
+(setq-default ad-redefinition-action 'accept     ; Silence warnings for redefinition
+              cursor-in-non-selected-windows nil ; Hide the cursor in inactive windows
+              fill-column 80                     ; Default line width
+              help-window-select t               ; Focus new help windows when opened
+              indent-tabs-mode nil               ; space insetead of tabs
+              tab-always-indent 'complete        ;first tab and then complete
+              tab-width 4
+              evil-shift-width tab-width
+              inhibit-startup-screen t           ; Disable start-up screen
+              sentence-end-double-space nil      ; Use a single space after dots
+              truncate-string-ellipsis "…")
+#+end_src
+
 ** Sync files
 
 I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
 
 ** Highlight Matching Braces
+
 #+begin_src emacs-lisp
 (use-package paren
   :config
@@ -422,7 +523,6 @@ I have a script which try to keep sync with a repository on codeberg. This repo 
 ** Reduce distractions
 
 #+begin_src emacs-lisp
-(setq inhibit-startup-message t)
 (unless is-termux
   (scroll-bar-mode  -1) ; Disable visible scrollbar
   (tool-bar-mode    -1) ; Disable the toolbar
@@ -463,7 +563,6 @@ Resolve symlinks when opening files, so that any operations are conducted from t
 #+end_src
 
 ** Maximize windows by default and setup transparency
-
 
 In order of maximize the frame and change the transparency I use the ~set-frame-parameter~ expression and the ~add-to-list 'default-frame-alist~. The function have been moved to the lisp library
 
@@ -510,7 +609,26 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
   ;; Sets the default theme to load!!
-  (load-theme 'doom-dracula t))
+  (load-theme 'doom-palenight t))
+
+(use-package nord-theme
+  :disabled
+  :straight (nord-theme
+             :type git
+             :host github
+             :local-repo "northeme"
+             :repo "nordtheme/emacs")
+  :init
+  (load-theme 'nord t))
+
+(use-package dracula-theme
+  :disabled
+  :straight (draculta-theme
+             :type git
+             :host github
+             :repo "dracula/emacs")
+  :init
+  (load-theme 'dracula t))
 #+end_src
 
 ** Fonts
@@ -568,24 +686,6 @@ Defining the various fonts that Emacs will use.
 *** Ligatures
 
 #+begin_src emacs-lisp
-(defvar lem/ligatures-extra-symbols
-  '(
-    ;; Functional
-    :lambda        "λ"
-    :def           "ƒ"
-    :composition   "∘"
-    :map           "↦"
-    ;; Flow
-    :not           "￢"
-    :in            "∈"
-    :not-in        "∉"
-    :and           "∧"
-    :or            "∨"
-    :for           "∀"
-    :some          "∃"
-    :return        "⟼"
-    :yield         "⟻"))
-
 (defvar lem/ligatures-prog-mode-list
   '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
     ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
@@ -657,6 +757,7 @@ Above there is the config for the doom-modeline
         doom-modeline-buffer-file-name-style 'relative-from-project
         ;; Only show file encoding if it's non-UTF-8 and different line endings
         ;; than the current OSes preference
+        doom-modeline-icons (display-graphic-p)
         doom-modeline-buffer-encoding 'nondefault
         doom-modeline-default-eol-type 0))
 #+end_src
@@ -1137,17 +1238,6 @@ Emacs by default use C-u for the universal-argument command, so if I want to kee
 #+end_src
 
 * Editing configuration
-
-** Default tab width
-
-Default tab width is 8, which is too much. We can change it to 4.
-
-#+begin_src emacs-lisp
-(setq-default indent-tabs-mode nil  ;; space insetead of tabs
-              tab-always-indent 'complete ;;first tab and then complete
-              tab-width 4
-              evil-shift-width tab-width)
-#+end_src
 
 * Work Spaces
 
@@ -1688,9 +1778,6 @@ snippets.
 #+end_src
 
 #+begin_src emacs-lisp
-(setq-default fill-column 80                          ; Default line width
-              sentence-end-double-space nil           ; Use a single space after dots
-              truncate-string-ellipsis "…")
 #+end_src
 
 ** Markdown
@@ -1813,6 +1900,22 @@ Git gutter is a software which make easy to view the difference between a file a
     (evil-define-key 'normal git-timemachine-mode-map (kbd "C-k") 'git-timemachine-show-next-revision))
 #+end_src
 
+*** Git commit
+
+[[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git commit]] forces you to follow the commits message conventions
+
+#+begin_src emacs-lisp
+(use-package git-commit
+  :ensure nil
+  :preface
+  (defun my/git-commit-auto-fill-everywhere ()
+    "Ensure that the commit body does not exceed 72 characters."
+    (setq fill-column 72)
+    (setq-local comment-auto-fill-only-comments nil))
+  :hook (git-commit-mode . my/git-commit-auto-fill-everywhere)
+  :custom (git-commit-summary-max-length 50))
+#+end_src
+
 *** Ediff
 
 ~ediff~ is a diff program that is built into Emacs.  By default, ‘ediff’ splits files vertically and places the ‘help’ frame in its own window.  I have changed this so the two files are split horizontally and the ~help~ frame appears as a lower split within the existing window.  Also, I create my own ‘dt-ediff-hook’ where I add ~j/k~ for moving to next/prev diffs.  By default, this is set to ~n/p~.
@@ -1916,26 +2019,47 @@ It need to be compiled, so you need to install first some dependencies
 
 ** Language server protocol
 
-*** LSP MODE                                                       :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
+*** LSP MODE
 #+begin_src emacs-lisp
 (use-package lsp-mode
-  :disabled
   :commands (lsp lsp-deferred)
-  :custom (lsp-headerline-breadcrumb-enable nil)
+  :custom
+;; https://gitlab.com/shilling.jake/emacsd/-/blob/master/config.org
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-log-io nil)
+  (lsp-print-performance nil)
+  (lsp-keep-workspace-alive nil)
+  (lsp-enable-snippet t)
+  (lsp-auto-guess-root t)
+  (lsp-restart 'iteractive)
+  (lsp-auto-configure nil)
+  (lsp-enable-completion-at-point t)
+  (lsp-diagnostics-provider :flycheck)
+  (lsp-enable-indentation t)
+  (lsp-semantic-highlighting nil)
   :bind (:map lsp-mode-map
-         ("TAB" . completion-at-point)))
+              ("TAB" . completion-at-point)))
 
 (use-package lsp-ui
-  :disabled
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-ui-sideline-enable t)
-  (setq lsp-ui-sideline-show-hover nil)
-  (setq lsp-ui-doc-position 'bottom)
+  (setq lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-show))
+#+end_src
+
+**** Debug adapter support (DAP)
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :after lsp-mode
+  :custom
+  (lsp-enable-dap-auto-configure nil)
+  :config
+  (dap-ui-mode 1)
+  (dap-tooltip-mode 1)
+  (require 'dap-node)
+  (dap-node-setup))
 #+end_src
 
 *** EGLOT
@@ -1944,8 +2068,12 @@ It need to be compiled, so you need to install first some dependencies
 
 #+begin_src emacs-lisp
 (use-package eglot
+  :custom
+(eglot-autoshutdown t)
+(eglot-ignored-server-capabilities '(:documentHighlightProvider))
   :hook((python-mode . eglot-ensure)
         (web-mode . eglot-ensure)
+        (typescript-mode . eglot-ensure)
         (js2-mode . eglot-ensure))
   :commands (eglot eglot-ensure))
 
@@ -1982,40 +2110,47 @@ This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
 (add-hook 'emacs-lisp-mode-hook  #'(lambda () (setq evil-shift-width 2)))
 #+end_src
 
-*** Web development
+*** JavaScript/TypeScript
 
 There are a lot of package aimed to work with js/ts code. Some of theme are ~js-mode~, ~js2-mode~, ~web-mode~... For javascript files I will use js2-mode because this is the one used by other frameworks such doom emacs. And, for editing html and css related files, ~web-mode~
 
 #+begin_src emacs-lisp
-(use-package js2-mode
-  :mode "\\.jsx?\\'"
-  :config
+
+(defun lem/js-indentation ()
   (setq js-chain-indent t
         ;; These have become standard in the JS community
-        js2-basic-offset 2
         js-indent-level 2
+        js2-basic-offset js-indent-level
+        typescript-indent-level js-indent-level
         evil-shift-width js-indent-level
-        tab-width 2
-        ;; let flycheck handle this
-        js2-mode-show-parse-errors nil
-        js2-mode-show-strict-warnings nil
-        ;; Flycheck provides these features, so disable them: conflicting with
-        ;; the eslint settings.
-        js2-strict-missing-semi-warning nil
-        ;; Use js2-mode for Node scripts
-        (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))))
+        tab-width js-indent-level))
+
+(use-package js2-mode
+  :mode "\\.jsx?\\'"
+  :ensure flycheck
+  :hook ((js2-mode . js2-imenu-extras-mode)
+         (js2-mode . prettier-js-mode)
+         (js2-mode . lem/js-indentation))
+  :config
+  (setq 
+   ;; let flycheck handle this
+   js2-mode-show-parse-errors nil
+   js2-mode-show-strict-warnings nil
+   ;; Flycheck provides these features, so disable them: conflicting with
+   ;; the eslint settings.
+   js2-strict-missing-semi-warning nil
+   ;; Use js2-mode for Node scripts
+   (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))))
 
 #+end_src
 
-Formating the code. There are some package that help with this kind of task. I will try aphelia
+For formatting the js code, I think the best tool is [[https://prettier.io/][prettier]].
 
 #+begin_src emacs-lisp
-(use-package apheleia
-  :disabled
-  :config
-  (apheleia-global-mode +1))
-
 (use-package prettier-js
+:custom (prettier-js-args '("--print-width" "100"
+                              "--single-quote" "true"
+                              "--trailing-comma" "all"))
   :config
   (setq prettier-js-show-errors nil))
 #+end_src
@@ -2027,7 +2162,24 @@ Formating the code. There are some package that help with this kind of task. I w
   :hook ((js2-mode rjsx-mode) . js2-refactor-mode))
 #+end_src
 
-Setup the web-mode
+Sometimes I need to work with typescript...
+
+#+begin_src emacs-lisp
+(use-package typescript-mode
+  :ensure flycheck
+  :hook ((typescript-mode . prettier-js-mode))
+  :mode ("\\.\\(ts\\|tsx\\)\\'")
+  :custom
+  ;; TSLint is depreciated in favor of ESLint.
+  (flycheck-disable-checker 'typescript-tslint)
+  (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr"))
+  (typescript-indent-level 2)
+  :config
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode))
+#+end_src
+
+*** HTML and CSS
+
 #+begin_src emacs-lisp
 (use-package web-mode
   :mode "(\\.html?"
@@ -2057,7 +2209,6 @@ Another package that could be helpful
 #+begin_src emacs-lisp
 (use-package rainbow-mode
   :hook ((css-mode sass-mode) . rainbow-mode))
-
 (use-package sass-mode)
 #+end_src
 
@@ -2065,9 +2216,11 @@ Another package that could be helpful
 ** Enable table of content
 
 #+begin_src emacs-lisp
-  (use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+(use-package toc-org
+  :commands toc-org-enable
+  :custom
+  (toc-org-max-depth 8)
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
 ** Define all the variables
@@ -2076,7 +2229,7 @@ Another package that could be helpful
 (defun lem/org-mode-hook ()
   (variable-pitch-mode)
   (visual-line-mode 1)
-  (auto-fill-mode 0)
+  (auto-fill-mode 1)
   (setq evil-auto-indent nil)
   (diminish org-indent-mode))
 
@@ -2084,6 +2237,8 @@ Another package that could be helpful
   :defer t
   :hook ((org-mode . lem/org-mode-hook)
          (org-mode . org-indent-mode))
+  :custom
+    (org-archive-save-context-info '(time category itags))
   :config
   (setq org-directory lem/org-directory
         org-default-notes-file (concat org-directory "Inbox.org")
@@ -2107,7 +2262,7 @@ Another package that could be helpful
         )
 #+end_src
 
-*Note* the variable org-startup-folded should be different to ~showeverithing~ because, this value overwrite other visibility properties for local blocks like ~visibility: hidden~ or ~org-hide-block-startu~
+*Note* the variable org-startup-folded should be different to ~showeverithing~ because, this value overwrite other visibility properties for local blocks like ~visibility: hidden~ or ~org-hide-block-startup~
 
 Add some vars borrow from doom-emacs
 
@@ -2457,6 +2612,30 @@ This package show the markup symbols when the cursors is between the symbols
   (evil-org-agenda-set-keys))
 #+end_src
 
+** Org ref
+
+#+begin_src emacs-lisp
+(use-package org-ref)
+#+end_src
+
+** org gnuplot
+
+gnuplot is a declarative language that allows you to print graphics in a easy way.
+
+#+begin_src emacs-lisp
+(use-package gnuplot)
+#+end_src
+
+** org wild notifier
+[[https://github.com/akhramov/org-wild-notifier.el][org wild notifier]] displays notifications based on the org agenda items
+#+begin_src emacs-lisp
+(use-package org-wild-notifier
+  :after org
+  :custom
+  (alert-default-style 'libnotify)
+  (org-wild-notifier-notification-title "Agenda Reminder")
+  :config (org-wild-notifier-mode))
+#+end_src
 ** Org present                                                     :INACTIVE:
 :PROPERTIES:
 :VISIBILITY: folded
@@ -2611,25 +2790,13 @@ Now register the hooks and install the package (if it already is not installed)
            (org-present-after-navigate . lem/org-present-prepare-slide)))
 #+end_src
 
-** Org ref
 
-#+begin_src emacs-lisp
-(use-package org-ref)
-#+end_src
-
-** org gnuplot
-
-gnuplot is a declarative language that allows you to print graphics in a easy way.
-
-#+begin_src emacs-lisp
-(use-package gnuplot)
-#+end_src
 * Org roam
 
 Org-roam is a tool for networked thought. It reproduces some of the Roam
 Research’s key features within Org-mode.
 
-*** Installation
+** Installation
 The instalation process use the melpa or melpa stable package manager from emacs.
 
 #+begin_src emacs-lisp
@@ -2642,23 +2809,25 @@ The instalation process use the melpa or melpa stable package manager from emacs
 #+end_src
 
 
-*** Configure org roam templates
+** Configure org roam templates
 
 
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
       '(("f" "Fleeting" plain "%?"
-                       :if-new
-                       (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                  "#+TITLE: ${title}\n#+DATE: %U\n#+AUTHOR: %n\n#+filetags: fleeting")
-                       :unnarrowed nil)
+         :if-new
+         (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                    "#+TITLE: ${title}\n#+DATE: %U\n#+AUTHOR: %n\n#+filetags: fleeting")
+         :unnarrowed nil)
         ("d" "default" plain "%?"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n#+author: %n\n")
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n#+date: %U\n#+author: %n\n")
          :unnarrowed t)
-        ("p" "project" plain "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
+        ("p" "project" plain
+         "* Goals\n\n%?\n\n* Tasks\n\n** TODO Add initial tasks\n\n* Dates\n\n"
          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
          :unnarrowed t)))
-#+end_src
+        #+end_src
 
 *** Configure org roam completion find function
 

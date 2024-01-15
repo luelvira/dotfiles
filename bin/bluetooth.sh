@@ -8,10 +8,10 @@ bluetooth_print() {
             device_alias=$(echo "$device_info" | grep "Alias" | cut -d' ' -f 2-)
             output="%{F#81A1C1} %{F-}$device_alias"
         else
-            output="%{F#81A1C1}"
+            output="%{F#81A1C1}󰂯"
         fi
     else
-        output="%{F#808B96}"
+        output="%{F#808B96}󰂯"
     fi
 
     if [[ -z "$last_output" ]]; then
@@ -25,7 +25,7 @@ bluetooth_print() {
 
 bluetooth_toggle() {
     devices_paired=$(bluetoothctl devices | tail -n 1 | cut -d ' ' -f 2)
-    if bluetoothctl info | grep -e "^.Connected: no" > /dev/null; then
+    if bluetoothctl info "$devices_paired" | grep -e "^.Connected: no"; then
         bluetoothctl connect "$devices_paired"
     else
         bluetoothctl disconnect "$devices_paired"

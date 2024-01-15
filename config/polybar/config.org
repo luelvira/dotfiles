@@ -47,6 +47,7 @@ color13    = ${dracula.color13}
 color14    = ${dracula.color14}
 color15    = ${dracula.color15}
 alert      = ${dracula.color1}
+
 [dracula]
 background = #282a36
 foreground = #f8f8f2
@@ -66,6 +67,24 @@ color12    = #caa9fa
 color13    = #ff92d0
 color14    = #9aedfe
 color15    = #e6e6e6
+
+[nord]
+nord0 = #2E3440
+nord1 = #3B4252
+nord2 = #434C5E
+nord3 = #4C566A
+nord4 = #D8DEE9
+nord5 = #E5E9F0
+nord6 = #ECEFF4
+nord7 = #8FBCBB
+nord8 = #88C0D0
+nord9 = #81A1C1
+nord10 = #5E81AC
+nord11 = #BF616A
+nord12 = #D08770
+nord13 = #EBCB8B
+nord14 = #A3BE8C
+nord15 = #B48EAD
 #+end_src
 
 * Bars
@@ -128,7 +147,7 @@ modules-right = fs-root fs-home memory cpu wired-network
 * List of modules used
 
 ** Bluetooth
-#+begin_src emacs-lisp
+#+begin_src conf
 [module/bluetooth]
 type = custom/script
 exec = ~/.local/bin/bluetooth.sh
@@ -137,7 +156,24 @@ click-right = "~/.local/bin/bluetooth.sh --state"
 tail = true
 format-padding = 3
 #+end_src
-** TODO CPU
+
+** CPU
+
+#+begin_src conf
+[module/cpu]
+type = internal/cpu
+format = <label> <ramp-coreload>
+label =  %percentage%%
+ramp-coreload-spacing = 0
+ramp-coreload-0 = ▁
+ramp-coreload-1 = ▂
+ramp-coreload-2 = ▃
+ramp-coreload-3 = ▄
+ramp-coreload-4 = ▅
+ramp-coreload-5 = ▆
+ramp-coreload-6 = ▇
+ramp-coreload-7 = █
+#+end_src
 ** Date
 #+begin_src conf
 [module/date]

@@ -334,7 +334,7 @@ bindsym $mod+Shift+b exec --no-startup-id firefox
 bindsym $mod+Shift+t exec --no-startup-id telegram-desktop
 bindsym $mod+Shift+m exec  /usr/bin/emacsclient --a= -c
 exec_always "setxkbmap -option 'grp:alt_shift_toggle' -layout us,es"
-bindsym $mod+F1 exec  --no-startup-id ~/.local/bin/bluetooth.sh
+bindsym $mod+F1 exec --no-startup-id ~/.local/bin/bluetooth.sh --toggle
 #+end_src
 
 * Setup workspace
@@ -441,10 +441,10 @@ will be execute once use *exec*
 2.  launch picom
 3.  Run xrand
 4.  Run Redshift
-5.  Launch always duns
+5.  Launch always dunst
 
 #+begin_src sh
-exec --no-startup-id feh --bg-fill /home/lucas/Pictures/wallpapers/OsfFKJ0.jpg
+exec --no-startup-id feh --bg-fill /home/lucas/Pictures/Wallpapers/tux.jpg
 exec --no-startup-id picom -b -f --experimental-backends
 exec --no-startup-id xrandr --output HDMI-0 --auto --right-of DP-1
 exec --no-startup-id redshift -l 40.59:-3.712
