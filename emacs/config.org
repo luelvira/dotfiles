@@ -120,6 +120,7 @@
     - [[#eglot][EGLOT]]
   - [[#language-support][Language support]]
     - [[#python][Python]]
+      - [[#lsp-for-python][lsp for python]]
     - [[#elisp-mode][elisp mode]]
     - [[#javascripttypescript][JavaScript/TypeScript]]
     - [[#html-and-css][HTML and CSS]]
@@ -169,6 +170,9 @@
     - [[#2-literature-notes][2. Literature Notes]]
       - [[#citar][Citar]]
       - [[#citar-org-roam][Citar-org-roam]]
+        - [[#add-my-custom-template][Add my custom template]]
+        - [[#set-the-default-configuration-vars][Set the default configuration vars]]
+        - [[#close-citar-org-roam][Close citar-org-roam]]
       - [[#import-annotations-from-zotero][Import annotations from zotero]]
       - [[#custom-acronym][Custom acronym]]
     - [[#3-permanent-notes][3. Permanent Notes]]
@@ -264,9 +268,22 @@ Make startup faster by reducing the frequency of garbage collection and then use
 This part aims to setting some special configuration based on the system Emacs is running
 
 #+begin_src emacs-lisp
-(defvar is-termux
+(defconst is-termux
   (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
 "Boolean variable to determinate if emacs is runing into termux system.")
+
+(defconst is-ubuntu
+  (string= (system-name) "HP-Z1-G8")
+"Boolean variable to determinate if emacs is runing on work's ubutnu machine")
+
+(defconst is-debian
+  (string= (system-name) "debian")
+"Boolean variable to determinate if emacs is runing on home's debian machine")
+
+(defconst is-fedora
+  (string= (system-name) "fedora")
+"Boolean variable to determinate if emacs is runing on laptop's fedora machine")
+
 (setq user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
       user-full-name    (string-trim (shell-command-to-string "git config --global user.name")))
 #+end_src
@@ -637,6 +654,8 @@ For some reason, emacs use defaults font in all buffer, also in prog-mode. I wou
 
 #+begin_src emacs-lisp
 (use-package fixed-pitch
+  :if (or is-debian
+          is-fedora)
   :straight (:type git :host github :repo "cstby/fixed-pitch-mode"))
 #+end_src
 
@@ -657,30 +676,30 @@ Defining the various fonts that Emacs will use.
                       :width 'normal
                       :weight 'normal
                       :height 110)
-
   (set-face-attribute 'fixed-pitch nil
                       :inherit 'default
                       :weight 'medium
                       :height 1.0
                       :family lem-fixed)
-
   (set-face-attribute 'variable-pitch nil
                       :family  lem-fixed
                       :inherit 'default
-                      :weight 'regular
-                      ))
+                      :weight 'regular))
+
 (defun lem/set-fonts (frame)
   (select-frame frame)
-  (lem/set--fonts))
+  (unless (or is-ubuntu
+              is-termux)
+    (lem/set--fonts))
 
-;; Makes commented text and keywords italics.
-;; This is working in emacsclient but not emacs.
-;; Your font must have an italic face available.
-(set-face-attribute 'font-lock-comment-face nil
-                    :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil
-                    :slant 'italic)
-(add-to-list 'default-frame-alist '(family . lem-default))
+  ;; Makes commented text and keywords italics.
+  ;; This is working in emacsclient but not emacs.
+  ;; Your font must have an italic face available.
+  (set-face-attribute 'font-lock-comment-face nil
+                      :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+                      :slant 'italic)
+  (add-to-list 'default-frame-alist '(family . lem-default))
 #+end_src
 
 *** Ligatures
@@ -2000,7 +2019,8 @@ It need to be compiled, so you need to install first some dependencies
 
 *** multi term
 #+begin_src emacs-lisp
-(use-package multi-vterm)
+(use-package multi-vterm
+  :after vterm)
 #+end_src
 
 ** Compilation
@@ -2062,7 +2082,7 @@ It need to be compiled, so you need to install first some dependencies
   (dap-node-setup))
 #+end_src
 
-*** EGLOT
+*** EGLOT                                                          :INACTIVE:
 
 [[https://github.com/joaotavora/eglot][eglot]] is lsp client for emacs that in meacs 29 will (is) part of the core of emacs
 
@@ -2101,6 +2121,12 @@ Use pyvenv to manage and use ~virtualenv~. Run ~pyvenv-activate~ to configure Em
   (add-to-list 'global-mode-string
                '(pyvenv-virtual-env-name (" venv:" pyvenv-virtual-env-name " "))
                'append))
+#+end_src
+
+**** lsp for python
+#+begin_src emacs-lisp
+(use-package lsp-pyright
+  :ensure t)
 #+end_src
 
 *** elisp mode
@@ -2789,7 +2815,6 @@ Now register the hooks and install the package (if it already is not installed)
            (org-present-mode-quit . lem/org-present-end)
            (org-present-after-navigate . lem/org-present-prepare-slide)))
 #+end_src
-
 
 * Org roam
 
