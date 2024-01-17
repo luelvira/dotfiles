@@ -161,7 +161,7 @@
   - [[#installation][Installation]]
   - [[#configure-org-roam-templates][Configure org roam templates]]
     - [[#configure-org-roam-completion-find-function][Configure org roam completion find function]]
-    - [[#configure-org-roam-dailies-notes][Configure Org-roam-dailies-notes]]
+    - [[#configure-org-roam-dailies-capture-templates][Configure org roam dailies capture templates]]
     - [[#close-org-roam-package-declaration][Close org roam package declaration]]
     - [[#some-functions-used-for-customize-org-roam][Some functions used for customize org-roam]]
   - [[#zettelkasten][Zettelkasten]]
@@ -169,6 +169,9 @@
     - [[#2-literature-notes][2. Literature Notes]]
       - [[#citar][Citar]]
       - [[#citar-org-roam][Citar-org-roam]]
+        - [[#add-my-custom-template][Add my custom template]]
+        - [[#set-the-default-configuration-vars][Set the default configuration vars]]
+        - [[#close-citar-org-roam][Close citar-org-roam]]
       - [[#import-annotations-from-zotero][Import annotations from zotero]]
       - [[#custom-acronym][Custom acronym]]
     - [[#3-permanent-notes][3. Permanent Notes]]
@@ -2842,7 +2845,7 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
               (propertize "${date:10}" 'face 'org-date)))
 #+end_src
 
-*** Configure Org-roam-dailies-notes
+*** Configure org roam dailies capture templates
 
 #+begin_src emacs-lisp
 (setq org-roam-dailies-capture-templates
