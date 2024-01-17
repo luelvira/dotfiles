@@ -30,7 +30,7 @@
   :group 'lem
   :type '(repeat :tag "List of bib files" file :must-match t))
 
-(defcustom lem/org-directory nil
+(defcustom lem/org-directory "~"
   "The directory for the Org repository."
   :set (lambda (k v)
          (set-default k v)
