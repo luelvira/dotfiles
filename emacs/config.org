@@ -271,19 +271,19 @@ This part aims to setting some special configuration based on the system Emacs i
 #+begin_src emacs-lisp
 (defconst is-termux
   (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-"Boolean variable to determinate if emacs is runing into termux system.")
+"Boolean variable to determinate if Emacs is runing into termux system.")
 
 (defconst is-ubuntu
   (string= (system-name) "HP-Z1-G8")
-"Boolean variable to determinate if emacs is runing on work's ubutnu machine")
+"Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
 
 (defconst is-debian
   (string= (system-name) "debian")
-"Boolean variable to determinate if emacs is runing on home's debian machine")
+"Boolean variable to determinate if Emacs is runing on home's debian machine.")
 
 (defconst is-fedora
   (string= (system-name) "fedora-laptop")
-"Boolean variable to determinate if emacs is runing on laptop's fedora machine")
+"Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
 
 (setq user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
       user-full-name    (string-trim (shell-command-to-string "git config --global user.name")))
@@ -2166,9 +2166,9 @@ There are a lot of package aimed to work with js/ts code. Some of theme are ~js-
    js2-mode-show-strict-warnings nil
    ;; Flycheck provides these features, so disable them: conflicting with
    ;; the eslint settings.
-   js2-strict-missing-semi-warning nil
+   js2-strict-missing-semi-warning nil)
    ;; Use js2-mode for Node scripts
-   (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))))
+   (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode)))
 
 #+end_src
 
@@ -2206,6 +2206,7 @@ Sometimes I need to work with typescript...
   (flycheck-add-mode 'javascript-eslint 'typescript-mode))
 #+end_src
 
+
 *** HTML and CSS
 
 #+begin_src emacs-lisp
@@ -2226,7 +2227,7 @@ Also [[https://github.com/skeeto/skewer-mode/tree/master][skewer]] provides a li
 
 These package don't work as I expect. They have a lot of problem rendering png image or loading external scripts.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package simple-httpd :defer t)
 (use-package impatient-mode :defer t)
 (use-package skewer-mode :defer t)
@@ -2252,6 +2253,12 @@ Another package that could be helpful
 #+end_src
 
 ** Define all the variables
+
+#+begin_src emacs-lisp
+(defconst lem/org-directory
+  (if (not is-termux)
+      "~/Documents/Org/" "~/storage/shared/Documents/Org/"))
+#+end_src
 
 #+begin_src emacs-lisp
 (defun lem/org-mode-hook ()
@@ -2971,6 +2978,15 @@ To answer this question, you can use meta-data as header from of the note, a lin
 
 [[https://github.com/emacs-citar/citar][Citar]] provides a highly-configurable completing-read front-end to browse and act on BibTeX, BibLaTeX, and CSL JSON
 bibliographic data, and LaTeX, markdown, and org-cite editing support.
+
+#+begin_src emacs-lisp
+(defvar lem/bibliography-files
+  "List of the .bib to get the bibliography."
+  (mapcar
+   (lambda (file)
+     (expand-file-name file org-roam-directory))
+   '("bibliography.bib" "phd.bib")))
+#+end_src
 
 #+begin_src emacs-lisp
 (use-package citar

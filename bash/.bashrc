@@ -57,21 +57,10 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
-}
+
 if [ "$color_prompt" = yes ]; then
 	#PROMPT_DIRTRIM=3
-		PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-	if [ $UID -eq 0 ];then
-		#PS1='\[\033[0;34m\][\[\033[00;31m\]\u@\h\[\033[1;37m\] \W \[\033[0;34m\]]\[\033[00m\]\$ '
-		PS1='${debian_chroot:+($debian_chroot)}\[\033[0;36m\]┌──(\[\033[00;31m\]\u@\h\[\033[0;36m\])-[\[\033[0;00m\]\w\[\033[0;36m\]]\n\[\033[0;36m\]└─\[\033[00;31m\]\$\[\033[00m\] '
-	else
-    	#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-		PS1='${debian_chroot:+($debian_chroot)}\[\033[0;32m\]┌──(\[\033[00;36m\]\u@\h\[\033[0;32m\])-[\[\033[0;00m\]\w\[\033[0;32m\]]\n\[\033[0;32m\]└─\[\033[0;36m\]\$\[\033[00m\] '
-		PS1="${debian_chroot:+($debian_chroot)}\[\033[0;32m\]┌──(\[\033[00;36m\]\u@\h\[\033[0;32m\])-(\[\033[00;36m\]\$(parse_git_branch)\[\033[0;32m\])-[\[\033[0;00m\]\w\[\033[0;32m\]]\n\[\033[0;32m\]└─\[\033[0;36m\]\$\[\033[00m\] "
-	fi
-
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[00;32m\]\u@\h\[\033[00m\]:\[\033[00;34m\]\w\[\033[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -121,7 +110,6 @@ export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/.local/bin/scripts
 export VISUAL=vim
 export EDITOR="$VISUAL"
-
 
 #(/usr/bin/cat ~/.cache/wal/sequences &)
 #if [ -f ~/.cache/wal/sequences ]; then

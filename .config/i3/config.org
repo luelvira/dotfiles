@@ -15,12 +15,19 @@
   - [[#reloadrestart-i3][Reload/restart i3]]
   - [[#navigate-between-layouts][Navigate between layouts]]
   - [[#move-container-to-another-workspace][Move container to another workspace]]
+    - [[#start-xdg-autostart-desktop-files-using-dex-see-also][Start XDG autostart .desktop files using dex. See also]]
+    - [[#setup-some-programs-to-control-de-wm][Setup some programs to control de WM]]
   - [[#change-between-modes][Change between modes]]
+    - [[#resize-mode][Resize mode]]
   - [[#moving-arround-the-windows][Moving arround the windows]]
   - [[#windows-manager-tools][Windows Manager tools]]
+    -  [[#use-pactl-to-adjust-volume-in-pulseaudio][Use pactl to adjust volume in PulseAudio.]]
+    -  [[#allow-to-make-screenshoots][Allow to make screenshoots]]
+    - [[#lock-screen][Lock screen]]
   - [[#launch-custom-programs][Launch Custom programs]]
 - [[#setup-workspace][Setup workspace]]
   - [[#define-layout][Define layout]]
+    - [[#send-programs-to-custom-ws][Send programs to custom WS]]
   - [[#i3-bar][I3 bar]]
   - [[#polybar][Polybar]]
   - [[#binding-workspace-to-monitors][Binding workspace to monitors]]
@@ -288,7 +295,6 @@ bindsym $mod+Shift+q kill
 #+end_src
 
 
-
 ** Windows Manager tools
 
 ***  Use pactl to adjust volume in PulseAudio.
@@ -317,6 +323,11 @@ bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewi
 bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png
 #+end_src
 
+*** Lock screen
+
+#+begin_src sh
+bindsym $mod+F9 exec --no-startup-id i3lock
+#+end_src
 ** Launch Custom programs
 
 | action                     | shortcuts    |

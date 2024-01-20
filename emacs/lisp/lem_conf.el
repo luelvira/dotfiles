@@ -25,21 +25,6 @@
   :group 'lem
   :type '(directory :must-match t))
 
-(defcustom lem/bibliography-files '("~/Documents/Org/bibliography.bib" "~/Documents/Org/phd.bib")
-  "List of the .bib to get the bibliography."
-  :group 'lem
-  :type '(repeat :tag "List of bib files" file :must-match t))
-
-(defcustom lem/org-directory "~"
-  "The directory for the Org repository."
-  :set (lambda (k v)
-         (set-default k v)
-         (setq org-directory v
-               org-default-notes-file (concat org-directory "Inbox.org")
-               org-roam-directory (expand-file-name "roam" org-directory)))
-  :group 'lem
-  :type '(directory :must-match t))
-
 (defcustom lem/alpha-value 90
   "The default value of transparency used for the current frame."
   :set (lambda (k v)
@@ -110,7 +95,6 @@ PATH: is the dir where the git repo is"
       (set-frame-parameter nil 'alpha tuple)
       (add-to-list 'default-frame-alist '(alpha-background . lem/alpha-value))))
   (setq-default lem/is-transparent (not lem/is-transparent)))
-
 
 (provide 'lem_conf)
 ;;; lem_conf.el ends here

@@ -1,3 +1,4 @@
+# -*- mode: shell-script -*- 
 # custom alias
 alias xclip='xclip -sel clipboard'
 alias su='su -'
@@ -16,30 +17,30 @@ if [ -f /usr/bin/lsd ]; then
 	alias ll='ls -al'
 	alias la='ls -A'
 	alias lha='ls -lhA'
-fi
-
-if [ -f /usr/bin/exa ]; then
+elif [ -f /usr/bin/exa ]; then
 	alias ls='exa --group-directories-first -F'
+else
+    alias ll='ls -alF'
+    alias la='ls -A'
+    alias l='ls -CF'
+    alias lha='ls -lhA'
 fi
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-alias lha='ls -lhA'
 
+if [ -f /usr/bin/batcat ]; then
+    alias cat="batcat"
+fi
 
 # alias for git common commands
-
 alias ggraph='git log --all --decorate --oneline --graph'
-	ginit() {
-		mkdir $1 && cd $_
-		echo "# $1" >> README.md
-		git init
-		git add README.md
-		git commit -m "first commit"
-		git branch -M main
-		git remote add origin "git@github.com:luelvira/$1.git"
-
-	}
+ginit() {
+    mkdir "$1" && cd "$_" || exit
+    echo "# $1" >> README.md
+    git init
+    git add README.md
+    git commit -m "first commit"
+    git branch -M main
+    git remote add origin "git@github.com:luelvira/$1.git"
+}
 alias gsh='git push -u origin'
 alias gl='git pull origin'
 alias gss='git status'
@@ -51,7 +52,7 @@ tmptouch (){
 	touch "$1$stamp"
 }
 mkcd () {
-	mkdir $1 && cd $_
+	mkdir "$1" && cd "$_" || exit
 }
 
 tmpmkdir() {
@@ -63,14 +64,20 @@ gbackup() {
     stamp=$(date '+%Y-%m-%dT%H:%M')
     git commit -m $stamp
 }
-#cd() {
-#	builtin cd "$@"
-#	bash ~/.local/bin/_projects -s
-#}
-#alias projection='source ~/.local/bin/_projects'
-
 # make an alias to prevent accidental rm -rf
 alias rm='rm -i'
 alias mv='mv -i'
 alias cp='cp -i'
-# alias emacs='emacsclient -a="emacs"'
+
+# SHOPT (https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html)
+shopt -s autocd
+shopt -s dotglob
+
+
+if [ -f "/usr/bin/nvim" ]; then
+    alias vim="nvim"
+fi
+
+alias emt="/usr/bin/emacs -nw"
+alias emc="emacsclient -c -a 'emacs'"
+alias rem="killall emacs || echo 'Emacs server not running'; /usr/bin/emacs --daemon"
