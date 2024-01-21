@@ -1,5 +1,5 @@
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" ".config/emacs/init.el")))
+:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "config/emacs/init.el")))
 :END:
 #+TITLE: My Emacs Configuration
 #+AUTHOR: Lucas Elvira Martín
@@ -234,7 +234,7 @@ This will generate a header at the top of the tangled file to indicate it is gen
 
 * Early init
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle .config/emacs/early-init.el
+:HEADER-ARGS:emacs-lisp: :tangle config/emacs/early-init.el
 :END:
 
 The early-init file is loaded before any process of emacs, either the package system. I use straight as package manager, so I need to disable the default behavior before the ~package.el~ is loaded
