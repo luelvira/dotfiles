@@ -9,6 +9,7 @@ window:
     x: 5
     y: 5
   title: Alacritty
+  opacity: 0.8
 
 font:
   normal:

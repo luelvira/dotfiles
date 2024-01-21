@@ -1,5 +1,5 @@
 :PROPERTIES:
-:HEADER-ARGS:conf: :tangle .vimrc
+:HEADER-ARGS:conf: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "vim/.vimrc"))
 :END:
 #+date: 2023-04-02
 #+AUTHOR: Lucas Elvira Martín
@@ -8,10 +8,9 @@
 
 * My vim configuration
 
-This is my custom vim configuration written in markdown and tangle to vimscript
-using vim-tangle plugin.
+This is my custom vim configuration written in markdown and tangle to vimscript using vim-tangle plugin.
 
-** :TOC:
+** Table of Content :TOC:
 - [[#my-vim-configuration][My vim configuration]]
   - [[#set-up-common-settings][Set up common settings]]
     - [[#default-values][Default values]]
@@ -29,13 +28,13 @@ using vim-tangle plugin.
     - [[#coc][Coc]]
   - [[#set-a-custom-theme][Set a custom theme]]
     - [[#configure-the-theme][Configure the theme]]
-    - [[#gutentags][Gutentags]]
-    - [[#vim-table-mode][vim table mode]]
-    - [[#vim-wiki][vim wiki]]
-      - [[#wikivm-pluggin][wikivm pluggin]]
-        - [[#changing-wiki-syntax][Changing Wiki syntax]]
-      - [[#vimwiki-from-lervag][vimwiki from lervag]]
-      - [[#vim-taskwarrior][vim-taskwarrior]]
+  - [[#gutentags][Gutentags]]
+  - [[#vim-table-mode][vim table mode]]
+  - [[#vim-wiki][vim wiki]]
+    - [[#wikivm-pluggin][wikivm pluggin]]
+    - [[#changing-wiki-syntax][Changing Wiki syntax]]
+    - [[#vimwiki-from-lervag][vimwiki from lervag]]
+    - [[#vim-taskwarrior][vim-taskwarrior]]
   - [[#set-local-settings][Set local settings]]
   - [[#templates][Templates]]
     - [[#template-definitions][Template definitions]]
@@ -45,8 +44,7 @@ using vim-tangle plugin.
 
 ** Set up common settings
 *** Default values
-First we need to load the default vim because, if we don't do that, we
-will loss some of the default settings
+First we need to load the default vim because, if we don't do that, we will loss some of the default settings
 
 #+begin_src conf
 source $VIMRUNTIME/defaults.vim
@@ -121,8 +119,7 @@ set nocompatible
 #+end_src
 
 *** Custom mapping
-I don't like to use arrows keys in insert mode because it is a reference
-of the mode I am in. So I disable them.
+I don't like to use arrows keys in insert mode because it is a reference of the mode I am in. So I disable them.
 
 #+begin_src conf
 " disable arrows keys in insert mode
@@ -166,7 +163,6 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 
 #+begin_src conf
 call plug#begin()
-
 " snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -222,8 +218,8 @@ silent! call repeat#set("\<Plug>MyWonderfulMap", v:count)
 
 *** NerdTree
 
-Display a file manager on the left panel and allows navigation over it. At this
-moment I don't use it
+Display a file manager on the left panel and allows navigation over it. At this moment I don't use it
+
 #+begin_src conf :tangle no
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Close the tab if NERDTree is the only window remaining in it.
@@ -231,13 +227,11 @@ autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTa
 " Open the existing NERDTree on each new tab.
 autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
 nnoremap <C-n> :NERDTreeToggle<CR>
-
 #+end_src
 
 *** Vimtext
 
-This plugin improves the experience of writing in latex with vim and preview the
-result.
+This plugin improves the experience of writing in latex with vim and preview the result.
 
 #+begin_src conf
 let g:vimtex_view_method = 'zathura'
@@ -255,13 +249,14 @@ A love who jsdoc works and why not use it here?
 let g:javascript_plugin_jsdoc = 1
 #+end_src
 
-*** Coc
+*** Coc                                                            :INACTIVE:
+:PROPERTIES:
+:DESCRIPTION: This entry is disable because I will use vim for short editting
+:END:
 
-*Disclaimer:* This plugin make the computer a lot more slowly. I disable it for
-the moment
+*Disclaimer:* This plugin make the computer a lot more slowly. I disable it for the moment
 
-Coc is a lsp plugin. It uses nodejs as backend and has its own package manager.
-To call it, you run `:CocInstall ` followed for the name of the package.
+Coc is a lsp plugin. It uses nodejs as backend and has its own package manager. To call it, you run `:CocInstall ` followed for the name of the package.
 
 #+begin_src conf
 set encoding=utf-8
@@ -307,18 +302,14 @@ augroup colorscheme_coc_setup | au!
 augroup END
 #+end_src
 
-** Set a custom theme
-The themes are installed with vim-plug. To set a theme, you need to add
-the following line to your vimrc with the name of the theme you want to
-use. I use nord theme.
+** Set a custom theme                                              :INACTIVE:
+The themes are installed with vim-plug. To set a theme, you need to add the following line to your vimrc with the name of the theme you want to use. I use nord theme.
 
 =colorscheme themename=
 
 *IMPORTANT*
 
-Most of themes in terminal have some problems with some kind of fonts
-like italic. To prevent it, /before/ set the it is necessary to setup
-some vars
+Most of themes in terminal have some problems with some kind of fonts like italic. To prevent it, /before/ set the it is necessary to setup some vars
 
 #+begin_src conf
 if $HOSTNAME == "fedora-pc"
@@ -356,7 +347,7 @@ if exists("colors_name")
 endif
 #+end_src
 
-*** Gutentags
+** Gutentags
 This plugin allows to generate tags for the current project. It uses
 ctags and cscope.
 
@@ -368,23 +359,15 @@ let g:gutentags_ctags_extra_args = ['--fields=+ailmnS', '--tag-relative=yes']
 let g:gutentags_ctags_exclude = ['*.min.js', '*.min.css', '*.map', 'node_modules', 'test', 'cache', 'dist', 'build', 'vendor', '.*', '*/.*', '*.json', '*.yml', '*.html', '*.txt', '*.cpy', '*.css', 'bin', '*.md', '*.org']
 #+end_src
 
-*** vim table mode
-To start the table mode =leader+tm= (leader + table mode). Then you need
-to write the header delimite each item with =|= The plugin is in charge
-of give a space between the pipe and the words.
+** vim table mode
+To start the table mode =leader+tm= (leader + table mode). Then you need to write the header delimite each item with =|= The plugin is in charge of give a space between the pipe and the words.
 
-Once you get the header and, without leaving Insert mode, enter =||= and
-a horizontal line will be displayed matched with the length of the
-table. Then you just need to write the content of your table
+Once you get the header and, without leaving Insert mode, enter =||= and a horizontal line will be displayed matched with the length of the table. Then you just need to write the content of your table
 
-*** vim wiki
-:PROPERTIES:
-:HEADER-ARGS:conf: :tangle no
-:END:
-**** wikivm pluggin
-***** Changing Wiki syntax
-vimwiki currently ships with 3 syntaxes: VimWiki, Markdown and
-MediaWiki. I would like to keep using markdown
+** vim wiki                                                          :INACTIVE:
+*** wikivm pluggin
+*** Changing Wiki syntax
+vimwiki currently ships with 3 syntaxes: VimWiki, Markdown and MediaWiki. I would like to keep using markdown
 
 Also I set the path of the wiki folder
 
@@ -401,7 +384,7 @@ let g:vimwiki_global_ext = 0
 let g:vimwiki_table_mappings=0
 #+end_src
 
-**** vimwiki from lervag
+*** vimwiki from lervag
 The first is to customize the root folder and the journal folder
 
 #+begin_src conf
@@ -419,8 +402,7 @@ nnoremap <leader>ff :WikiPages<CR>
 nnoremap <leader>fo :WikiOpen<CR>
 #+end_src
 
-Also could be interesting get a function which generate a unique ID as
-prefix for the file. To do it, the file must be open with =WikiOpen=
+Also could be interesting get a function which generate a unique ID as prefix for the file. To do it, the file must be open with =WikiOpen=
 
 #+begin_src conf :tangle no
 let g:wiki_map_create_page = 'AddDateAsPrefix'
@@ -433,16 +415,11 @@ function AddDateAsPrefix(name) abort
 endfunction
 #+end_src
 
-*Need to be completed this part*
-
-**** vim-taskwarrior
-This plugin is an interface to the [[task warrior]] program. In order to
-view the pending task: =:TW=. More info in
-[[https://github.com/blindFS/vim-taskwarrior][vim-taskwarrior]]
+*** vim-taskwarrior
+This plugin is an interface to the [[task warrior]] program. In order to view the pending task: =:TW=. More info in [[https://github.com/blindFS/vim-taskwarrior][vim-taskwarrior]]
 
 ** Set local settings
-With autocm you can enable or disable some settings for the current
-buffer.
+With autocm you can enable or disable some settings for the current buffer.
 
 #+begin_src conf :tangle no
 " text mode
@@ -462,10 +439,7 @@ autocmd FileType gitcommit setlocal spell spelllang=en_us
 #+end_src
 
 ** Templates
-Vim file templates (known as skeleton) are file that can be read when a
-file with some pattern is created and write the content of the template
-inside the fil. It is useful for markdown headers or html common parts
-
+Vim file templates (known as skeleton) are file that can be read when a file with some pattern is created and write the content of the template inside the fil. It is useful for markdown headers or html common parts
 To enable it you need to put in your config file:
 
 #+begin_example
@@ -474,8 +448,7 @@ autocmd BufNewFile <pattern> 0r <path of the file>
 
 - =autocmd= is a command to run automatically on some events
 - =BufNewFile=: Vim's new file events
-- =0r= read into the buffer starting at line 0 source:
-  [[https://vimtricks.com/p/vim-file-templates/][vim templates]]
+- =0r= read into the buffer starting at line 0 source: [[https://vimtricks.com/p/vim-file-templates/][vim templates]]
 
 #+begin_src conf
 autocmd BufNewFile *.sh,bash 0r ~/.vim/templates/bash_template.sh
@@ -486,7 +459,7 @@ autocmd BufNewFile *.html 0r ~/.vim/templates/index.html
 
 **** Template for shell script
 :PROPERTIES:
-:HEADER-ARGS:shell: :tangle templates/bash_template.sh
+:HEADER-ARGS:shell: :tangle vim/templates/bash_template.sh
 :END:
 
 First define the header
@@ -543,7 +516,6 @@ Here is an example:
   #            ;;
   #    esac
   #done
-
   function usage {
       path=$(readlink -f $0)
       dir=$(dirname ${path})
@@ -560,7 +532,7 @@ Here is an example:
 
 **** Templates for html
 :PROPERTIES:
-:HEADER-ARGS:html: :tangle templates/index.html
+:HEADER-ARGS:html: :tangle vim/templates/index.html
 :END:
 
 #+begin_src html
@@ -585,5 +557,4 @@ Here is an example:
 
 
 ** Custom function
-Each time I want to write in vim in English, I need to change the
-spelllang option. This command will automatically at it to the last line
+Each time I want to write in vim in English, I need to change the spelllang option. This command will automatically at it to the last line

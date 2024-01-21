@@ -1,5 +1,5 @@
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "init.el")))
+:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" ".config/emacs/init.el")))
 :END:
 #+TITLE: My Emacs Configuration
 #+AUTHOR: Lucas Elvira Martín
@@ -49,6 +49,7 @@
   - [[#anzu-and-vim-anzu][Anzu and vim anzu]]
   - [[#create-frame-hook][create frame hook]]
   - [[#rainbow-delimeters][Rainbow delimeters]]
+  - [[#neotree][neotree]]
 - [[#keyboard-binding][Keyboard binding]]
   - [[#esc-as-c-g][ESC as C-g]]
   - [[#setup-evil-mode][Setup evil mode]]
@@ -233,7 +234,7 @@ This will generate a header at the top of the tangled file to indicate it is gen
 
 * Early init
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle early-init.el
+:HEADER-ARGS:emacs-lisp: :tangle .config/emacs/early-init.el
 :END:
 
 The early-init file is loaded before any process of emacs, either the package system. I use straight as package manager, so I need to disable the default behavior before the ~package.el~ is loaded
@@ -245,6 +246,7 @@ The early-init file is loaded before any process of emacs, either the package sy
       private-emacs-directory user-emacs-directory
     ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
       user-emacs-directory (expand-file-name "~/.cache/emacs/"))
+(setq url-history-file (expand-file-name "url/history" user-emacs-directory))
 #+end_src
 
 ** Startup performance
@@ -301,21 +303,35 @@ Add the lisp script to the path
 
 ** With straight
 
-Using [[https://github.com/radian-software/straight.el][straight]] for package management and disable checking (for speedup). To keep order the init.el file, the boostrap script is moved to [[file:lisp/straight-setup.el][straight-setup.el]]
+Using [[https://github.com/radian-software/straight.el][straight]] for package management and disable checking (for speedup).
 
 #+begin_src emacs-lisp
-(require 'straight-setup)
+(setq straight-check-for-modifications nil)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Use straight by default
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+(provide 'straight-setup)
 #+end_src
 
 * Keep it clean
 
-First I define the default emacs back-up where all the cache files will be stored. I set the emacs directory in early-init to prevent emacs install staffs inside the config folder
-
-#+begin_src emacs-lisp :tangle early-init.el
-(setq url-history-file (expand-file-name "url/history" user-emacs-directory))
-#+end_src
-
-Use no-littering to automatically set common paths to the new user-emacs-directory
+First I define the default emacs back-up where all the cache files will be stored. I set the emacs directory in early-init to prevent emacs install staffs inside the config folder. Use no-littering to automatically set common paths to the new user-emacs-directory
 
 #+begin_src emacs-lisp
 (use-package no-littering)
@@ -653,7 +669,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 *** fixed pitch
 For some reason, emacs use defaults font in all buffer, also in prog-mode. I would like to have a different fonts for the interface and the code. The package [[https://github.com/cstby/fixed-pitch-mode][fixed-pitch-mode]] allows that.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package fixed-pitch
   :if (or is-debian
           is-fedora)
@@ -666,7 +682,7 @@ Defining the various fonts that Emacs will use.
 #+begin_src emacs-lisp
 (defvar lem-fixed "FiraCodeNerdFont"
   "Font string for fixed pitch modes")
-(defvar lem-default "Monospace"
+(defvar lem-default "Dejavu Sans Mono"
   "Font string for UI fonts")
 (defvar lem-variable "Iosevka Aile"
   "Font string for variable pitch texts")
@@ -683,15 +699,13 @@ Defining the various fonts that Emacs will use.
                       :height 1.0
                       :family lem-fixed)
   (set-face-attribute 'variable-pitch nil
-                      :family  lem-fixed
+                      :family  lem-variable
                       :inherit 'default
                       :weight 'regular))
 
 (defun lem/set-fonts (frame)
   (select-frame frame)
-  (unless (or is-ubuntu
-              is-termux)
-    (lem/set--fonts)))
+  (lem/set--fonts))
 
 ;; Makes commented text and keywords italics.
 ;; This is working in emacsclient but not emacs.
@@ -817,6 +831,26 @@ Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to
 (use-package rainbow-delimiters
   :init (setq rainbow-delimiters-max-face-count 4)
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
+#+end_src
+
+** neotree
+
+Neotree as a file tree viewer.
+
+#+begin_src emacs-lisp
+(use-package neotree
+  :config
+  (setq neo-smart-open t
+        neo-show-hidden-files t
+        inhibit-compacting-font-caches t
+        projectile-switch-project-action 'neotree-projectile-action
+        neo-window-width 55
+        neo-window-fixed-size nil)
+  :init
+  (setq neo-create-file-auto-open nil
+        neo-auto-indent-point nil
+        neo-autorefresh nil
+        neo-mode-line-type 'none))
 #+end_src
 
 * Keyboard binding
@@ -1064,7 +1098,6 @@ Regarding /buffers/, the text you are editing in Emacs resides in an object call
     "ee" '(eval-expression :wk "Evaluate and elisp expression")
     "el" '(eval-last-sexp :wk "Evaluate elisp expression before point")
     "er" '(eval-region :wk "Evaluate elisp in region"))
-
 #+end_src
 
 **** Files operations
@@ -1226,11 +1259,13 @@ We can set a sortcut to open the config file from the emacs directory
 
 #+begin_src emacs-lisp
 (lem/leader-key-def
-  "t"  '(:ignore t               :which-key "toggles")
-  "tw" '(whitespace-mode         :which-key "whitespace")
-  "td" '(lem/switch-dictionary   :which-key "Toggle between dictionaries")
-  "tt" '(lem/toggle-transparency :which-key "Toggle between transparency states")
-  "tl" '(org-toggle-link-display :which-key "Toggle org link display"))
+  "t"  '(:ignore t                 :which-key "toggles")
+  "tw" '(whitespace-mode           :which-key "whitespace")
+  "td" '(lem/switch-dictionary     :which-key "Toggle between dictionaries")
+  "tt" '(lem/toggle-transparency   :which-key "Toggle between transparency states")
+  "tl" '(org-toggle-link-display   :which-key "Toggle org link display")
+  "tL" '(display-line-numbers-mode :which-key "Toggle display line numbers")
+  "tf" '(auto-fill-mode            :which-key "Toggle autofill mode"))
 #+end_src
 
 *** Rebind C-u
@@ -1797,9 +1832,6 @@ snippets.
 (add-hook 'text-mode-hook 'lem/text-mode-setup)
 #+end_src
 
-#+begin_src emacs-lisp
-#+end_src
-
 ** Markdown
 
 For some reason, emacs has not a  markdown mode enable by default
@@ -2143,7 +2175,6 @@ This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
 There are a lot of package aimed to work with js/ts code. Some of theme are ~js-mode~, ~js2-mode~, ~web-mode~... For javascript files I will use js2-mode because this is the one used by other frameworks such doom emacs. And, for editing html and css related files, ~web-mode~
 
 #+begin_src emacs-lisp
-
 (defun lem/js-indentation ()
   (setq js-chain-indent t
         ;; These have become standard in the JS community
@@ -2247,8 +2278,6 @@ Another package that could be helpful
 #+begin_src emacs-lisp
 (use-package toc-org
   :commands toc-org-enable
-  :custom
-  (toc-org-max-depth 8)
   :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 

@@ -1,9 +1,76 @@
-#+title:     ~/.dotfiltes
+#+title:     $HOME/.dotfiltes
 #+author:    Lucas Elvira Martín
-#+startup: inlineimages
 * ~$HOME/.dotfiles~
 
+Since I read about the literature config with emacs, I felt in love with them, so I start using it for all kinds of configuration
 
-[[file:images/wip.gif]]
+** Management
 
+I only create symlinks for files, never for folder. This helps me to keep the repository clean when some programs use its folder as a store space. At this moment, I still use stown.
+
+** Software I use
+
+This apply for my PC (debian based)
+- *EDITOR*: As editor I use [[https://www.vim.org/][vim]], but I'm moving to [[https://www.gnu.org/software/emacs/][GNU Emacs]] (really, why I have to make this to me??)
+- *WM* A tilling window manager is a window manager with an organization into non-overlapping frames. but they don't only allow you to maximize the screen space, also allow you a full keyboard navigation. In my case, I use [[https://i3wm.org/][I3WM]], but I thinking to move to [[https://qtile.org/][qtile]]
+- *Compositor and notification daemon* A window manager does not come with a lot of software like the compositor or the notification daemons. To get it working, I will [[https://github.com/yshui/picom][picom]] and [[https://github.com/dunst-project/dunst][dunst]] respectively.
+- *launcher*: [[https://github.com/davatorium/rofi][rofi]] as a replacement for dmenu
+- *Terminal* Alacritty. I have a little problems with this terminal because in debian system is very old.
+
+
+** Structure
+
+The structure of the project try to be very simple. Each software has its own folder. If the folder is very simple, it could be inside the ~config~ folder, and then, make a symbolic link to the ~$HOME/.config~ folder. In other case, if I need more access to it, it will be at the root. Something similar happens with the /bash/ files, whose have their own folder.
+
+*** ~config~ folder
+The equivalent to ~$HOME/.config~, where all the configuration files will be stored for most of the programs
+
+ - ~alacritty~: The configuration for the terminal
+ - ~autostart~: Sometimes, you have programs that should be run when you login on the system, but not as scripts file, instead as desktop file
+ - ~i3~: The configuration for the window manager
+ - ~systemd/user~ For custom services that DOES NOT be run as sudo
+ - ~dunst~: We all need sometimes a kind of notification
+ - ~picom~
+ - ~polybar~: A bar menu for system information. This folder also contains some scripts to improve it uses
+ - ~rofi~: The launcher. Also has some scripts required to full working
+
+*** ~bash~ folder
+Where the root files will be places. This include all the bashrc, bash_alias, profile... This helps to keep it order
+
+*** ~vim~ folder
+
+Sometimes, vim need some extra plugins or folder, but the main config file will be at [[file:bash/.vimrc][.vimrc]]
+
+** Important files
+
+1. [[file:Emacs.org][Emacs.org]] The literature configuration file for emacs. This will tangle into different files as needed
+2. [[file:vim.org][vim.org]] The same, but for vim/nvim
+
+** Install
+
+There are some package that I need to install manually to get all working fine when I install the system without graphical environment
+
+#+begin_src shell
+sudo apt-get install \
+  lightdm lightdm-gretter i3 polybar dunst rofi feh \
+  make cmake build-essential git python3-virtualenv \
+  wget curl \
+  vim-nox xclip alacritty emacs stow
+#+end_src
+
+I provide a simple script which iter over the different folders and create the symlinks in their respective folders. *Note* This script won't install anything, so you must install it to make it works.
+
+#+begin_src shell
+git clone git@github.com:luelvira/dotfiles.git --depth 1
+stow bash -vt ~
+stow --no-folding config -vt ~/.config
+stow --no-folding local -vt ~/.local
+#+end_src
+
+Also I use a lot of virtualenv for python and nodejs. Read [[https://github.com/pyenv/pyenv][pyenv]] and [[https://github.com/ekalinin/nodeenv][nodeenv]] for more info
+
+#+begin_src shell
+git submodules init
+git submodules update
+#+end_src
 

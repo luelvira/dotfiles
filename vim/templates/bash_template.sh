@@ -31,7 +31,6 @@ function usage {
 #            ;;
 #    esac
 #done
-
 function usage {
     path=$(readlink -f $0)
     dir=$(dirname ${path})

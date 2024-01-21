@@ -1,7 +1,0 @@
-\.git
-misc
-#LICENSE
-^/.*\.org
-^/.*\.md
-\.stow-local-ignore
-scripts
