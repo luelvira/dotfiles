@@ -12,19 +12,6 @@
   :prefix 'lem
   :version '0.0.1)
 
-(defcustom lem/sync_script_path
-  (let ((
-         file-name (expand-file-name "sync.sh" "~/.local/bin/")))
-    (if (file-exists-p file-name) file-name nil))
-  "The path where the sync file is stored."
-  :group 'lem
-  :type '(file :must-match t))
-
-(defcustom lem/dotfiles "~/Documents/git/dotfiles/"
-  "The path where the dotfiles git repo is stored."
-  :group 'lem
-  :type '(directory :must-match t))
-
 (defcustom lem/alpha-value 90
   "The default value of transparency used for the current frame."
   :set (lambda (k v)

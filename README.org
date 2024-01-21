@@ -62,9 +62,13 @@ I provide a simple script which iter over the different folders and create the s
 
 #+begin_src shell
 git clone git@github.com:luelvira/dotfiles.git --depth 1
+#+end_src
+
+#+begin_src shell
 stow bash -vt ~
 stow --no-folding config -vt ~/.config
 stow --no-folding local -vt ~/.local
+stow --no-folding vim -vt ~/.vim
 #+end_src
 
 Also I use a lot of virtualenv for python and nodejs. Read [[https://github.com/pyenv/pyenv][pyenv]] and [[https://github.com/ekalinin/nodeenv][nodeenv]] for more info

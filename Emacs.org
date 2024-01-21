@@ -18,18 +18,9 @@
 - [[#package-system][Package system]]
   - [[#with-straight][With straight]]
 - [[#keep-it-clean][Keep it clean]]
-    - [[#emacs-as-server][Emacs as server]]
-    - [[#auto-revert-buffers][Auto revert buffers]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
   - [[#standard-settings][Standard settings]]
-    - [[#startup-screen][Startup screen]]
-    - [[#default-encoding][Default encoding]]
-    - [[#disable-warnings][Disable warnings]]
-    - [[#recovery][Recovery]]
-    - [[#history][History]]
-    - [[#confirmation-prompts][Confirmation prompts]]
-    - [[#defaults][Defaults]]
   - [[#sync-files][Sync files]]
   - [[#highlight-matching-braces][Highlight Matching Braces]]
   - [[#enable-line-numbers][Enable line numbers]]
@@ -40,12 +31,7 @@
   - [[#setup-icons][Setup icons]]
   - [[#color-theme][Color theme]]
   - [[#fonts][Fonts]]
-    - [[#fixed-pitch][fixed pitch]]
-    - [[#fonts-definition][Fonts definition]]
-    - [[#ligatures][Ligatures]]
   - [[#modeline][modeline]]
-    - [[#minions][Minions]]
-    - [[#doom-modeline][Doom modeline]]
   - [[#anzu-and-vim-anzu][Anzu and vim anzu]]
   - [[#create-frame-hook][create frame hook]]
   - [[#rainbow-delimeters][Rainbow delimeters]]
@@ -53,43 +39,15 @@
 - [[#keyboard-binding][Keyboard binding]]
   - [[#esc-as-c-g][ESC as C-g]]
   - [[#setup-evil-mode][Setup evil mode]]
-    - [[#set-the-undo-system][Set the undo system]]
-    - [[#set-the-major-mode][Set the major mode]]
-    - [[#install-evil-related-packages][Install evil related packages]]
-    - [[#evil-prog-mode][evil-pro(g) mode]]
   - [[#which-key][Which Key]]
   - [[#custom-shortcut-with-general][Custom shortcut with general]]
-    - [[#bookmarks-and-buffer][Bookmarks and buffer]]
-      - [[#buffers][Buffers]]
-      - [[#dired-keys][Dired keys]]
-      - [[#eval-expressions][Eval expressions]]
-      - [[#files-operations][Files operations]]
-    - [[#configuration-file][Configuration file]]
-    - [[#git][Git]]
-    - [[#perspective][Perspective]]
-    - [[#projectile][Projectile]]
-    - [[#org-shortcuts][Org shortcuts]]
-    - [[#org-roam-shortcut][Org roam shortcut]]
-    - [[#sync-scripts][Sync scripts]]
-    - [[#toggle-options][Toggle options]]
-    - [[#rebind-c-u][Rebind C-u]]
-    - [[#vterm-commands][vterm commands]]
-    - [[#end-of-general-block][End of general block]]
 - [[#editing-configuration][Editing configuration]]
 - [[#work-spaces][Work Spaces]]
 - [[#completion-system][Completion system]]
   - [[#company][Company]]
   - [[#cape][Cape]]
   - [[#ivy-and-counsel][ivy and counsel]]
-    - [[#counsel][Counsel]]
-    - [[#disable--of-m-x][Disable '^' of M-x]]
   - [[#vertico-completion-system][Vertico completion system]]
-    - [[#vertico][Vertico]]
-    - [[#consult][Consult]]
-      - [[#consult-hacks][Consult hacks]]
-      - [[#consult-dir][Consult-dir]]
-    - [[#marginalia][Marginalia]]
-    - [[#completion-action-with-embark][Completion action with Embark]]
   - [[#completion-in-regions-with-corfu][Completion in Regions with Corfu]]
   - [[#install-smex][Install Smex]]
   - [[#orderless][Orderless]]
@@ -98,52 +56,25 @@
 - [[#file-browser-with-dired][File browser with dired]]
 - [[#writting][Writting]]
   - [[#flyspell][Flyspell]]
-    - [[#language-tool][Language tool]]
   - [[#visual-fill-configuration][Visual fill configuration]]
   - [[#text-mode][Text mode]]
   - [[#markdown][Markdown]]
   - [[#zen-mode][zen mode]]
 - [[#development][Development]]
-  - [[#projectile-1][Projectile]]
+  - [[#projectile][Projectile]]
   - [[#flycheck][Flycheck]]
-  - [[#git-1][Git]]
-    - [[#magit][Magit]]
-    - [[#git-gutter][Git gutter]]
-    - [[#git-commit][Git commit]]
-    - [[#ediff][Ediff]]
+  - [[#git][Git]]
   - [[#vterm][vterm]]
-    - [[#vterm-toggle][vterm toggle]]
-    - [[#multi-term][multi term]]
   - [[#compilation][Compilation]]
   - [[#language-server-protocol][Language server protocol]]
-    - [[#lsp-mode][LSP MODE]]
-      - [[#debug-adapter-support-dap][Debug adapter support (DAP)]]
-    - [[#eglot][EGLOT]]
   - [[#language-support][Language support]]
-    - [[#python][Python]]
-      - [[#lsp-for-python][lsp for python]]
-        - [[#write-the-instructions-for-install-each-lsp-modes][Write the instructions for install each LSP modes]]
-    - [[#elisp-mode][elisp mode]]
-    - [[#javascripttypescript][JavaScript/TypeScript]]
-    - [[#html-and-css][HTML and CSS]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-content][Enable table of content]]
   - [[#define-all-the-variables][Define all the variables]]
   - [[#gtd][GTD]]
-    - [[#multiple--keyword-sets-in-one-file][Multiple  keyword sets in one file]]
-    - [[#workflow-states][Workflow states]]
-    - [[#tags][Tags]]
-    - [[#agendas][Agendas]]
-    - [[#control-time-per-task][Control time per task]]
-    - [[#capture-template-for-task][Capture template for task]]
-    - [[#habit][Habit]]
-    - [[#define-the-agenda-view][Define the agenda view]]
   - [[#configure-babel-languages][Configure Babel languages]]
   - [[#structure-templates][Structure templates]]
   - [[#fonts-and-bullets][Fonts and bullets]]
-    - [[#bullets-with-org-superstar][Bullets with org-superstar]]
-    - [[#increase-the-size-of-various-heading][Increase the size of various heading]]
-    - [[#setting-monospace-fonts-for-required-text][Setting monospace fonts for required text]]
   - [[#org-templates][Org templates]]
   - [[#close-org-mode-configuration][Close org mode configuration]]
   - [[#pomodoro][Pomodoro]]
@@ -155,30 +86,10 @@
   - [[#org-gnuplot][org gnuplot]]
   - [[#org-wild-notifier][org wild notifier]]
   - [[#org-present][Org present]]
-    - [[#keep-it-order][Keep it order]]
-    - [[#increase-font-size][Increase font size]]
-      - [[#define-faces][Define faces]]
-      - [[#setting-faces][Setting faces]]
-    - [[#define-the-hook-of-the-presentation-mode][Define the hook of the presentation mode]]
 - [[#org-roam][Org roam]]
   - [[#installation][Installation]]
   - [[#configure-org-roam-templates][Configure org roam templates]]
-    - [[#configure-org-roam-completion-find-function][Configure org roam completion find function]]
-    - [[#configure-org-roam-dailies-capture-templates][Configure org roam dailies capture templates]]
-    - [[#close-org-roam-package-declaration][Close org roam package declaration]]
-    - [[#some-functions-used-for-customize-org-roam][Some functions used for customize org-roam]]
   - [[#zettelkasten][Zettelkasten]]
-    - [[#1-fleeting-notes][1. Fleeting notes]]
-    - [[#2-literature-notes][2. Literature Notes]]
-      - [[#citar][Citar]]
-      - [[#citar-org-roam][Citar-org-roam]]
-        - [[#add-my-custom-template][Add my custom template]]
-        - [[#set-the-default-configuration-vars][Set the default configuration vars]]
-        - [[#close-citar-org-roam][Close citar-org-roam]]
-      - [[#import-annotations-from-zotero][Import annotations from zotero]]
-      - [[#custom-acronym][Custom acronym]]
-    - [[#3-permanent-notes][3. Permanent Notes]]
-    - [[#4-index-notes][4. Index Notes]]
   - [[#org-roam-ui][Org-roam-ui]]
 
 * Enable literature configuration
@@ -273,22 +184,27 @@ This part aims to setting some special configuration based on the system Emacs i
 #+begin_src emacs-lisp
 (defconst is-termux
   (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-"Boolean variable to determinate if Emacs is runing into termux system.")
+  "Boolean variable to determinate if Emacs is runing into termux system.")
 
 (defconst is-ubuntu
   (string= (system-name) "HP-Z1-G8")
-"Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
+  "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
 
 (defconst is-debian
   (string= (system-name) "debian")
-"Boolean variable to determinate if Emacs is runing on home's debian machine.")
+  "Boolean variable to determinate if Emacs is runing on home's debian machine.")
 
 (defconst is-fedora
   (string= (system-name) "fedora-laptop")
-"Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
+  "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
 
 (setq user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
       user-full-name    (string-trim (shell-command-to-string "git config --global user.name")))
+
+(defconst lem/dotfiles (cond ((or is-debian
+                                  is-fedora) "~/Documents/git/dotfiles/")
+                             (is-termux ".cfg"))
+  "The path where the dotfiles git repo is stored.")
 #+end_src
 
 * Update load path
@@ -517,6 +433,14 @@ No duplicates in history
 ** Sync files
 
 I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
+
+#+begin_src emacs-lisp
+(defvar lem/sync_script_path
+  (let ((
+         file-name (expand-file-name "sync.sh" "~/.local/bin/")))
+    (if (file-exists-p file-name) file-name nil))
+  "The path where the sync file is stored.")
+#+end_src
 
 ** Highlight Matching Braces
 
@@ -876,8 +800,6 @@ Evil mode is a mayor mode that allow to use vim keybindings in emacs
 This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience. [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key. [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
 
 #+begin_src emacs-lisp
-
-;; disable the arrows in insert mode
 (defun rune/dont-arrow-me-bro ()
   (interactive)
   (message "Arrow keys are bad, you know?"))
@@ -1135,7 +1057,7 @@ We can set a sortcut to open the config file from the emacs directory
   "fe" '(:ignore t :which-key "Emacs files")
   "fec" '((lambda ()
             (interactive)
-            (find-file (expand-file-name "config.org" private-emacs-directory)))
+            (find-file (expand-file-name "Emacs.org" lem/dotfiles)))
           :which-key "Emacs Config file")
   "fei" '((lambda ()
             (interactive)
@@ -2091,7 +2013,7 @@ It need to be compiled, so you need to install first some dependencies
   (lsp-enable-indentation t)
   (lsp-semantic-highlighting nil)
   :bind (:map lsp-mode-map
-              ("TAB" . completion-at-point)))
+              ("S-TAB" . completion-at-point)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -2942,7 +2864,6 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
   (interactive)
   ;; Add the project file to the agenda after capture is finished
   (add-hook 'org-capture-after-finalize-hook #'lem/org-roam-project-finalize-hook)
-
   ;; Select a project file to open, creating it if necessary
   (org-roam-node-find
    nil
@@ -2955,6 +2876,7 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
         (org-roam-capture-templates (list (append (car org-roam-capture-templates)
                                                   '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
+
 (defun lem/org-roam-capture-task ()
   (interactive)
   (org-roam-capture- :node (org-roam-node-read

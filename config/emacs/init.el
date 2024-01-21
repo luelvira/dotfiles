@@ -25,22 +25,27 @@
 
 (defconst is-termux
   (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-"Boolean variable to determinate if Emacs is runing into termux system.")
+  "Boolean variable to determinate if Emacs is runing into termux system.")
 
 (defconst is-ubuntu
   (string= (system-name) "HP-Z1-G8")
-"Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
+  "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
 
 (defconst is-debian
   (string= (system-name) "debian")
-"Boolean variable to determinate if Emacs is runing on home's debian machine.")
+  "Boolean variable to determinate if Emacs is runing on home's debian machine.")
 
 (defconst is-fedora
   (string= (system-name) "fedora-laptop")
-"Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
+  "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
 
 (setq user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
       user-full-name    (string-trim (shell-command-to-string "git config --global user.name")))
+
+(defconst lem/dotfiles (cond ((or is-debian
+                                  is-fedora) "~/Documents/git/dotfiles/")
+                             (is-termux ".cfg"))
+  "The path where the dotfiles git repo is stored.")
 
 (add-to-list 'load-path (expand-file-name "lisp" private-emacs-directory))
 (require 'lem_conf)
@@ -172,6 +177,12 @@
               inhibit-startup-screen t           ; Disable start-up screen
               sentence-end-double-space nil      ; Use a single space after dots
               truncate-string-ellipsis "…")
+
+(defvar lem/sync_script_path
+  (let ((
+         file-name (expand-file-name "sync.sh" "~/.local/bin/")))
+    (if (file-exists-p file-name) file-name nil))
+  "The path where the sync file is stored.")
 
 (use-package paren
   :config
@@ -401,7 +412,6 @@
 :config
 (setq undo-tree-auto-save-history nil))
 
-;; disable the arrows in insert mode
 (defun rune/dont-arrow-me-bro ()
   (interactive)
   (message "Arrow keys are bad, you know?"))
@@ -580,7 +590,7 @@ Enable it only for the most braves :;"
   "fe" '(:ignore t :which-key "Emacs files")
   "fec" '((lambda ()
             (interactive)
-            (find-file (expand-file-name "config.org" private-emacs-directory)))
+            (find-file (expand-file-name "Emacs.org" lem/dotfiles)))
           :which-key "Emacs Config file")
   "fei" '((lambda ()
             (interactive)
@@ -1066,7 +1076,7 @@ Enable it only for the most braves :;"
   (lsp-enable-indentation t)
   (lsp-semantic-highlighting nil)
   :bind (:map lsp-mode-map
-              ("TAB" . completion-at-point)))
+              ("S-TAB" . completion-at-point)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -1480,7 +1490,6 @@ Enable it only for the most braves :;"
   (interactive)
   ;; Add the project file to the agenda after capture is finished
   (add-hook 'org-capture-after-finalize-hook #'lem/org-roam-project-finalize-hook)
-
   ;; Select a project file to open, creating it if necessary
   (org-roam-node-find
    nil
@@ -1493,6 +1502,7 @@ Enable it only for the most braves :;"
         (org-roam-capture-templates (list (append (car org-roam-capture-templates)
                                                   '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
+
 (defun lem/org-roam-capture-task ()
   (interactive)
   (org-roam-capture- :node (org-roam-node-read

@@ -3,7 +3,7 @@ vimpluging/
 emacs.d/lisp/
 config/i3/config
 config/polybar/config.ini
-emacs/init.el
+config/emacs/init.el
 emacs/early-init.el
 vim/.vimrc
 .config/i3/config
