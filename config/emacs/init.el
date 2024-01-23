@@ -108,31 +108,9 @@
 ;; Revert buffers when the underlying file has changed
 (global-auto-revert-mode 1)
 
-(use-package dashboard
-  :demand
-  :diminish (dashboard-mode)
-  :init      ;; tweak dashboard config before loading it
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  (setq dashboard-banner-logo-title "Close the world. Open the nExt.")
-  (setq dashboard-set-navigator t)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  ;(setq dashboard-startup-banner 3)
-  (setq dashboard-center-content t)
-  (setq dashboard-items '((recents   . 5)
-                          (agenda    . 5 )
-                          (projects  . 3)))
-  (setq dashboard-set-navigator t)
-  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
-  :config
-  (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-modify-heading-icons '((recents . "file-text")
-                                    (bookmarks . "book"))))
-
-(setq inhibit-startup-screen t
-      inhibit-startup-echo-area-message user-full-name)
+(setq-default inhibit-startup-screen  t
+              inhibit-startup-message t
+              inhibit-startup-echo-area-message user-full-name)
 
 ;; Set encding by default
 (set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
@@ -279,6 +257,11 @@
   :init
   (load-theme 'dracula t))
 
+(use-package fixed-pitch
+  :if (or is-debian
+          is-fedora)
+  :straight (:type git :host github :repo "cstby/fixed-pitch-mode"))
+
 (defvar lem-fixed "FiraCodeNerdFont"
   "Font string for fixed pitch modes")
 (defvar lem-default "Dejavu Sans Mono"
@@ -391,11 +374,11 @@
 
 (use-package neotree
   :config
-  (setq neo-smart-open t
+  (setq neo-smart-open nil
         neo-show-hidden-files t
         inhibit-compacting-font-caches t
         projectile-switch-project-action 'neotree-projectile-action
-        neo-window-width 55
+        neo-window-width 30
         neo-window-fixed-size nil)
   :init
   (setq neo-create-file-auto-open nil
@@ -922,7 +905,12 @@ Enable it only for the most braves :;"
   :straight t
   :mode "\\.mdx?\\'"
   :config
-(setq markdown-command "marked"))
+  (setq markdown-command "marked"))
+
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+         (current-buffer)))
 
 (defun zen-mode--activate ()
   "Function to active a free distraction mode."
@@ -987,13 +975,17 @@ Enable it only for the most braves :;"
   (use-package seq))
 (use-package magit)
 
-(unless is-termux
-  (use-package git-gutter
-    :commands git-gutter:revert-hunk git-gutter:stage-hunk git-gutter:previous-hunk git-gutter:next-hunk
-    :hook ((text-mode . git-gutter-mode)
-           (prog-mode . git-gutter-mode))
-    :config
-    (setq git-gutter:update-interval 0.2)))
+(use-package git-gutter
+  :unless is-termux
+  :commands git-gutter:revert-hunk git-gutter:stage-hunk git-gutter:previous-hunk git-gutter:next-hunk
+  :hook ((text-mode . git-gutter-mode)
+         (prog-mode . git-gutter-mode))
+  :custom
+  (git-gutter:modified-sign "|")
+  (git-gutter:added-sign "+")
+  (git-gutter:delete-sign "-")
+  :config
+  (setq git-gutter:update-interval 0.2))
 
 (use-package git-timemachine
 :hook (evil-normalize-keymaps . git-timemachine-hook)
@@ -1098,7 +1090,8 @@ Enable it only for the most braves :;"
 
 (use-package python-mode
   :init
-  (setq python-indent-guess-indent-offset-verbose nil
+  (setq python-indent-guess-indent-offset t
+        python-indent-guess-indent-offset-verbose nil
         python-shell-interpreter "python3"))
 
 (use-package pyvenv
@@ -1256,26 +1249,31 @@ Enable it only for the most braves :;"
 (add-hook 'org-after-todo-state-change-hook #'lem/start-task)
 
 (setq org-tag-alist
-    '((:startgroup . nil)
-     ;Put mutually exclusive tags here
-     ("@home" . ?H )
-     ("@PHD" . ?P)
-     ("@UI" . ?U)
-     (:endgroup . nil)))
+  '((:startgroup)
+  ;Put mutually exclusive tags here
+  ("@home" . ?H)
+  ("@PHD" . ?P)
+  ("@UI" . ?U)
+  (:endgroup)
+  (:startgroup)
+  ("INACTIVE" . ?I)
+  ("TOC" . ?T)
+  ("HIDDEN" . ?F)
+  (:endgroup)))
 
 (setq org-agenda-files
-        (mapcar (lambda (file)
-                  (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects.org"))
-        org-agenda-window-setup 'current-window
-        org-agenda-span 'week
-        org-agenda-start-with-log-mode t
-        org-agenda-time-in-grid t
-        org-agenda-show-current-time-in-grid t
-;;        org-agenda-start-on-weekday 1
-        org-agenda-skip-deadline-if-done t
-        org-agenda-skip-scheduled-if-done t
-        org-log-into-drawer t
-        org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %20SCHEDULED %20DEADLINE %6CLOCKSUM(Clock) %TAGS")
+      (mapcar (lambda (file)
+                (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects.org"))
+      org-agenda-window-setup 'current-window
+      org-agenda-span 'week
+      org-agenda-start-with-log-mode t
+      org-agenda-time-in-grid t
+      org-agenda-show-current-time-in-grid t
+      ;;        org-agenda-start-on-weekday 1
+      org-agenda-skip-deadline-if-done t
+      org-agenda-skip-scheduled-if-done t
+      org-log-into-drawer t
+      org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %20SCHEDULED %20DEADLINE %6CLOCKSUM(Clock) %TAGS")
 
 (setq org-clock-persist t)
 (org-clock-persistence-insinuate)
@@ -1342,12 +1340,14 @@ Enable it only for the most braves :;"
         org-superstar-leading-bullet ?\s
         org-superstar-leading-fallback ?\s
         org-hide-leading-stars nil
-        org-superstar-todo-bullet-alist
-        '(("TODO" . 9744)
-          ("[ ]"  . 9744)
-          ("DONE" . 9745)
-          ("[X]"  . 9745))))
-;; org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+        org-superstar-special-todo-items nil
+;;        org-superstar-todo-bullet-alist
+;;        '(("TODO" . 9744)
+;;          ("[ ]"  . 9744)
+;;          ("DONE" . 9745)
+;;          ("[X]"  . 9745))
+        org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")
+))
 
 (require 'org-indent)
 (set-face-attribute 'org-block           nil :foreground nil :inherit 'fixed-pitch)
@@ -1528,12 +1528,11 @@ Enable it only for the most braves :;"
                                         ; initialize the functions
 (lem/org-roam-refresh-agenda-list)
 
-(defvar lem/bibliography-files
-  "List of the .bib to get the bibliography."
-  (mapcar
+(defvar lem/bibliography-files (mapcar
    (lambda (file)
-     (expand-file-name file org-roam-directory))
-   '("bibliography.bib" "phd.bib")))
+     (expand-file-name file org-directory))
+   '("bibliography.bib" "phd.bib"))
+  "List of the .bib to get the bibliography.")
 
 (use-package citar
   :after (org-roam)

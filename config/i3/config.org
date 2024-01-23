@@ -15,19 +15,12 @@
   - [[#reloadrestart-i3][Reload/restart i3]]
   - [[#navigate-between-layouts][Navigate between layouts]]
   - [[#move-container-to-another-workspace][Move container to another workspace]]
-    - [[#start-xdg-autostart-desktop-files-using-dex-see-also][Start XDG autostart .desktop files using dex. See also]]
-    - [[#setup-some-programs-to-control-de-wm][Setup some programs to control de WM]]
   - [[#change-between-modes][Change between modes]]
-    - [[#resize-mode][Resize mode]]
   - [[#moving-arround-the-windows][Moving arround the windows]]
   - [[#windows-manager-tools][Windows Manager tools]]
-    -  [[#use-pactl-to-adjust-volume-in-pulseaudio][Use pactl to adjust volume in PulseAudio.]]
-    -  [[#allow-to-make-screenshoots][Allow to make screenshoots]]
-    - [[#lock-screen][Lock screen]]
   - [[#launch-custom-programs][Launch Custom programs]]
 - [[#setup-workspace][Setup workspace]]
   - [[#define-layout][Define layout]]
-    - [[#send-programs-to-custom-ws][Send programs to custom WS]]
   - [[#i3-bar][I3 bar]]
   - [[#polybar][Polybar]]
   - [[#binding-workspace-to-monitors][Binding workspace to monitors]]
@@ -77,7 +70,7 @@ gaps outer 2px
 ** Borders and colors
 
 #+begin_src sh
-default_border pixel 1
+default_border pixel 0
 # class                 border  bground text    indicator child_border
 client.focused          #343746 #5e637f #F8F8F2 #343746
 client.focused_inactive #343746 #343746 #F8F8F2 #21222C   #21222C
@@ -89,9 +82,7 @@ client.background       #FFFFFF
 
 ** Rofi
 
-Rofi is a popup window switcher like dmenu (the default used in d3) . Rofi will
-provide user with a textual list of options where the user could select almost
-one.
+Rofi is a popup window switcher like dmenu (the default used in d3) . Rofi will provide user with a textual list of options where the user could select almost one.
 
 Here are some custom shortcut used with rofi
 
@@ -161,7 +152,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 
 *** Start XDG autostart .desktop files using dex. See also
 
-See: <https://wiki.archlinux.org/index.php/XDG_Autostart>
+See: [[https://wiki.archlinux.org/index.php/XDG_Autostart][XDG_Autostart]]
 
 #+begin_src sh
 exec --no-startup-id dex-autostart --autostart --environment i3
@@ -187,13 +178,13 @@ exec --no-startup-id nm-applet
 
 i3 modes are a way of arrange the windows. There are 5 basic modes:
 
-1.  Tilling mode
-2.  Stack Mode
-3.  Tab mode
-4.  Floatting mode
-5.  Resize
+1. Tilling mode
+2. Stack Mode
+3. Tab mode
+4. Floatting mode
+5. Resize
 
-Use Mouse+\$mod to drag floating windows to their wanted position
+Use Mouse+$mod to drag floating windows to their wanted position
 
 #+begin_src sh
 floating_modifier $mod
@@ -213,27 +204,24 @@ This is some shorcuts to change size of windows. You can also use the mouse
 
 #+begin_src sh
 mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
-
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
-
-        # same bindings, but for the arrow keys
-        bindsym Left resize shrink width 10 px or 10 ppt
-        bindsym Down resize grow height 10 px or 10 ppt
-        bindsym Up resize shrink height 10 px or 10 ppt
-        bindsym Right resize grow width 10 px or 10 ppt
-
-        # back to normal: Enter or Escape or $mod+r
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-        bindsym $mod+r mode "default"
+    # These bindings trigger as soon as you enter the resize mode
+    # Pressing left will shrink the window’s width.
+    # Pressing right will grow the window’s width.
+    # Pressing up will shrink the window’s height.
+    # Pressing down will grow the window’s height.
+    bindsym j resize shrink width 10 px or 10 ppt
+    bindsym k resize grow height 10 px or 10 ppt
+    bindsym l resize shrink height 10 px or 10 ppt
+    bindsym semicolon resize grow width 10 px or 10 ppt
+    # same bindings, but for the arrow keys
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+    # back to normal: Enter or Escape or $mod+r
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+r mode "default"
 }
 bindsym $mod+r mode "resize"
 #+end_src
@@ -248,48 +236,36 @@ bindsym $mod+j focus left
 bindsym $mod+k focus down
 bindsym $mod+l focus up
 bindsym $mod+semicolon focus right
-
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
-
 # move focused window
 bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
-
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
-
 # split in horizontal orientation
 bindsym $mod+h split h
-
 # split in vertical orientation
 bindsym $mod+v split v
-
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
-
 # change container layout (stacked, tabbed, toggle split)
-
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
-
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
-
 # focus the parent container
 bindsym $mod+a focus parent
-
 # focus the child container
 # bindsym $mod+d focus child
-
 # kill focused window
 bindsym $mod+Shift+q kill
 #+end_src
@@ -328,6 +304,7 @@ bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection c
 #+begin_src sh
 bindsym $mod+F9 exec --no-startup-id i3lock
 #+end_src
+
 ** Launch Custom programs
 
 | action                     | shortcuts    |
@@ -350,14 +327,11 @@ bindsym $mod+F1 exec --no-startup-id ~/.local/bin/bluetooth.sh --toggle
 
 * Setup workspace
 
-Workspace are like virtual desktop in other window manager or desktop
-environment. On each workspace you can have any program, also you cand
-bind some program to always be openend in one of it
+Workspace are like virtual desktop in other window manager or desktop environment. On each workspace you can have any program, also you can bind some program to always be openend in one of it
 
 ** Define layout
 
-In this block we define names for the default layout and store it in
-variables to avoid repeating the names in multiple places
+In this block we define names for the default layout and store it in variables to avoid repeating the names in multiple places
 
 #+begin_src sh
 set $ws1    1
@@ -375,19 +349,16 @@ set $ws11  scratchpad
 
 *** Send programs to custom WS
 
-Most of the programs can be referenced by its class and sent to custom
-workspace. In this case, I will set firefox on ws2, spotify on ws3 and
-message service on 4
+Most of the programs can be referenced by its class and sent to custom workspace. In this case, I will set firefox on ws2, spotify on ws3 and message service on 4
 
 #+begin_src sh
-assign [class="firefox"] $ws2
+assign [class="firefox"]         $ws2
 assign [class="TelegramDesktop"] $ws4
-assign [class="slack"] $ws4
-assign [class="obsidian"] $ws5
+assign [class="slack"]           $ws4
+assign [class="obsidian"]        $ws5
 #+end_src
 
-There are also programs that don\'t follow this rule, so it is necessary
-another method
+There are also programs that don't follow this rule, so it is necessary another method
 
 #+begin_src sh
 for_window [class="Spotify"] move to workspace $ws3
@@ -398,8 +369,7 @@ for_window [class="Spotify"] move to workspace $ws3
 :header-args: :tangle no
 :END:
 
-Start i3bar to display a workspace bar (plus the system information
-i3status In the future, it will be replace to i3blocks or polybar
+Start i3bar to display a workspace bar (plus the system information i3status In the future, it will be replace to i3blocks or polybar
 
 #+begin_src sh
 # finds out, if available)
@@ -477,11 +447,9 @@ mode "$mode_system" {
     bindsym h exec --no-startup-id i3exit hibernate, mode "default"
     bindsym r exec --no-startup-id i3exit reboot, mode "default"
     bindsym Shift+s exec --no-startup-id i3exit shutdown, mode "default"
-
     # exit system mode: "Enter" or "Escape"
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
-
 #+end_src
 
