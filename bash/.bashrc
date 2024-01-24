@@ -109,7 +109,7 @@ fi
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/.local/bin/scripts
 export VISUAL=vim
-export EDITOR="$VISUAL"
+export EDITOR=emacs
 
 #(/usr/bin/cat ~/.cache/wal/sequences &)
 #if [ -f ~/.cache/wal/sequences ]; then
