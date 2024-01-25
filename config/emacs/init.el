@@ -108,6 +108,28 @@
 ;; Revert buffers when the underlying file has changed
 (global-auto-revert-mode 1)
 
+(use-package dashboard
+  :demand
+  :diminish (dashboard-mode)
+  :init      ;; tweak dashboard config before loading it
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
+        dashboard-banner-logo-title "Welcome to Emacs!"
+        dashboard-set-navigator t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-startup-banner 'logo
+        dashboard-center-content nil
+        dashboard-items '((recents   . 5)
+                          (agenda    . 5 )
+                          (projects  . 5))
+        dashboard-display-icons-p t ;; display icons on both GUI and terminal
+        dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
+  :config
+  (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book"))))
+
 (setq-default inhibit-startup-screen  t
               inhibit-startup-message t
               inhibit-startup-echo-area-message user-full-name)
@@ -371,20 +393,6 @@
 (use-package rainbow-delimiters
   :init (setq rainbow-delimiters-max-face-count 4)
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
-
-(use-package neotree
-  :config
-  (setq neo-smart-open nil
-        neo-show-hidden-files t
-        inhibit-compacting-font-caches t
-        projectile-switch-project-action 'neotree-projectile-action
-        neo-window-width 30
-        neo-window-fixed-size nil)
-  :init
-  (setq neo-create-file-auto-open nil
-        neo-auto-indent-point nil
-        neo-autorefresh nil
-        neo-mode-line-type 'none))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 ;; By default, Emacs requires you to hit ESC trhee times to escape quit the minibuffer
@@ -657,6 +665,11 @@ Enable it only for the most braves :;"
   "tf" '(auto-fill-mode            :which-key "Toggle autofill mode"))
 
 (lem/leader-key-def
+  "r" '(:ignore t :which-key "sudo edit")
+  "rf" '(sudo-edit-find-file :which-key "Sudo find file")
+  "rF" '(sudo=edit :which-key "sudo edit current file"))
+
+(lem/leader-key-def
    "u" '(universal-argument :which-key "Universal argument"))
 
 (lem/leader-key-def
@@ -666,6 +679,13 @@ Enable it only for the most braves :;"
 
 ;; end of general parents
 )
+
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file)
+  (load-file user-init-file))
+
+(use-package sudo-edit)
 
 (use-package perspective
     :custom
@@ -948,6 +968,9 @@ Enable it only for the most braves :;"
       (zen-mode--activate)
     (zen-mode--disable)))
 
+(use-package auctex)
+(use-package cdlatex)
+
 (use-package projectile
   :init
   (setq projectile-auto-discover nil
@@ -1036,6 +1059,28 @@ Enable it only for the most braves :;"
                (window-height . 0.25)
                (side . bottom)
                (slot . 0)))
+
+(use-package vterm-toggle
+  :after vterm
+  :config
+  ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
+  ;; kills the program as it would in most standard terminal programs.
+  (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                     (let ((buffer (get-buffer buffer-or-name)))
+                       (with-current-buffer buffer
+                         (or (equal major-mode 'vterm-mode)
+                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                  (display-buffer-reuse-window display-buffer-at-bottom)
+                  ;;(display-buffer-reuse-window display-buffer-in-direction)
+                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                  ;;(direction . bottom)
+                  ;;(dedicated . t) ;dedicated is supported in emacs27
+                  (reusable-frames . visible)
+                  (window-height . 0.3))))
 
 (use-package multi-vterm
   :after vterm)
@@ -1395,12 +1440,6 @@ Enable it only for the most braves :;"
   (interactive "nMinutes: ")
   (setq org-pomodoro-length minutes))
 
-;; function to search into the org folder
-(defun lem/org-search ()
-  (interactive)
-  (let ((consult-ripgrep-command "rg --type org --line-buffered --color=always --max-columns=500 --line-number . -e ARG OPTS"))
-  (consult-ripgrep org-directory)))
-
 (use-package org-auto-tangle
   :defer t
   :hook (org-mode . org-auto-tangle-mode)
@@ -1427,8 +1466,13 @@ Enable it only for the most braves :;"
   (evil-org-agenda-set-keys))
 
 (use-package org-ref)
-
 (use-package gnuplot)
+
+;; function to search into the org folder
+(defun lem/org-search ()
+  (interactive)
+  (let ((consult-ripgrep-command "rg --type org --line-buffered --color=always --max-columns=500 --line-number . -e ARG OPTS"))
+  (consult-ripgrep org-directory)))
 
 (use-package org-wild-notifier
   :after org
@@ -1436,6 +1480,84 @@ Enable it only for the most braves :;"
   (alert-default-style 'libnotify)
   (org-wild-notifier-notification-title "Agenda Reminder")
   :config (org-wild-notifier-mode))
+
+;; Load org-faces to make sure we can set appropriate faces
+(require 'org-faces)
+
+(defun lem/define-header-size ()
+  ;; Function in charge of ensure the title fonts has a property size
+  (dolist (face '((org-level-1 . 2.0)
+                  (org-level-2 . 1.8)
+                  (org-level-3 . 1.7)
+                  (org-level-4 . 1.6)
+                  (org-level-5 . 1.5)
+                  (org-level-6 . 1.4)
+                  (org-level-7 . 1.3)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :weight 'medium :height (cdr face)))
+  ;; Make the document title a bit bigger
+  (set-face-attribute 'org-document-title nil :weight 'bold :height 1.3))
+
+(defun lem/revert-size ()
+  ;; Revert font size changes
+  (dolist (face '((org-level-1 . 1.0)
+                  (org-level-2 . 1.0)
+                  (org-level-3 . 1.0)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.0)
+                  (org-level-6 . 1.0)
+                  (org-level-7 . 1.0)
+                  (org-level-8 . 1.0)))
+    (set-face-attribute (car face) nil :weight 'medium :height (cdr face)))
+  ;; Make the document title a bit bigger
+  (set-face-attribute 'org-document-title nil :weight 'regular :height 1.0))
+
+
+;; Make sure certain org faces use the fixed-pitch face when variable-pitch-mode is on
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+
+(defun lem/org-present-start ()
+  (setq-local visual-fill-column-width 110
+              visual-fill-column-center-text t)
+  ;; Set a blank header line string to create blank space at the top
+  (setq header-line-format " ")
+  (lem/define-header-size)
+  (display-line-numbers-mode 0)
+  (visual-fill-column-mode 1)
+  (flyspell-mode 0)
+  (visual-line-mode 1))
+
+(defun lem/org-present-end ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (lem/revert-size)
+  (display-line-numbers-mode 1)
+  (visual-line-mode 1)
+  (visual-fill-column-mode 0)
+  (visual-line-mode 0))
+
+(defun lem/org-present-prepare-slide (buffer-name heading)
+  ;; Show only top-level headlines
+  (org-overview)
+  ;; Unfold the current entry
+  (org-show-entry)
+  ;; Show only direct subheadings of the slide but don't expand them
+  (org-show-children))
+
+(use-package org-present
+  :straight (:type git :host github :repo "luelvira/org-present")
+  :hook ((org-present-mode . lem/org-present-start)
+         (org-present-mode-quit . lem/org-present-end))
+  :config
+  (add-hook 'org-present-after-navigate-functions 'lem/org-present-prepare-slide))
 
 (use-package org-roam
   :config

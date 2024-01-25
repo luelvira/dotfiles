@@ -42,6 +42,8 @@
   - [[#which-key][Which Key]]
   - [[#custom-shortcut-with-general][Custom shortcut with general]]
 - [[#editing-configuration][Editing configuration]]
+  - [[#reload-emacs][Reload emacs]]
+  - [[#sudo-edit][Sudo edit]]
 - [[#work-spaces][Work Spaces]]
 - [[#completion-system][Completion system]]
   - [[#company][Company]]
@@ -60,6 +62,7 @@
   - [[#text-mode][Text mode]]
   - [[#markdown][Markdown]]
   - [[#zen-mode][zen mode]]
+  - [[#latex][Latex]]
 - [[#development][Development]]
   - [[#projectile][Projectile]]
   - [[#flycheck][Flycheck]]
@@ -78,14 +81,14 @@
   - [[#org-templates][Org templates]]
   - [[#close-org-mode-configuration][Close org mode configuration]]
   - [[#pomodoro][Pomodoro]]
-  - [[#search-function][Search function]]
   - [[#org-auto-tangle][Org-auto-tangle]]
   - [[#auto-show-markup-symbols][Auto show markup symbols]]
   - [[#org-evil][org evil]]
-  - [[#org-ref][Org ref]]
-  - [[#org-gnuplot][org gnuplot]]
+  - [[#install-org-ref-and-gnuplot-support][Install org ref and gnuplot support]]
+  - [[#search-function][Search function]]
   - [[#org-wild-notifier][org wild notifier]]
   - [[#org-present][Org present]]
+  - [[#org-present-ii][Org present II]]
 - [[#org-roam][Org roam]]
   - [[#installation][Installation]]
   - [[#configure-org-roam-templates][Configure org roam templates]]
@@ -309,24 +312,23 @@ This command allow to run emacs as server, so all the startup can be done once t
 
 Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package dashboard
   :demand
   :diminish (dashboard-mode)
   :init      ;; tweak dashboard config before loading it
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  (setq dashboard-banner-logo-title "Close the world. Open the nExt.")
-  (setq dashboard-set-navigator t)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  ;(setq dashboard-startup-banner 3)
-  (setq dashboard-center-content t)
-  (setq dashboard-items '((recents   . 5)
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
+        dashboard-banner-logo-title "Welcome to Emacs!"
+        dashboard-set-navigator t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-startup-banner 'logo
+        dashboard-center-content nil
+        dashboard-items '((recents   . 5)
                           (agenda    . 5 )
-                          (projects  . 3)))
-  (setq dashboard-set-navigator t)
-  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
+                          (projects  . 5))
+        dashboard-display-icons-p t ;; display icons on both GUI and terminal
+        dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
   :config
   (dashboard-setup-startup-hook)
   :custom
@@ -759,14 +761,14 @@ Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
 #+end_src
 
-** neotree
+** neotree                                                         :INACTIVE:
 
 Neotree as a file tree viewer.
 
 #+begin_src emacs-lisp
 (use-package neotree
   :config
-  (setq neo-smart-open nil
+  (setq neo-smart-open t
         neo-show-hidden-files t
         inhibit-compacting-font-caches t
         projectile-switch-project-action 'neotree-projectile-action
@@ -774,7 +776,7 @@ Neotree as a file tree viewer.
         neo-window-fixed-size nil)
   :init
   (setq neo-create-file-auto-open nil
-        neo-auto-indent-point nil
+        neo-auto-indent-point t
         neo-autorefresh nil
         neo-mode-line-type 'none))
 #+end_src
@@ -1192,6 +1194,15 @@ We can set a sortcut to open the config file from the emacs directory
   "tf" '(auto-fill-mode            :which-key "Toggle autofill mode"))
 #+end_src
 
+*** root privileges.
+
+#+begin_src emacs-lisp
+(lem/leader-key-def
+  "r" '(:ignore t :which-key "sudo edit")
+  "rf" '(sudo-edit-find-file :which-key "Sudo find file")
+  "rF" '(sudo=edit :which-key "sudo edit current file"))
+#+end_src
+
 *** Rebind C-u
 
 Emacs by default use C-u for the universal-argument command, so if I want to keep the default behavior of vi, I need to rebind it.
@@ -1217,6 +1228,29 @@ Emacs by default use C-u for the universal-argument command, so if I want to kee
 #+end_src
 
 * Editing configuration
+
+** Reload emacs
+
+#+begin_src emacs-lisp
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file)
+  (load-file user-init-file))
+#+end_src
+
+** Sudo edit
+
+sudo-edit gives the ability to open files with sudo privileges.
+
+| COMMAND             | DESCRIPTION                     | KEYBINDING |
+|---------------------+---------------------------------+------------|
+| sudo-edit-find-file | Find file and open as sudo user | SPC r f    |
+| sudo-edit           | Open the current file as sudo   | SPC r F    |
+
+#+begin_src emacs-lisp
+(use-package sudo-edit)
+#+end_src
+
 
 * Work Spaces
 
@@ -1815,6 +1849,13 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
     (zen-mode--disable)))
 #+end_src
 
+
+** Latex
+
+#+begin_src emacs-lisp
+(use-package auctex)
+(use-package cdlatex)
+#+end_src
 * Development
 ** Projectile
 
@@ -1955,10 +1996,7 @@ It need to be compiled, so you need to install first some dependencies
                (slot . 0)))
 #+end_src
 
-*** vterm toggle                                                   :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
+*** vterm toggle
 
 #+begin_src emacs-lisp
 (use-package vterm-toggle
@@ -2565,19 +2603,6 @@ In this subsection, I will add some capture to the capture list, that are not re
 
 #+end_src
 
-** Search function
-
-This functions allows to search across the org roam note in any directory. To
-call them, you should use the ~SPC-o-s~ shortcuts
-
-#+begin_src emacs-lisp
-  ;; function to search into the org folder
-  (defun lem/org-search ()
-    (interactive)
-    (let ((consult-ripgrep-command "rg --type org --line-buffered --color=always --max-columns=500 --line-number . -e ARG OPTS"))
-    (consult-ripgrep org-directory)))
-#+end_src
-
 ** Org-auto-tangle
 Org  auto-tangle enable tangle the content of a document each time, you save the
 org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
@@ -2619,22 +2644,32 @@ This package show the markup symbols when the cursors is between the symbols
   (evil-org-agenda-set-keys))
 #+end_src
 
-** Org ref
-
-#+begin_src emacs-lisp
-(use-package org-ref)
-#+end_src
-
-** org gnuplot
+** Install org ref and gnuplot support
 
 gnuplot is a declarative language that allows you to print graphics in a easy way.
 
 #+begin_src emacs-lisp
+(use-package org-ref)
 (use-package gnuplot)
 #+end_src
 
+** Search function
+
+This functions allows to search across the org roam note in any directory. To
+call them, you should use the ~SPC-o-s~ shortcuts
+
+#+begin_src emacs-lisp
+  ;; function to search into the org folder
+  (defun lem/org-search ()
+    (interactive)
+    (let ((consult-ripgrep-command "rg --type org --line-buffered --color=always --max-columns=500 --line-number . -e ARG OPTS"))
+    (consult-ripgrep org-directory)))
+#+end_src
+
 ** org wild notifier
+
 [[https://github.com/akhramov/org-wild-notifier.el][org wild notifier]] displays notifications based on the org agenda items
+
 #+begin_src emacs-lisp
 (use-package org-wild-notifier
   :after org
@@ -2795,6 +2830,88 @@ Now register the hooks and install the package (if it already is not installed)
     :hook ((org-present-mode . lem/org-present-start)
            (org-present-mode-quit . lem/org-present-end)
            (org-present-after-navigate . lem/org-present-prepare-slide)))
+#+end_src
+
+** Org present II
+
+#+begin_src emacs-lisp
+;; Load org-faces to make sure we can set appropriate faces
+(require 'org-faces)
+
+(defun lem/define-header-size ()
+  ;; Function in charge of ensure the title fonts has a property size
+  (dolist (face '((org-level-1 . 2.0)
+                  (org-level-2 . 1.8)
+                  (org-level-3 . 1.7)
+                  (org-level-4 . 1.6)
+                  (org-level-5 . 1.5)
+                  (org-level-6 . 1.4)
+                  (org-level-7 . 1.3)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :weight 'medium :height (cdr face)))
+  ;; Make the document title a bit bigger
+  (set-face-attribute 'org-document-title nil :weight 'bold :height 1.3))
+
+(defun lem/revert-size ()
+  ;; Revert font size changes
+  (dolist (face '((org-level-1 . 1.0)
+                  (org-level-2 . 1.0)
+                  (org-level-3 . 1.0)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.0)
+                  (org-level-6 . 1.0)
+                  (org-level-7 . 1.0)
+                  (org-level-8 . 1.0)))
+    (set-face-attribute (car face) nil :weight 'medium :height (cdr face)))
+  ;; Make the document title a bit bigger
+  (set-face-attribute 'org-document-title nil :weight 'regular :height 1.0))
+
+
+;; Make sure certain org faces use the fixed-pitch face when variable-pitch-mode is on
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+
+(defun lem/org-present-start ()
+  (setq-local visual-fill-column-width 110
+              visual-fill-column-center-text t)
+  ;; Set a blank header line string to create blank space at the top
+  (setq header-line-format " ")
+  (lem/define-header-size)
+  (display-line-numbers-mode 0)
+  (visual-fill-column-mode 1)
+  (flyspell-mode 0)
+  (visual-line-mode 1))
+
+(defun lem/org-present-end ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (lem/revert-size)
+  (display-line-numbers-mode 1)
+  (visual-line-mode 1)
+  (visual-fill-column-mode 0)
+  (visual-line-mode 0))
+
+(defun lem/org-present-prepare-slide (buffer-name heading)
+  ;; Show only top-level headlines
+  (org-overview)
+  ;; Unfold the current entry
+  (org-show-entry)
+  ;; Show only direct subheadings of the slide but don't expand them
+  (org-show-children))
+
+(use-package org-present
+  :straight (:type git :host github :repo "luelvira/org-present")
+  :hook ((org-present-mode . lem/org-present-start)
+         (org-present-mode-quit . lem/org-present-end))
+  :config
+  (add-hook 'org-present-after-navigate-functions 'lem/org-present-prepare-slide))
 #+end_src
 
 * Org roam
