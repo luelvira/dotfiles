@@ -633,7 +633,7 @@ Enable it only for the most braves :;"
   "oCi" '(org-clock-in                                        :which-key "Clock in in the current task")
   "oCI" '(org-clock-in-last                                   :which-key "Clock-in the last task")
   "oCo" '(org-clock-out                                       :which-key "Clock-out current clock")
-  "on"  '((lambda () (interactive) (find-file org-directory)) :which-key "Notes")
+  "od"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
   "op"  '(:ignore t                                           :which-key "Pomodoro")
   "ops" '(org-pomodoro                                        :whick-key "Start org pomodoro")
   "opt" '(set-pomodoro-timer                                  :which-key "Set pomodoro timer")
@@ -1482,8 +1482,6 @@ Enable it only for the most braves :;"
   :config (org-wild-notifier-mode))
 
 ;; Load org-faces to make sure we can set appropriate faces
-(require 'org-faces)
-
 (defun lem/define-header-size ()
   ;; Function in charge of ensure the title fonts has a property size
   (dolist (face '((org-level-1 . 2.0)
