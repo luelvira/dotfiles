@@ -106,10 +106,10 @@ if [ -f ~/.bash_functions ]; then
 	. ~/.bash_functions
 	 #set_bash_prompt
 fi
-export PATH=$PATH:~/.local/bin
-export PATH=$PATH:~/.local/bin/scripts
-export VISUAL=vim
-export EDITOR=emacs
+#export PATH=$PATH:~/.local/bin
+#export PATH=$PATH:~/.local/bin/scripts
+#export VISUAL=vim
+#export EDITOR=vim
 
 #(/usr/bin/cat ~/.cache/wal/sequences &)
 #if [ -f ~/.cache/wal/sequences ]; then
@@ -125,4 +125,13 @@ eval "$(pyenv virtualenv-init -)"
 
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init - bash)"
+
+
+# Automatically added by the Guix install script.
+if [ -n "$GUIX_ENVIRONMENT" ]; then
+    if [[ $PS1 =~ (.*)"\\$" ]]; then
+        PS1="${BASH_REMATCH[1]} [env]\\\$ "
+    fi
+    export GUIX_LOCPATH="$HOME/.guix-profile/lib/local"
+fi
 

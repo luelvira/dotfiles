@@ -18,8 +18,9 @@
 
 ;;; Commentary:
 
-;; This file has been generated from config.org file. DO NOT EDIT.
+;; This file has been generated from Emacs.org file. DO NOT EDIT.
 ;; Sources are available from https://github.com/luelvira/dotfiles/
+;; Last generated on Fri 02 Feb 2024 03:13:04 PM CET
 
 ;;; Code:
 
@@ -258,35 +259,32 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
   ;; Sets the default theme to load!!
-  (load-theme 'doom-palenight t))
+  (load-theme (cond (is-debian 'doom-dracula)
+                    (is-fedora 'doom-palennight)
+                    (is-ubuntu 'modus-vivendi)) t))
 
-(use-package nord-theme
-  :disabled
-  :straight (nord-theme
-             :type git
-             :host github
-             :local-repo "northeme"
-             :repo "nordtheme/emacs")
-  :init
-  (load-theme 'nord t))
+  (use-package nord-theme
+    :disabled
+    :straight (nord-theme
+               :type git
+               :host github
+               :local-repo "northeme"
+               :repo "nordtheme/emacs")
+    :init
+    (load-theme 'nord t))
 
-(use-package dracula-theme
-  :disabled
-  :straight (draculta-theme
-             :type git
-             :host github
-             :repo "dracula/emacs")
-  :init
-  (load-theme 'dracula t))
-
-(use-package fixed-pitch
-  :if (or is-debian
-          is-fedora)
-  :straight (:type git :host github :repo "cstby/fixed-pitch-mode"))
+  (use-package dracula-theme
+    :disabled
+    :straight (draculta-theme
+               :type git
+               :host github
+               :repo "dracula/emacs")
+    :init
+    (load-theme 'dracula t))
 
 (defvar lem-fixed "FiraCodeNerdFont"
   "Font string for fixed pitch modes")
-(defvar lem-default "Dejavu Sans Mono"
+(defvar lem-default "FiraCodeNerdFont"
   "Font string for UI fonts")
 (defvar lem-variable "Iosevka Aile"
   "Font string for variable pitch texts")
@@ -354,9 +352,10 @@
 (use-package diminish)
 
 (use-package minions
-  :hook (doom-modeline-mode . minions-mode))
+  :hook ((doom-modeline-mode mood-line-mode) . minions-mode))
 
 (use-package doom-modeline
+  :disabled
   :hook (after-init . doom-modeline-mode)
   :init
   (setq projectile-dynamic-mode-line nil)
@@ -373,6 +372,11 @@
         doom-modeline-icons (display-graphic-p)
         doom-modeline-buffer-encoding 'nondefault
         doom-modeline-default-eol-type 0))
+
+(use-package mood-line
+  :config
+  (setq mood-line-glyph-alist mood-line-glyphs-fira-code)
+  (mood-line-mode))
 
 (use-package anzu)
 
@@ -424,6 +428,16 @@
         evil-respect-visual-line-mode t)
   :config
   (evil-mode 1)
+  ;; Set Emacs state modes
+  (dolist (mode '(custom-mode
+                  eshell-mode
+                  git-rebase-mode
+                  erc-mode
+                  circe-server-mode
+                  circe-chat-mode
+                  circe-query-mode
+                  term-mode))
+    (add-to-list 'evil-emacs-state-modes mode))
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
   (evil-set-initial-state 'messages-buffer-mode 'normal)
@@ -623,7 +637,7 @@ Enable it only for the most braves :;"
   "ol"  '(:ignore t                                           :which-key "Link")
   "oli" '(org-insert-link                                     :which-key "insert link")
   "ols" '(org-store-link                                      :which-key "store link")
-  "on"  '(org-toggle-narrow-to-subtree                        :which-key "toggle narrow")
+  "oN"  '(org-toggle-narrow-to-subtree                        :which-key "toggle narrow")
   "os"  '(lem/org-search                                      :which-key "search notes")
   "oa"  '(org-agenda                                          :which-key "Status")
   "oc"  '(org-capture t                                       :which-key "Capture")
@@ -633,7 +647,7 @@ Enable it only for the most braves :;"
   "oCi" '(org-clock-in                                        :which-key "Clock in in the current task")
   "oCI" '(org-clock-in-last                                   :which-key "Clock-in the last task")
   "oCo" '(org-clock-out                                       :which-key "Clock-out current clock")
-  "od"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
+  "on"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
   "op"  '(:ignore t                                           :which-key "Pomodoro")
   "ops" '(org-pomodoro                                        :whick-key "Start org pomodoro")
   "opt" '(set-pomodoro-timer                                  :which-key "Set pomodoro timer")
@@ -1096,42 +1110,21 @@ Enable it only for the most braves :;"
       (remove-hook 'after-save-hook #'recompile t)
     (add-hook 'after-save-hook #'recompile nil t)))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
+(use-package eglot
   :custom
-;; https://gitlab.com/shilling.jake/emacsd/-/blob/master/config.org
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-log-io nil)
-  (lsp-print-performance nil)
-  (lsp-keep-workspace-alive nil)
-  (lsp-enable-snippet t)
-  (lsp-auto-guess-root t)
-  (lsp-restart 'iteractive)
-  (lsp-auto-configure nil)
-  (lsp-enable-completion-at-point t)
-  (lsp-diagnostics-provider :flycheck)
-  (lsp-enable-indentation t)
-  (lsp-semantic-highlighting nil)
-  :bind (:map lsp-mode-map
-              ("S-TAB" . completion-at-point)))
-
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
+  (eglot-autoshutdown t)
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider))
   :config
-  (setq lsp-ui-sideline-enable t
-        lsp-ui-sideline-show-hover nil
-        lsp-ui-doc-position 'bottom)
-  (lsp-ui-doc-show))
+  (setq eglot-autoshutdown t
+        eglot-confirm-server-initiated-edits nil)
+  :hook((python-mode . eglot-ensure)
+        (web-mode . eglot-ensure)
+        (typescript-mode . eglot-ensure)
+        (js2-mode . eglot-ensure))
+  :commands (eglot eglot-ensure))
 
-(use-package dap-mode
-  :after lsp-mode
-  :custom
-  (lsp-enable-dap-auto-configure nil)
-  :config
-  (dap-ui-mode 1)
-  (dap-tooltip-mode 1)
-  (require 'dap-node)
-  (dap-node-setup))
+(use-package consult-eglot
+  :defer t)
 
 (use-package python-mode
   :init
@@ -1483,7 +1476,7 @@ Enable it only for the most braves :;"
 
 ;; Load org-faces to make sure we can set appropriate faces
 (defun lem/define-header-size ()
-  ;; Function in charge of ensure the title fonts has a property size
+;; Function in charge of ensure the title fonts has a property size
   (dolist (face '((org-level-1 . 2.0)
                   (org-level-2 . 1.8)
                   (org-level-3 . 1.7)
