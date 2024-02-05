@@ -24,6 +24,7 @@
   - [[#highlight-matching-braces][Highlight Matching Braces]]
   - [[#enable-line-numbers][Enable line numbers]]
   - [[#highlight-current-line][Highlight current line]]
+  - [[#dont-truncate-the-lines][Don't truncate the lines]]
 - [[#theming][Theming]]
   - [[#reduce-distractions][Reduce distractions]]
   - [[#maximize-windows-by-default-and-setup-transparency][Maximize windows by default and setup transparency]]
@@ -117,7 +118,7 @@ Lexical binding is a mode that allows to use special features of the languages. 
 
 This will generate a header at the top of the tangled file to indicate it is generated and is not meant to be modified directly.
 
-#+begin_src emacs-lisp :prologue (format-time-string ";; Last generated on %c")
+#+begin_src emacs-lisp
 ;;; init.el --- config file -*- lexical-binding: t -*-
 
 ;; This file is not part of GNU Emacs
@@ -318,7 +319,7 @@ This command allow to run emacs as server, so all the startup can be done once t
 (global-auto-revert-mode 1)
 #+end_src
 
-* Dashboard
+* Dashboard                                                        :INACTIVE:
 
 Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
 
@@ -444,6 +445,12 @@ No duplicates in history
               truncate-string-ellipsis "…")
 #+end_src
 
+*** Set up tramp
+
+#+begin_src emacs-lisp
+(setq tramp-default-method "ssh")
+#+end_src
+
 ** Sync files
 
 I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
@@ -488,6 +495,11 @@ I have a script which try to keep sync with a repository on codeberg. This repo 
     :straight nil
     :hook ((prog-mode . hl-line-mode)
            (conf-mode . hl-line-mode)))
+#+end_src
+
+** Don't truncate the lines
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook (lambda () (setq truncate-lines t)))
 #+end_src
 
 * Theming
@@ -1263,7 +1275,6 @@ sudo-edit gives the ability to open files with sudo privileges.
 (use-package sudo-edit)
 #+end_src
 
-
 * Work Spaces
 
 #+begin_src emacs-lisp
@@ -1831,14 +1842,14 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
         visual-fill-column-center-text t
         visual-fill-column-fringes-outside-margins t
         display-line-numbers nil)
-  (auto-fill-mode 1)
+  (auto-fill-mode -1)
   (git-gutter-mode -1)
   (visual-fill-column-mode 1))
 
 (defun zen-mode--disable ()
   "Dsable the zen mode and restore the variables to the previous state."
   (visual-fill-column-mode -1)
-  (auto-fill-mode -1)
+  (auto-fill-mode 1)
   (kill-local-variable 'visual-fill-column-width)
   (kill-local-variable 'visual-fill-column-center-text)
   (kill-local-variable 'visual-fill-column-fringes-outside-margins)

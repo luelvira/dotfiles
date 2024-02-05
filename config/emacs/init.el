@@ -18,9 +18,8 @@
 
 ;;; Commentary:
 
-;; This file has been generated from Emacs.org file. DO NOT EDIT.
+;; This file has been generated automatically. DO NOT EDIT.
 ;; Sources are available from https://github.com/luelvira/dotfiles/
-;; Last generated on Fri 02 Feb 2024 03:13:04 PM CET
 
 ;;; Code:
 
@@ -179,6 +178,8 @@
               sentence-end-double-space nil      ; Use a single space after dots
               truncate-string-ellipsis "…")
 
+(setq tramp-default-method "ssh")
+
 (defvar lem/sync_script_path
   (let ((
          file-name (expand-file-name "sync.sh" "~/.local/bin/")))
@@ -206,6 +207,8 @@
   :straight nil
   :hook ((prog-mode . hl-line-mode)
          (conf-mode . hl-line-mode)))
+
+(add-hook 'prog-mode-hook (lambda () (setq truncate-lines t)))
 
 (unless is-termux
   (scroll-bar-mode  -1) ; Disable visible scrollbar
@@ -953,14 +956,14 @@ Enable it only for the most braves :;"
         visual-fill-column-center-text t
         visual-fill-column-fringes-outside-margins t
         display-line-numbers nil)
-  (auto-fill-mode 1)
+  (auto-fill-mode -1)
   (git-gutter-mode -1)
   (visual-fill-column-mode 1))
 
 (defun zen-mode--disable ()
   "Dsable the zen mode and restore the variables to the previous state."
   (visual-fill-column-mode -1)
-  (auto-fill-mode -1)
+  (auto-fill-mode 1)
   (kill-local-variable 'visual-fill-column-width)
   (kill-local-variable 'visual-fill-column-center-text)
   (kill-local-variable 'visual-fill-column-fringes-outside-margins)
