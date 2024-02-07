@@ -20,7 +20,7 @@
 
 ;; This file has been generated from Emacs.org file. DO NOT EDIT.
 ;; Sources are available from https://github.com/luelvira/dotfiles/
-;; Last generated on Fri 02 Feb 2024 03:13:04 PM CET
+;; Last generated on Wed 07 Feb 2024 11:39:04 AM CET
 
 ;;; Code:
 
@@ -260,7 +260,7 @@
   (doom-themes-org-config)
   ;; Sets the default theme to load!!
   (load-theme (cond (is-debian 'doom-dracula)
-                    (is-fedora 'doom-palennight)
+                    (is-fedora 'doom-palenight)
                     (is-ubuntu 'modus-vivendi)) t))
 
   (use-package nord-theme

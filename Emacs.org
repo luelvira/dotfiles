@@ -582,7 +582,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
   (doom-themes-org-config)
   ;; Sets the default theme to load!!
   (load-theme (cond (is-debian 'doom-dracula)
-                    (is-fedora 'doom-palennight)
+                    (is-fedora 'doom-palenight)
                     (is-ubuntu 'modus-vivendi)) t))
 
   (use-package nord-theme
