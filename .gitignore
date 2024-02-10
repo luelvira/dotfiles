@@ -4,7 +4,7 @@ emacs.d/lisp/
 config/i3/config
 config/polybar/config.ini
 config/emacs/init.el
-emacs/early-init.el
+config/emacs/early-init.el
 vim/.vimrc
 .config/i3/config
 _*

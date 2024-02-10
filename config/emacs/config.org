@@ -1,11 +1,12 @@
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "config/emacs/init.el"))) :noweb tangle
+:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "init.el"))) :noweb tangle
 :END:
 #+TITLE: My Emacs Configuration
 #+AUTHOR: Lucas Elvira Martín
 #+DATE: [2023-12-07 Thu]
 #+STARTUP: noptag
 #+TAGS: INACTIVE(i) TOC(t)
+#+auto_tangle: t
 
 * TOC                                                                   :TOC:
 - [[#enable-literature-configuration][Enable literature configuration]]
@@ -108,7 +109,7 @@ Emacs allows to export src blocks to a ~.el~ file and load them. This is a great
 (expand-file-name
 "config.org"
   user-emacs-directory))
- #+end_example
+#+end_example
 
 * Lexical binding
 :PROPERTIES:
@@ -139,27 +140,15 @@ This will generate a header at the top of the tangled file to indicate it is gen
 
 ;;; Commentary:
 
-;; This file has been generated from <<metadata()>> file. DO NOT EDIT.
+;; This file has been automatically generated. DO NOT EDIT.
 ;; Sources are available from https://github.com/luelvira/dotfiles/
-;; <<lastexecution()>>
 
 ;;; Code:
 #+end_src
 
-
-#+NAME: metadata
-#+begin_src emacs-lisp :tangle no :noweb-ref metadata
-(file-name-nondirectory (buffer-file-name))
-#+end_src
-
-#+NAME: lastexecution
-#+begin_src emacs-lisp :tangle no :noweb-ref lastexecution
-(format-time-string "Last generated on %c")
-#+end_src
-
 * Early init
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle config/emacs/early-init.el
+:HEADER-ARGS:emacs-lisp: :tangle early-init.el
 :VISIBILITY: folded
 :END:
 
@@ -730,7 +719,6 @@ Above there is the config for the doom-modeline
 
 #+begin_src emacs-lisp
 (use-package doom-modeline
-  :disabled
   :hook (after-init . doom-modeline-mode)
   :init
   (setq projectile-dynamic-mode-line nil)
@@ -754,6 +742,7 @@ Above there is the config for the doom-modeline
 
 #+begin_src emacs-lisp
 (use-package mood-line
+  :disabled
   :config
   (setq mood-line-glyph-alist mood-line-glyphs-fira-code)
   (mood-line-mode))
@@ -2391,6 +2380,7 @@ to determinate its context.
 (setq org-tag-alist
   '((:startgroup)
   ;Put mutually exclusive tags here
+  ("@college" . ?C)
   ("@home" . ?H)
   ("@PHD" . ?P)
   ("@UI" . ?U)
@@ -2610,21 +2600,35 @@ In this subsection, I will add some capture to the capture list, that are not re
 
 ** Pomodoro
 #+begin_src emacs-lisp
+(defun set-pomodoro-timer (minutes rest)
+  (interactive "nMinutes: \nnRest time: ")
+  (setq org-pomodoro-length minutes
+        org-pomodoro-short-break-length rest))
+
+(defun lem/set-short-pomodoro ()
+  "This function set the default values from the pomodoro method"
+  (interactive)
+  (setq org-pomodoro-length 25
+        org-pomodoro-long-break-frequency 4
+        org-pomodoro-short-break-length 5
+        org-pomodoro-long-break-length 10))
+
+(defun lem/set-custom-timmers-pomodo ()
+  "Function to customize the timmers for the pomodoro clock"
+  (interactive)
+  (setq org-pomodoro-length 90
+        org-pomodoro-long-break-frequency 2
+        org-pomodoro-short-break-length 10
+        org-pomodoro-long-break-length 20))
+
 (use-package org-pomodoro
   :config
   (setq
    alert-user-configuration
    (quote ((((:category . "org-pomodoro")) libnotify nil)))
-   org-pomodoro-length 90
-   org-pomodoro-short-break-length 10
-   org-pomodoro-long-break-length 20
    org-pomodoro-clock-break t
-   org-pomodoro-manual-break t))
-
-(defun set-pomodoro-timer (minutes)
-  (interactive "nMinutes: ")
-  (setq org-pomodoro-length minutes))
-
+   org-pomodoro-manual-break t)
+  (lem/set-custom-timmers-pomodo))
 #+end_src
 
 ** Org-auto-tangle
@@ -2632,17 +2636,18 @@ Org  auto-tangle enable tangle the content of a document each time, you save the
 org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
 
 #+begin_src emacs-lisp
-    (use-package org-auto-tangle
-      :defer t
-      :hook (org-mode . org-auto-tangle-mode)
-      :config
-      (setq org-auto-tangle-default nil))
-    (defun lem/insert-auto-tangle-tag ()
-      "Insert auto-tangle tag in literature config."
-      (interactive)
-      (evil-org-open-below 1)
-      (insert "#+auto_tangle: t ")
-      (evil-force-normal-state))
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default nil))
+
+(defun lem/insert-auto-tangle-tag ()
+  "Insert auto-tangle tag in literature config."
+  (interactive)
+  (evil-org-open-below 1)
+  (insert "#+auto_tangle: t ")
+  (evil-force-normal-state))
 #+end_src
 
 ** Auto show markup symbols
@@ -2953,9 +2958,7 @@ The instalation process use the melpa or melpa stable package manager from emacs
         org-roam-list-files-commands '(fd fdfind rg find))
 #+end_src
 
-
 ** Configure org roam templates
-
 
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
@@ -3043,7 +3046,7 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
                             nil
                             (lem/org-roam-filter-by-tag "Project"))
                      :templates '(
-                                  ("p" "project" plain "** TODO %?"
+                                  ("p" "project" plain "** TODO %?\nAdded at: %U"
                                    :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
                                                           "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
                                                           ("Tasks")))
