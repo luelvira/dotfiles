@@ -1,11 +1,12 @@
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "config/emacs/init.el"))) :noweb tangle
+:HEADER-ARGS:emacs-lisp: :tangle (let ((org-use-tag-inheritance t)) (if (member "INACTIVE" (org-get-tags))  "no" "init.el"))) :noweb tangle
 :END:
 #+TITLE: My Emacs Configuration
 #+AUTHOR: Lucas Elvira Martín
 #+DATE: [2023-12-07 Thu]
 #+STARTUP: noptag
 #+TAGS: INACTIVE(i) TOC(t)
+#+auto_tangle: t
 
 * TOC                                                                   :TOC:
 - [[#enable-literature-configuration][Enable literature configuration]]
@@ -24,6 +25,7 @@
   - [[#highlight-matching-braces][Highlight Matching Braces]]
   - [[#enable-line-numbers][Enable line numbers]]
   - [[#highlight-current-line][Highlight current line]]
+  - [[#dont-truncate-the-lines][Don't truncate the lines]]
 - [[#theming][Theming]]
   - [[#reduce-distractions][Reduce distractions]]
   - [[#maximize-windows-by-default-and-setup-transparency][Maximize windows by default and setup transparency]]
@@ -107,7 +109,7 @@ Emacs allows to export src blocks to a ~.el~ file and load them. This is a great
 (expand-file-name
 "config.org"
   user-emacs-directory))
- #+end_example
+#+end_example
 
 * Lexical binding
 :PROPERTIES:
@@ -117,7 +119,7 @@ Lexical binding is a mode that allows to use special features of the languages. 
 
 This will generate a header at the top of the tangled file to indicate it is generated and is not meant to be modified directly.
 
-#+begin_src emacs-lisp :prologue (format-time-string ";; Last generated on %c")
+#+begin_src emacs-lisp
 ;;; init.el --- config file -*- lexical-binding: t -*-
 
 ;; This file is not part of GNU Emacs
@@ -138,27 +140,15 @@ This will generate a header at the top of the tangled file to indicate it is gen
 
 ;;; Commentary:
 
-;; This file has been generated from <<metadata()>> file. DO NOT EDIT.
+;; This file has been automatically generated. DO NOT EDIT.
 ;; Sources are available from https://github.com/luelvira/dotfiles/
-;; <<lastexecution()>>
 
 ;;; Code:
 #+end_src
 
-
-#+NAME: metadata
-#+begin_src emacs-lisp :tangle no :noweb-ref metadata
-(file-name-nondirectory (buffer-file-name))
-#+end_src
-
-#+NAME: lastexecution
-#+begin_src emacs-lisp :tangle no :noweb-ref lastexecution
-(format-time-string "Last generated on %c")
-#+end_src
-
 * Early init
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle config/emacs/early-init.el
+:HEADER-ARGS:emacs-lisp: :tangle early-init.el
 :VISIBILITY: folded
 :END:
 
@@ -318,7 +308,7 @@ This command allow to run emacs as server, so all the startup can be done once t
 (global-auto-revert-mode 1)
 #+end_src
 
-* Dashboard
+* Dashboard                                                        :INACTIVE:
 
 Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
 
@@ -444,6 +434,12 @@ No duplicates in history
               truncate-string-ellipsis "…")
 #+end_src
 
+*** Set up tramp
+
+#+begin_src emacs-lisp
+(setq tramp-default-method "ssh")
+#+end_src
+
 ** Sync files
 
 I have a script which try to keep sync with a repository on codeberg. This repo contains the org files only, and it is named sync.
@@ -488,6 +484,11 @@ I have a script which try to keep sync with a repository on codeberg. This repo 
     :straight nil
     :hook ((prog-mode . hl-line-mode)
            (conf-mode . hl-line-mode)))
+#+end_src
+
+** Don't truncate the lines
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook (lambda () (setq truncate-lines t)))
 #+end_src
 
 * Theming
@@ -718,7 +719,6 @@ Above there is the config for the doom-modeline
 
 #+begin_src emacs-lisp
 (use-package doom-modeline
-  :disabled
   :hook (after-init . doom-modeline-mode)
   :init
   (setq projectile-dynamic-mode-line nil)
@@ -742,6 +742,7 @@ Above there is the config for the doom-modeline
 
 #+begin_src emacs-lisp
 (use-package mood-line
+  :disabled
   :config
   (setq mood-line-glyph-alist mood-line-glyphs-fira-code)
   (mood-line-mode))
@@ -1262,7 +1263,6 @@ sudo-edit gives the ability to open files with sudo privileges.
 #+begin_src emacs-lisp
 (use-package sudo-edit)
 #+end_src
-
 
 * Work Spaces
 
@@ -1831,14 +1831,14 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
         visual-fill-column-center-text t
         visual-fill-column-fringes-outside-margins t
         display-line-numbers nil)
-  (auto-fill-mode 1)
+  (auto-fill-mode -1)
   (git-gutter-mode -1)
   (visual-fill-column-mode 1))
 
 (defun zen-mode--disable ()
   "Dsable the zen mode and restore the variables to the previous state."
   (visual-fill-column-mode -1)
-  (auto-fill-mode -1)
+  (auto-fill-mode 1)
   (kill-local-variable 'visual-fill-column-width)
   (kill-local-variable 'visual-fill-column-center-text)
   (kill-local-variable 'visual-fill-column-fringes-outside-margins)
@@ -2380,6 +2380,7 @@ to determinate its context.
 (setq org-tag-alist
   '((:startgroup)
   ;Put mutually exclusive tags here
+  ("@college" . ?C)
   ("@home" . ?H)
   ("@PHD" . ?P)
   ("@UI" . ?U)
@@ -2599,21 +2600,35 @@ In this subsection, I will add some capture to the capture list, that are not re
 
 ** Pomodoro
 #+begin_src emacs-lisp
+(defun set-pomodoro-timer (minutes rest)
+  (interactive "nMinutes: \nnRest time: ")
+  (setq org-pomodoro-length minutes
+        org-pomodoro-short-break-length rest))
+
+(defun lem/set-short-pomodoro ()
+  "This function set the default values from the pomodoro method"
+  (interactive)
+  (setq org-pomodoro-length 25
+        org-pomodoro-long-break-frequency 4
+        org-pomodoro-short-break-length 5
+        org-pomodoro-long-break-length 10))
+
+(defun lem/set-custom-timmers-pomodo ()
+  "Function to customize the timmers for the pomodoro clock"
+  (interactive)
+  (setq org-pomodoro-length 90
+        org-pomodoro-long-break-frequency 2
+        org-pomodoro-short-break-length 10
+        org-pomodoro-long-break-length 20))
+
 (use-package org-pomodoro
   :config
   (setq
    alert-user-configuration
    (quote ((((:category . "org-pomodoro")) libnotify nil)))
-   org-pomodoro-length 90
-   org-pomodoro-short-break-length 10
-   org-pomodoro-long-break-length 20
    org-pomodoro-clock-break t
-   org-pomodoro-manual-break t))
-
-(defun set-pomodoro-timer (minutes)
-  (interactive "nMinutes: ")
-  (setq org-pomodoro-length minutes))
-
+   org-pomodoro-manual-break t)
+  (lem/set-custom-timmers-pomodo))
 #+end_src
 
 ** Org-auto-tangle
@@ -2621,17 +2636,18 @@ Org  auto-tangle enable tangle the content of a document each time, you save the
 org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
 
 #+begin_src emacs-lisp
-    (use-package org-auto-tangle
-      :defer t
-      :hook (org-mode . org-auto-tangle-mode)
-      :config
-      (setq org-auto-tangle-default nil))
-    (defun lem/insert-auto-tangle-tag ()
-      "Insert auto-tangle tag in literature config."
-      (interactive)
-      (evil-org-open-below 1)
-      (insert "#+auto_tangle: t ")
-      (evil-force-normal-state))
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default nil))
+
+(defun lem/insert-auto-tangle-tag ()
+  "Insert auto-tangle tag in literature config."
+  (interactive)
+  (evil-org-open-below 1)
+  (insert "#+auto_tangle: t ")
+  (evil-force-normal-state))
 #+end_src
 
 ** Auto show markup symbols
@@ -2942,9 +2958,7 @@ The instalation process use the melpa or melpa stable package manager from emacs
         org-roam-list-files-commands '(fd fdfind rg find))
 #+end_src
 
-
 ** Configure org roam templates
-
 
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
@@ -3032,7 +3046,7 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
                             nil
                             (lem/org-roam-filter-by-tag "Project"))
                      :templates '(
-                                  ("p" "project" plain "** TODO %?"
+                                  ("p" "project" plain "** TODO %?\nAdded at: %U"
                                    :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
                                                           "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
                                                           ("Tasks")))
