@@ -8,7 +8,11 @@
 #+TAGS: INACTIVE(i) TOC(t)
 #+auto_tangle: t
 
-* TOC                                                                   :TOC:
+* Table of  content
+:PROPERTIES:
+:TOC:      :include all :depth 2 :force (nothing) :ignore (this) :local (nothing)
+:END:
+:CONTENTS:
 - [[#enable-literature-configuration][Enable literature configuration]]
 - [[#lexical-binding][Lexical binding]]
 - [[#early-init][Early init]]
@@ -18,6 +22,8 @@
 - [[#package-system][Package system]]
   - [[#with-straight][With straight]]
 - [[#keep-it-clean][Keep it clean]]
+  - [[#emacs-as-server][Emacs as server]]
+  - [[#auto-revert-buffers][Auto revert buffers]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
   - [[#standard-settings][Standard settings]]
@@ -25,7 +31,6 @@
   - [[#highlight-matching-braces][Highlight Matching Braces]]
   - [[#enable-line-numbers][Enable line numbers]]
   - [[#highlight-current-line][Highlight current line]]
-  - [[#dont-truncate-the-lines][Don't truncate the lines]]
 - [[#theming][Theming]]
   - [[#reduce-distractions][Reduce distractions]]
   - [[#maximize-windows-by-default-and-setup-transparency][Maximize windows by default and setup transparency]]
@@ -49,11 +54,11 @@
   - [[#company][Company]]
   - [[#cape][Cape]]
   - [[#ivy-and-counsel][ivy and counsel]]
+  - [[#helpul][helpul]]
   - [[#vertico-completion-system][Vertico completion system]]
   - [[#completion-in-regions-with-corfu][Completion in Regions with Corfu]]
   - [[#install-smex][Install Smex]]
   - [[#orderless][Orderless]]
-  - [[#helpul][helpul]]
   - [[#snippets][Snippets]]
 - [[#file-browser-with-dired][File browser with dired]]
 - [[#writting][Writting]]
@@ -94,6 +99,8 @@
   - [[#configure-org-roam-templates][Configure org roam templates]]
   - [[#zettelkasten][Zettelkasten]]
   - [[#org-roam-ui][Org-roam-ui]]
+- [[#denote][Denote]]
+:END:
 
 * Enable literature configuration
 :PROPERTIES:
@@ -484,11 +491,6 @@ I have a script which try to keep sync with a repository on codeberg. This repo 
     :straight nil
     :hook ((prog-mode . hl-line-mode)
            (conf-mode . hl-line-mode)))
-#+end_src
-
-** Don't truncate the lines
-#+begin_src emacs-lisp
-(add-hook 'prog-mode-hook (lambda () (setq truncate-lines t)))
 #+end_src
 
 * Theming
@@ -1074,7 +1076,7 @@ We can set a sortcut to open the config file from the emacs directory
   "fe" '(:ignore t :which-key "Emacs files")
   "fec" '((lambda ()
             (interactive)
-            (find-file (expand-file-name "Emacs.org" lem/dotfiles)))
+            (find-file (expand-file-name "config/emacs/config.org" lem/dotfiles)))
           :which-key "Emacs Config file")
   "fei" '((lambda ()
             (interactive)
@@ -1450,6 +1452,26 @@ knowing what it begins with though.
 (setq ivy-initial-inputs-alist nil)
 #+end_src
 
+** helpul                                                          :INACTIVE:
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers. For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration. It is very useful for figuring out how things work in Emacs.
+
+
+#+begin_src emacs-lisp
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+#+end_src
+
 ** Vertico completion system
 
 An alternative to ivy and counsel
@@ -1650,26 +1672,6 @@ Smex is a package that makes M-x remember out history
         completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
 
-** helpul                                                          :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
-
-[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers. For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration. It is very useful for figuring out how things work in Emacs.
-
-
-#+begin_src emacs-lisp
-(use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
-#+end_src
-
 ** Snippets
 
 Snippets are a short text which is enabled to be expanded. yasnippet provide the mechanism, but does not have the snippets. You need to lead them. I will try with yasnippet-snippets and doom-snippets. The first one use the < character at the begin of the text, while doom-snippets not.
@@ -1815,7 +1817,8 @@ For some reason, emacs has not a  markdown mode enable by default
 
 (defun markdown-html (buffer)
   (princ (with-current-buffer buffer
-           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>"
+                   (buffer-substring-no-properties (point-min) (point-max))))
          (current-buffer)))
 #+end_src
 
@@ -2264,8 +2267,11 @@ Another package that could be helpful
 
 #+begin_src emacs-lisp
 (use-package toc-org
-  :commands toc-org-enable
-  :init (add-hook 'org-mode-hook 'toc-org-enable))
+  :disabled
+  :hook (org-mode-hook . toc-org-enable))
+
+(use-package org-make-toc
+  :hook (org-mode . org-make-toc))
 #+end_src
 
 ** Define all the variables
@@ -2318,13 +2324,13 @@ Another package that could be helpful
 Add some vars borrow from doom-emacs
 
 #+begin_src emacs-lisp
-  (setq 
-   org-indirect-buffer-display 'current-window
-   org-enforce-todo-dependencies t
-   org-fontify-done-headline t
-   org-fontify-quote-and-verse-blocks t
-   org-fontify-whole-heading-line t
-   org-tags-columns 0)
+(setq 
+  org-indirect-buffer-display 'current-window
+  org-enforce-todo-dependencies t
+  org-fontify-done-headline t
+  org-fontify-quote-and-verse-blocks t
+  org-fontify-whole-heading-line t
+  org-tags-columns 0)
 #+end_src
 
 The org mode is not close
@@ -2336,27 +2342,16 @@ From [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]], 
 IMPORTANT* You can only use set at time, so you need first to select the correct workflow. The shortcut to select them is: =C-u C-u C-c C-t=; =C-s-RIGHT=; =C-s-LEFT=
 
 *** Workflow states
-- *TODO*: A task workflowhich should be done, but is not processed
+- *TODO*: A task workflow which should be done, but is not processed
 - *IN PROGRESS*: A task that start by it is not finished
 - *NEXT*: With the GTD flow, the next task to be done
 - *WAIT*: This task depends on other person, so it's not actionable
 - *DONE*: Need explication?
 
 #+begin_src emacs-lisp
-(setq org-todo-keywords '((sequence
-                           "TODO(t)"
-                           "STRT(s)"
-                           "WAIT(w)"
-                           "HOLD(h)"
-                           "|"
-                           "DONE(d!)"
-                           "CANCELED(c!)"))
-      org-todo-keywords-faces
-      '(("[-]" . org-todo-active)
-        ("STRT" . org-todo-active)
-        ("[?]" . org-todo-onhold)
-        ("WAIT" . org-todo-onhold)
-        ("HOLD" . org-todo-onhold)))
+(setq org-todo-keywords '((sequence "TODO(t)" "STRT(s)" "BACK(b)" "|" "DONE(d!)")
+                          (sequence "|" "HOLD(h)" "CANCELED(c!")))
+
 #+end_src
 
 Also, we can make a hook to start clock in when a task state changes to *IN PROGRESS*
@@ -3115,7 +3110,8 @@ bibliographic data, and LaTeX, markdown, and org-cite editing support.
         '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
           (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
           (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-          (note . "Notes on ${author editor:%etal}, ${title}"))))
+          (note . "Notes on ${author editor:%etal}, ${title}"))
+        bibtex-completion-bibliography lem/bibliography-files))
 #+end_src
 
 **** Citar-org-roam
@@ -3166,7 +3162,7 @@ References from:
 #+begin_src emacs-lisp
 (defun lem/import-notes-from-zotero (key &optional _entry)
 (interactive (list (citar-select-ref)))
-  (let* ((entry (bibtex-completion-get-entry citekey))
+  (let* ((entry (bibtex-completion-get-entry key))
          (note (bibtex-completion-get-value "note" entry ""))
          (pandoc-command "pandoc --from latex --to org")
          result)
@@ -3211,6 +3207,18 @@ Index notes are these notes used to group connected notes. Can be a TOC, a sort 
 
 #+begin_src emacs-lisp
 (use-package org-roam-ui)
+#+end_src
+
+* Denote
+#+begin_src emacs-lisp
+(use-package denote
+  :config
+  (setq denote-directory org-roam-directory
+        denote-file-type "org"
+        denote-infer-keywords t
+        denote-prompts '(title keywords signature)
+        denote-dired-directories (list denote-directory))
+  :hook (dired-mode . denote-dired-mode-in-directories))
 #+end_src
 
 
