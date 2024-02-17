@@ -7,12 +7,7 @@
 #+STARTUP: noptag
 #+TAGS: INACTIVE(i) TOC(t)
 #+auto_tangle: t
-
-* Table of  content
-:PROPERTIES:
-:TOC:      :include all :depth 2 :force (nothing) :ignore (this) :local (nothing)
-:END:
-:CONTENTS:
+* Table of Content                                                      :TOC:
 - [[#enable-literature-configuration][Enable literature configuration]]
 - [[#lexical-binding][Lexical binding]]
 - [[#early-init][Early init]]
@@ -22,8 +17,6 @@
 - [[#package-system][Package system]]
   - [[#with-straight][With straight]]
 - [[#keep-it-clean][Keep it clean]]
-  - [[#emacs-as-server][Emacs as server]]
-  - [[#auto-revert-buffers][Auto revert buffers]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
   - [[#standard-settings][Standard settings]]
@@ -94,13 +87,13 @@
   - [[#org-wild-notifier][org wild notifier]]
   - [[#org-present][Org present]]
   - [[#org-present-ii][Org present II]]
+  - [[#org-journal][Org Journal]]
 - [[#org-roam][Org roam]]
   - [[#installation][Installation]]
   - [[#configure-org-roam-templates][Configure org roam templates]]
   - [[#zettelkasten][Zettelkasten]]
   - [[#org-roam-ui][Org-roam-ui]]
 - [[#denote][Denote]]
-:END:
 
 * Enable literature configuration
 :PROPERTIES:
@@ -2011,7 +2004,7 @@ It need to be compiled, so you need to install first some dependencies
 
 *** vterm toggle
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package vterm-toggle
   :after vterm
   :config
@@ -2138,6 +2131,7 @@ Use pyvenv to manage and use ~virtualenv~. Run ~pyvenv-activate~ to configure Em
 
 #+begin_src emacs-lisp
 (use-package pyvenv
+  :init (setenv "WORKON_HOME" "~/.pyenv/versions")
   :config
   (pyvenv-mode 1)
   (add-hook 'python-mode-local-vars-hook #'pyvenv-track-virtualenv)
@@ -2152,7 +2146,6 @@ Use pyvenv to manage and use ~virtualenv~. Run ~pyvenv-activate~ to configure Em
   :ensure t)
 #+end_src
 
-***** TODO Write the instructions for install each LSP modes
 *** elisp mode
 
 This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
@@ -2267,11 +2260,7 @@ Another package that could be helpful
 
 #+begin_src emacs-lisp
 (use-package toc-org
-  :disabled
   :hook (org-mode-hook . toc-org-enable))
-
-(use-package org-make-toc
-  :hook (org-mode . org-make-toc))
 #+end_src
 
 ** Define all the variables
@@ -2936,6 +2925,18 @@ Now register the hooks and install the package (if it already is not installed)
   (add-hook 'org-present-after-navigate-functions 'lem/org-present-prepare-slide))
 #+end_src
 
+** Org Journal
+#+begin_src emacs-lisp
+(use-package org-journal
+  :straight t
+  :defer t
+  :custom
+  (org-journal-dir (expand-file-name "Journal" org-directory))
+  (org-journal-file-format "%Y-%m-%d")
+  (org-journal-enable-encryption t)
+  (org-journal-encrypt-journal t)
+)
+#+end_src
 * Org roam
 
 Org-roam is a tool for networked thought. It reproduces some of the Roam

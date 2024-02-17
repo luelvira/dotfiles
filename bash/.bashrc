@@ -57,7 +57,6 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-
 if [ "$color_prompt" = yes ]; then
 	#PROMPT_DIRTRIM=3
     PS1='${debian_chroot:+($debian_chroot)}\[\033[00;32m\]\u@\h\[\033[00m\]:\[\033[00;34m\]\w\[\033[00m\]\$ '
@@ -118,11 +117,12 @@ export EDITOR=vim
 if [ -f ~/.bash_completion ]; then
     source ~/.bash_completion/alacritty
 fi
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+
+if [ -d ~/.bashrc.d ]; then
+    for f in ~/.bashrc.d; do
+        [-r "$f" ] && [-f "$f" ] && source "$f";
+    done
+fi
 
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init - bash)"
-
