@@ -1,2 +1,0 @@
-GUIX_PROFILE="$HOME/.guix-profile" ; \
-source "$GUIX_PROFILE/etc/profile"
