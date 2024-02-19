@@ -1,2 +1,2 @@
-GUIX_PROFILE="$HOME/.guix-profile" ; \
-source "$GUIX_PROFILE/etc/profile"
+export VISUAL=vim
+export EDITOR=vim
