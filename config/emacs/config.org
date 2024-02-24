@@ -14,22 +14,28 @@
   - [[#lexical-binding][Lexical binding]]
 - [[#early-init][Early init]]
   - [[#startup-performance][Startup performance]]
-  - [[#hacking-the-ui][Hacking the UI]]
-- [[#system-settings][System settings]]
-- [[#update-load-path][Update load path]]
+- [[#init-file][Init file]]
+  - [[#profile-emacs-start-up][Profile emacs start up]]
+  - [[#update-load-path][Update load path]]
 - [[#package-system][Package system]]
   - [[#end-of-package][End of package]]
 - [[#dashboard][Dashboard]]
 - [[#general-configuration][General configuration]]
   - [[#standard-settings][Standard settings]]
-  - [[#lem-module][lem module]]
+- [[#lem-module][lem module]]
+  - [[#define-transparency][Define transparency]]
+  - [[#sync-files][Sync files]]
+  - [[#file-operations][File operations]]
+  - [[#reload-emacs][Reload emacs]]
+  - [[#end-of-lem-module][End of lem module]]
 - [[#theming][Theming]]
+  - [[#fonts][Fonts]]
   - [[#reduce-distractions][Reduce distractions]]
   - [[#configure-lines][Configure lines]]
   - [[#setup-icons][Setup icons]]
-  - [[#global-theme][Global theme]]
-  - [[#fonts][Fonts]]
   - [[#modeline][modeline]]
+  - [[#create-frame-hook][create frame hook]]
+  - [[#global-theme][Global theme]]
   - [[#end-of-lem-ui][End of lem-ui]]
 - [[#highlight-current-line][Highlight current line]]
 - [[#rainbow-delimeters][Rainbow delimeters]]
@@ -38,18 +44,32 @@
   - [[#which-key][Which Key]]
   - [[#custom-shortcut-with-general][Custom shortcut with general]]
 - [[#work-spaces][Work Spaces]]
+  - [[#end-of-lem-workspace][End of lem-workspace]]
 - [[#completion-system][Completion system]]
-  - [[#company][Company]]
-  - [[#cape][Cape]]
-  - [[#ivy-and-counsel][ivy and counsel]]
-  - [[#helpul][helpul]]
-  - [[#vertico-completion-system][Vertico completion system]]
+  - [[#completion-at-point][Completion at point]]
+  - [[#vertico][Vertico]]
+  - [[#consult][Consult]]
+  - [[#marginalia][Marginalia]]
+  - [[#completion-action-with-embark][Completion action with Embark]]
   - [[#completion-in-regions-with-corfu][Completion in Regions with Corfu]]
-  - [[#install-smex][Install Smex]]
+  - [[#smex][Smex]]
   - [[#orderless][Orderless]]
-  - [[#snippets][Snippets]]
-- [[#file-browser-with-dired][File browser with dired]]
+  - [[#end-of-lem-vertico][End of lem-vertico]]
+- [[#file-management][File Management]]
+  - [[#files-operations][Files operations]]
+  - [[#dired][Dired]]
+  - [[#peep-dired][Peep dired]]
+  - [[#defining-some-keys-for-dired][Defining some keys for dired]]
   - [[#end-of-lem-dired][End of lem-dired]]
+- [[#development][Development]]
+  - [[#project-management][Project management]]
+  - [[#linters][Linters]]
+  - [[#compilation][Compilation]]
+  - [[#language-server-protocol][Language server protocol]]
+  - [[#language-support][Language support]]
+  - [[#terminals][Terminals]]
+  - [[#snippets][Snippets]]
+  - [[#end-of-lem-dev][End of lem-dev]]
 - [[#writting][Writting]]
   - [[#flyspell][Flyspell]]
   - [[#visual-fill-configuration][Visual fill configuration]]
@@ -57,14 +77,6 @@
   - [[#markdown][Markdown]]
   - [[#zen-mode][zen mode]]
   - [[#latex][Latex]]
-- [[#development][Development]]
-  - [[#projectile][Projectile]]
-  - [[#flycheck][Flycheck]]
-  - [[#git][Git]]
-  - [[#vterm][vterm]]
-  - [[#compilation][Compilation]]
-  - [[#language-server-protocol][Language server protocol]]
-  - [[#language-support][Language support]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-content][Enable table of content]]
   - [[#define-all-the-variables][Define all the variables]]
@@ -160,7 +172,7 @@ The early-init file is loaded before any process of emacs, either the package sy
 
 #+begin_src emacs-lisp
 (defvar private-emacs-directory nil
-"The path where the configuration file for Emacs are stored.")
+"The folder where the emacs configuration is stored")
 (setq package-enable-at-startup nil
       private-emacs-directory user-emacs-directory
     ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
@@ -182,16 +194,6 @@ a hook to measure Emacs startup time.
 #+end_src
 
 
-** Profile emacs start up
-
-#+begin_src emacs-lisp
-;; Profile emacs startup
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s seconds with %d garbage collections."
-                     (emacs-init-time "%.2f") gcs-done)
-            (setq gc-cons-threshold (* 8 1024 1024))))
-#+end_src
 * Init file
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp+: :tangle init.el
@@ -205,50 +207,18 @@ setting and import the rest of the modules.
 <<header>>
 #+end_src
 
-** System settings
-
-This part aims to setting some special configuration based on the system Emacs is running
+** Profile emacs start up
 
 #+begin_src emacs-lisp
-(defconst is-termux
-  (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-  "Boolean variable to determinate if Emacs is runing into termux system.")
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s seconds with %d garbage collections."
+                     (emacs-init-time "%.2f") gcs-done)))
 
-(defconst is-ubuntu
-  (string= (system-name) "HP-Z1-G8")
-  "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
-
-(defconst is-debian
-  (string= (system-name) "debian")
-  "Boolean variable to determinate if Emacs is runing on home's debian machine.")
-
-(defconst is-fedora
-  (string= (system-name) "fedora-laptop")
-  "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
-
-(setq
-  user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
-  user-full-name (string-trim (shell-command-to-string "git config --global user.name")))
-
-(defconst lem/dotfiles (cond ((or is-debian
-                                  is-fedora) "~/Documents/git/dotfiles/")
-                             (is-termux ".cfg"))
-  "The path where the dotfiles git repo is stored.")
+(add-hook 'after-init-hook (lambda ()
+            (setq gs-cons-threshold (* 2 1024 1024))))
 #+end_src
-
-** Hacking the UI
-
-#+begin_src emacs-lisp
-(unless is-termux
-  (tool-bar-mode    -1)
-  (scroll-bar-mode  -1)
-  (set-fringe-mode   0)
-  (tooltip-mode     -1)
-  (menu-bar-mode    -1)
-  (setq-default fringes-outside-margins t))
-
-#+end_src
-
 ** Update load path
 
 Add the lisp script to the path
@@ -269,26 +239,26 @@ Using [[https://github.com/radian-software/straight.el][straight]] for package m
 
 
 #+begin_src emacs-lisp
-(setq straight-check-for-modifications nil)
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+  (setq straight-check-for-modifications nil)
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name
+          "straight/repos/straight.el/bootstrap.el"
+          (or (bound-and-true-p straight-base-dir)
+              user-emacs-directory)))
+        (bootstrap-version 7))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
 
-;; Use straight by default
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+  ;; Use straight by default
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
 #+end_src
 
 ** End of package                                                       :END:
@@ -307,7 +277,6 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 
 #+begin_src emacs-lisp
 (use-package dashboard
-  :demand
   :diminish (dashboard-mode)
   :init      ;; tweak dashboard config before loading it
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
@@ -336,8 +305,48 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 :VISIBILITY: folded
 :END:
 
+*** System settings
+
+This part aims to setting some special configuration based on the system Emacs is running
+
 #+begin_src emacs-lisp
-<<header>>
+
+(defconst is-termux
+  (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
+  "Boolean variable to determinate if Emacs is runing into termux system.")
+
+(defconst is-ubuntu
+  (string= (system-name) "HP-Z1-G8")
+  "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
+
+(defconst is-debian
+  (string= (system-name) "debian")
+  "Boolean variable to determinate if Emacs is runing on home's debian machine.")
+
+(defconst is-fedora
+  (string= (system-name) "fedora-laptop")
+  "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
+
+(setq
+  user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
+  user-full-name (string-trim (shell-command-to-string "git config --global user.name")))
+
+(defconst lem/dotfiles (cond ((or is-debian
+                                  is-fedora) "~/Documents/git/dotfiles/")
+                             (is-termux ".cfg"))
+  "The path where the dotfiles git repo is stored.")
+#+end_src
+
+*** Hacking the UI
+
+#+begin_src emacs-lisp
+(unless is-termux
+  (tool-bar-mode    -1)
+  (scroll-bar-mode  -1)
+  (set-fringe-mode   0)
+  (tooltip-mode     -1)
+  (menu-bar-mode    -1)
+  (setq-default fringes-outside-margins t))
 #+end_src
 
 This section  contains a list of common and simple configuration
@@ -418,7 +427,10 @@ Also I will change the location of the ~custom-file.el~, setting it in the confi
 
 *** Recovery
 
-If Emacs or the computer crashes, you can recover the files you were editing at the time of the crash from their auto-save files. To do this, start Emacs again and type the command M-x recover-session. Here, we parameterize how files are saved in the background.
+If Emacs or the computer crashes, you can recover the files you were editing at
+the time of the crash from their auto-save files. To do this, start Emacs again
+and type the command M-x recover-session. Here, we parameterize how files are
+saved in the background.
 
 #+begin_src emacs-lisp
 (setq auto-save-list-file-prefix ; Prefix for generating auto-save-list-file-name
@@ -542,30 +554,14 @@ dired buffers
 
 *** Maximize windows by default and setup transparency
 
-In order of maximize the frame and change the transparency I use the ~set-frame-parameter~ expression and the ~add-to-list 'default-frame-alist~. The function have been moved to the lisp library
+In order of maximize the frame and change the transparency I use the
+~set-frame-parameter~ expression and the ~add-to-list 'default-frame-alist~. The
+function have been moved to the lisp library
 
 #+begin_src emacs-lisp
 (unless is-termux
   (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
   (add-to-list 'default-frame-alist '(fullscreen . maximized)))
-#+end_src
-
-*** create frame hook
-
-Emacs in daemon mode has a problem loading the fonts. By default, the init file is not read until the first frame is loaded, so the changes on the ui should be done after it.
-
-Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to call a function after a frame is created. This function receive as argument the current frame
-
-#+begin_src emacs-lisp
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame)
-                (lem/set-fonts frame)
-                (lem/set-background frame)))
-  (add-hook 'after-init-hook
-            (lambda ()
-              (lem/set--fonts)
-              (lem/set-background))))
 #+end_src
 
 *** Enable scape instead of C-g
@@ -586,22 +582,20 @@ Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to
 (require 'lem-core)
 #+end_src
 
-** lem module
+* lem module
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp+: :tangle modules/lem-module.el
 :END:
 This module contains some custom functions
 
 #+begin_src emacs-lisp
-<<header>>
 (defgroup lem ()
   "Group for some personal variables."
-  :group 'file
-  :prefix 'lem
+  :prefix  'lem
   :version '0.0.1)
 #+end_src
 
-*** Define transparency
+** Define transparency
 
 #+begin_src emacs-lisp
 (defcustom lem/alpha-value 90
@@ -612,27 +606,15 @@ This module contains some custom functions
   :group 'lem
   :type '(number))
 
-(defvar lem/is-transparent t
-  "If the frame is transparent or not.")
-
 (defun lem/set-background ( &optional frame)
   (unless is-termux
     (let ((alpha (if (boundp 'lem/alpha-value) lem/alpha-value 100)))
       (let ((tuple `(,alpha . ,alpha)))
         (set-frame-parameter frame 'alpha tuple)
         (add-to-list 'default-frame-alist `(alpha-background . ,lem/alpha-value))))))
-
-(defun lem/toggle-transparency ()
-  "Toggle the state of the transparency for all the frames."
-  (interactive)
-  (let ((alpha (if lem/is-transparent 100 lem/alpha-value)))
-    (let ((tuple `(,alpha . ,alpha)))
-      (set-frame-parameter nil 'alpha tuple)
-      (add-to-list 'default-frame-alist '(alpha-background . lem/alpha-value))))
-  (setq-default lem/is-transparent (not lem/is-transparent)))
 #+end_src
 
-*** Sync files
+** Sync files
 
 I have a script which try to keep sync with a repository on codeberg. This repo
 contains the org files only, and it is named sync.
@@ -661,7 +643,7 @@ PATH: is the dir where the git repo is"
   (lem/sync lem/dotfiles))
 #+end_src
 
-*** File operations
+** File operations
 
 #+begin_src emacs-lisp
 (defun lem/delete-this-file ()
@@ -692,9 +674,12 @@ PATH: is the dir where the git repo is"
           (message "File '%s' successfully renamed to '%s'"
                    name (file-name-nondirectory new-name)))))))
 
+(defun lem/interactive-find-file (dir)
+  (let ((default-directory dir))
+    (call-interactively 'find-file)))
 #+end_src
 
-*** Reload emacs
+** Reload emacs
 
 #+begin_src emacs-lisp
 (defun lem/reload-init-file ()
@@ -703,7 +688,7 @@ PATH: is the dir where the git repo is"
   (load-file user-init-file))
 #+end_src
 
-*** End of lem module                                                   :END:
+** End of lem module                                                      :END:
 
 #+begin_src emacs-lisp
 (provide 'lem-module)
@@ -718,113 +703,6 @@ PATH: is the dir where the git repo is"
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp+: :tangle modules/lem-ui.el
 :END:
-
-#+begin_src emacs-lisp
-<<header>>
-#+end_src
-** Reduce distractions
-
-#+begin_src emacs-lisp
-(setq visible-bell t)
-(electric-indent-mode -1)
-(electric-pair-mode -1)
-
-;; Reduce the clutter in the fringes; we'd like to reserve that space for more
-(setq indicate-buffer-boundaries nil
-      indicate-empty-lines nil
-      frame-title-format "%b - GNU Emacs"
-      icon-title-format frame-title-format
-      use-dialog-box nil
-      window-divider-default-places       t
-      window-divider-default-bottom-width 1
-      window-divider-default-right-width  1)
-
-(add-hook 'emacs-startup-hook #'window-divider-mode)
-#+end_src
-
-** Configure lines
-Set display-line-numbers-width to 3 make easy to prevent recalculate the width
-with some large files
-#+begin_src emacs-lisp
-(setq-default dispaly-line-numbers-width 3
-              display-line-numbers-widen t)
-#+end_src
-Enable line numbers for some modes
-#+begin_src emacs-lisp
-(dolist (mode '(text-mode-hook
-                prog-mode-hook
-                conf-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
-#+end_src
-
-** Setup icons
-
-This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
-
-#+begin_src emacs-lisp :tangle no
-(use-package all-the-icons
-  :disabled
-  :if (display-graphic-p))
-
-(use-package all-the-icons-dired
-  :disabled
-  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package nerd-icons)
-(use-package nerd-icons-dired
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
-(use-package nerd-icons-completion
-  :config
-  (nerd-icons-completion-mode))
-#+end_src
-
-** Global theme
-*** Color theme with doom-theme
-
-[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.
-
-#+begin_src emacs-lisp
-(use-package doom-themes
-  :defer t
-  :init
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config)
-  ;; Sets the default theme to load!!
-  (load-theme (cond (is-debian 'doom-dracula)
-                    (is-fedora 'doom-palenight)
-                    (is-ubuntu 'modus-vivendi)) t))
-
-(provide 'lem-doom-theme)
-#+end_src
-
-*** Color theme with other themes
-#+begin_src emacs-lisp
-(use-package nord-theme
-  :disabled
-  :defer t
-  :straight (nord-theme
-             :type git
-             :host github
-             :local-repo "northeme"
-             :repo "nordtheme/emacs")
-  :init
-  (load-theme 'nord t))
-
-(use-package dracula-theme
-  :disabled
-  :defer t
-  :straight (draculta-theme
-             :type git
-             :host github
-             :repo "dracula/emacs")
-  :init
-  (load-theme 'dracula t))
-#+end_src
 
 ** Fonts
 *** Fonts definition
@@ -909,8 +787,64 @@ Then call the set--fonts function."
  (global-ligature-mode t))
 #+end_src
 
-** modeline
+** Reduce distractions
 
+#+begin_src emacs-lisp
+(setq visible-bell t)
+(electric-indent-mode -1)
+(electric-pair-mode -1)
+
+;; Reduce the clutter in the fringes; we'd like to reserve that space for more
+(setq indicate-buffer-boundaries nil
+      indicate-empty-lines nil
+      frame-title-format "%b - GNU Emacs"
+      icon-title-format frame-title-format
+      use-dialog-box nil
+      window-divider-default-places       t
+      window-divider-default-bottom-width 1
+      window-divider-default-right-width  1)
+
+(add-hook 'emacs-startup-hook #'window-divider-mode)
+#+end_src
+
+The diminish package hides pesky minor modes from the modeline
+#+begin_src emacs-lisp
+(use-package diminish)
+#+end_src
+
+** Configure lines
+Set display-line-numbers-width to 3 make easy to prevent recalculate the width
+with some large files
+#+begin_src emacs-lisp
+(setq-default dispaly-line-numbers-width 3
+              display-line-numbers-widen t)
+#+end_src
+Enable line numbers for some modes
+#+begin_src emacs-lisp
+(dolist (mode '(text-mode-hook
+                prog-mode-hook
+                conf-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+#+end_src
+
+** Setup icons
+
+This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
+
+#+begin_src emacs-lisp
+(use-package nerd-icons
+    :defer t)
+(use-package nerd-icons-dired
+    :defer t
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
+(use-package nerd-icons-completion
+    :defer t
+    :config
+    (nerd-icons-completion-mode))
+#+end_src
+
+** modeline
 
 *NOTE:* The first time you load your configuration on a new machine, you'll need
 to run `M-x all-the-icons-install-fonts` so that mode line icons display
@@ -933,7 +867,9 @@ Minions is a package that implements a nested menu which gives access to all kno
 
 *** Doom modeline
 
-[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
+configuration for Emacs. The default configuration is quite good but you can
+check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
 
 Above there is the config for the doom-modeline
 
@@ -968,13 +904,73 @@ Above there is the config for the doom-modeline
   (mood-line-mode))
 #+end_src
 
+** create frame hook
+
+Emacs in daemon mode has a problem loading the fonts. By default, the init file
+is not read until the first frame is loaded, so the changes on the ui should be
+done after it.
+
+Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to
+call a function after a frame is created. This function receive as argument the
+current frame
+
+#+begin_src emacs-lisp
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (frame)
+                (lem/set-fonts frame)
+                (lem/set-background frame)))
+  (add-hook 'after-init-hook
+            (lambda ()
+              (lem/set--fonts)
+              (lem/set-background))))
+#+end_src
+
+** Global theme
+
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.
+
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :defer t
+  :config
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
+  ;; Sets the default theme to load!!
+;  (load-theme (cond (is-debian 'doom-dracula)
+;                    (is-fedora 'doom-palenight)
+;                    (is-ubuntu 'modus-vivendi)) t)
+;
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package nord-theme
+  :defer t
+  :straight (nord-theme
+             :type git
+             :host github
+             :local-repo "northeme"
+             :repo "nordtheme/emacs"))
+
+(use-package dracula-theme
+  :defer t
+  :straight (draculta-theme
+             :type git
+             :host github
+             :repo "dracula/emacs"))
+#+end_src
+
+#+begin_src emacs-lisp
+(load-theme 'modus-vivendi t)
+#+end_src
+
 ** End of lem-ui                                                        :END:
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: 
-:END:
 #+begin_src emacs-lisp
 (provide 'lem-ui)
-;;; lem-ui ends here
+;;; lem-ui.el ends here
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
@@ -1111,7 +1107,8 @@ Evil collection is a package that provide evil keybindings for a lot of modes
 
 *** evil-pro(g) mode
 
-I define a custom minor mode to enable/disable the navigation with the arrows. Depend's of the context I prefer using one set of keys or another
+I define a custom minor mode to enable/disable the navigation with the arrows.
+Depend's of the context I prefer using one set of keys or another
 
 #+begin_src emacs-lisp
 (defun enable-evil-pro-mode ()
@@ -1141,7 +1138,8 @@ Enable it only for the most braves :;"
 #+end_src
 *** Anzu and vim anzu
 
-[[https://github.com/victorteokw/emacs-anzu][Anzu]] is a port of [[https://github.com/osyo-manga/vim-anzu][vim-anzu]], which provides a minor mode to display /current match/ and /total matches/ in the modeline.
+[[https://github.com/victorteokw/emacs-anzu][Anzu]] is a port of [[https://github.com/osyo-manga/vim-anzu][vim-anzu]], which provides a minor mode to display /current match/
+and /total matches/ in the modeline.
 
 #+begin_src emacs-lisp
   (use-package anzu)
@@ -1161,6 +1159,9 @@ Enable it only for the most braves :;"
 #+end_src
 
 ** Which Key
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-keybinding.el
+:END:
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key
 binding in Emacs to offer you all possible completions for the prefix. For
@@ -1170,23 +1171,24 @@ prefix and which command they run. This is very useful for learning the possible
 key bindings in the mode of your current buffer.
 
 #+begin_src emacs-lisp
-  (use-package which-key
-    :init (which-key-mode)
-    :diminish which-key-mode
-    :config
-    (setq which-key-idle-delay 0.3
-          which-key-side-window-location 'bottom
-          which-key-sort-order #'which-key-key-order-alpha
-          which-key-allow-imprecise-window-fit nil
-          which-key-sort-uppercase-first nil
-          which-key-add-column-padding 1
-          which-key-max-display-columns nil
-          which-key-min-display-lines 6
-          which-key-side-window-slot -10
-          which-key-side-window-max-height 0.25
-          which-key-max-description-length 25
-          which-key-allow-imprecise-window-fit nil
-          which-key-separator " → " ))
+(use-package which-key
+  :defer t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3
+        which-key-side-window-location 'bottom
+        which-key-sort-order #'which-key-key-order-alpha
+        which-key-allow-imprecise-window-fit nil
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit nil
+        which-key-separator " → " ))
 #+end_src
 
 ** Custom shortcut with general
@@ -1194,14 +1196,10 @@ key bindings in the mode of your current buffer.
 :HEADER-ARGS:emacs-lisp+: :tangle modules/lem-keybinding.el
 :END:
 
-#+begin_src emacs-lisp
-<<header>>
-#+end_src
-
-General is a package  that provides a more convenient method for binding keys in emacs
+General is a package that provides a more convenient method for binding keys in
+emacs
 #+begin_src emacs-lisp
 (use-package general
-  :straight t
   :config
   (general-evil-setup t)
   (general-create-definer lem/leader-key-def
@@ -1224,11 +1222,11 @@ Use 'SPC b' for keybinings related to bookmarks and buffers
 (setq bookmark-default-file
       (expand-file-name "bookmarks" user-emacs-directory))
 (lem/leader-key-def
-  "b" '(:ignore t :which-key "buffers/bookmarks")
-  "bl" '(bookmark-jump :which-key "List bookmarks")
-  "bm" '(bookmark-set :which-key "Set bookmark")
+  "b" '(:ignore t        :which-key "buffers/bookmarks")
+  "bl" '(bookmark-jump   :which-key "List bookmarks")
+  "bm" '(bookmark-set    :which-key "Set bookmark")
   "bd" '(bookmark-delete :which-key "Delete bookmark")
-  "bw" '(bookmark-save :which-key "Save current bookmark to bookmark file"))
+  "bw" '(bookmark-save   :which-key "Save current bookmark to bookmark file"))
 #+end_src
 
 Regarding /buffers/, the text you are editing in Emacs resides in an object called
@@ -1254,19 +1252,6 @@ navigate between them and filter them.
   "bs" '(save-buffer :whick-key "Save current buffer"))
 #+end_src
 
-*** Dired keys
-
-#+begin_src emacs-lisp
-(lem/leader-key-def
-  "d"  '(:ignore t  :which-key "Dired")
-  "dd" '(dired      :which-key "Open dired")
-  "dj" '(dired-jump :which-key "Dired jump to current")
-  "dp" '((lambda ()
-           (interactive)
-           (dired lem/dotfiles))
-         :which-key "Go to dotfiles folder"))
-#+end_src
-
 *** Eval expressions
 
 | Command         | Description                                      | shortcut |
@@ -1279,40 +1264,18 @@ navigate between them and filter them.
 
 #+begin_src emacs-lisp
   (lem/leader-key-def
-    "e" '(:ignore t :wk "Eshell/Evaluate")
-    "eb" '(eval-buffer :wk "Evaluate elisp in buffer")
-    "ed" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e" '(:ignore t        :wk "Eshell/Evaluate")
+    "eb" '(eval-buffer     :wk "Evaluate elisp in buffer")
+    "ed" '(eval-defun      :wk "Evaluate defun containing or after point")
     "ee" '(eval-expression :wk "Evaluate and elisp expression")
-    "el" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-    "er" '(eval-region :wk "Evaluate elisp in region"))
-#+end_src
-
-*** Files operations
-
-| Command              | Description          | shortcut |
-|----------------------+----------------------+----------|
-| View recent files    | Display recent files | r        |
-| lem/delete-this-file | Delete current file  | D        |
-| lem/rename-this-file | Rename current file  | R        |
-| find-file            | Find files in CW     | f        |
-
-#+begin_src emacs-lisp
-(lem/leader-key-def
-  "f" '(:ignore t :which-key  "Files")
-  "fD" '(lem/delete-this-file :which-key "Delete current file")
-  "fd" '(find-grep-dired :whick-key "Search for string in files in DIR")
-  "ff" '(find-file :which-key "Find files")
-  "fr" '(recentf-open-files :which-key "Recent files")
-  "fR" '(lem/rename-this-file :which-key "Rename current file"))
+    "el" '(eval-last-sexp  :wk "Evaluate elisp expression before point")
+    "er" '(eval-region     :wk "Evaluate elisp in region"))
 #+end_src
 
 *** Configuration file
 We can set a sortcut to open the config file from the emacs directory
 
 #+begin_src emacs-lisp
-(defun lem/interactive-find-file (dir)
-  (let ((default-directory dir))
-    (call-interactively 'find-file)))
 
 (lem/leader-key-def
   "fp" '((lambda ()
@@ -1406,7 +1369,8 @@ We can set a sortcut to open the config file from the emacs directory
 
 *** Rebind C-u
 
-Emacs by default use C-u for the universal-argument command, so if I want to keep the default behavior of vi, I need to rebind it.
+Emacs by default use C-u for the universal-argument command, so if I want to
+keep the default behavior of vi, I need to rebind it.
 
 #+begin_src emacs-lisp
   (lem/leader-key-def
@@ -1435,9 +1399,6 @@ Emacs by default use C-u for the universal-argument command, so if I want to kee
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp+: :tangle modules/lem-workspace.el
 :END:
-#+begin_src emacs-lisp
-<<header>>
-#+end_src
 
 #+begin_src emacs-lisp
   (use-package perspective
@@ -1470,43 +1431,71 @@ Use the TAB instead of =C-x x=
 ;;; lem-workspace ends here
 #+end_src
 
-#+begin_src emacs-lisp :tangle int.el
+#+begin_src emacs-lisp :tangle init.el
 (require 'lem-workspace)
 #+end_src
  
 * Completion system
-** Cape                                                            :INACTIVE:
 :PROPERTIES:
-:VISIBILITY: folded
+:HEADER-ARGS:emacs-lisp: :tangle modules/lem-completion.el
 :END:
+
+** Completion at point
 Cape is a completion at point extension.
 
 #+begin_src emacs-lisp
-  (use-package cape
-    :init
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+(use-package cape
+  :after corfu
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+
+  ;; No auto-completion or completion-on-quit in eshell
+  (defun crafted-completion-corfu-eshell ()
+    "Special settings for when using corfu with eshell."
+    (setq-local corfu-quit-at-boundary t
+                corfu-quit-no-match t
+                corfu-auto nil)
+    (corfu-mode))
+  (add-hook 'eshell-mode-hook #'crafted-completion-corfu-eshell))
 #+end_src
 
 Overwrite the completion at point shortcut of evil-mode. The default system
 works better to your use.
 
-#+begin_src emacs-lisp :tangle no
-(define-key evil-insert-state-map "\C-n" 'corfu-next)
-(define-key evil-insert-state-map "\C-p" 'corfu-previous)
-#+end_src
-
-** Vertico completion system
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-vertico.el
-:END:
-
 #+begin_src emacs-lisp
-<<header>>
+(use-package corfu
+  :bind (:map corfu-map
+              ("C-j" . corfu-next)
+              ("C-k" . corfu-previous)
+              ("TAB" . corfu-insert))
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-preview-current nil)
+  (corfu-quit-at-boundary t)
+  (corfu-quit-no-match t)
+  :config
+  (global-corfu-mode 1)
+  (setq corfu-separator ?\s
+        corfu-preselect-first nil
+        corfu-preselect 'prompt
+        tab-always-indent 'complete)
+  (defun corfu-enable-in-minibuffer ()
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point (list (current-local-map)))
+      ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+      (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                  corfu-popupinfo-delay nil)
+      (corfu-mode 1)))
+
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
+  :init
+  (global-corfu-mode))
 #+end_src
-An alternative to ivy and counsel
-*** Vertico
+
+** Vertico
 
 [[https://github.com/minad/vertico][Vertico]] provides a performant and minimalistic vertical completion UI
 based on the default completion system but aims to be highly flexible,
@@ -1545,7 +1534,7 @@ extensible and modular.
                          args))))
 #+end_src
 
-*** Consult
+** Consult
 
 Consult provides a lot of useful completion commands similar to Ivy’s Counsel.
 #+begin_src emacs-lisp
@@ -1578,7 +1567,7 @@ Consult provides a lot of useful completion commands similar to Ivy’s Counsel.
    consult-bookmark consult-recent-file))
 #+end_src
 
-**** Consult hacks
+*** Consult hacks
 
 For the [[help:consult-goto-line][consult-goto-line]] and ~consult-line~ commands, we define our
 owns with live preview (independently of the [[help:consult-preview-key][consult-preview-key]])
@@ -1617,7 +1606,7 @@ The consult wiki has a demo for the find file function with preview
                    :predicate pred)))
 #+end_src
 
-**** Consult-dir
+*** Consult-dir
 #+begin_src emacs-lisp
 (use-package consult-dir
   :straight t
@@ -1629,7 +1618,7 @@ The consult wiki has a demo for the find file function with preview
   (consult-dir-project-list-function nil))
 #+end_src
 
-*** Marginalia
+** Marginalia
 
 [[https://github.com/minad/marginalia][Marginalia]] add annotations at the margin of the minibuffer, like ivy-rich, but for [[*Vertico][vertico]]
 #+begin_src emacs-lisp
@@ -1645,7 +1634,7 @@ The consult wiki has a demo for the find file function with preview
   (marginalia-mode))
 #+end_src
 
-*** Completion action with Embark
+** Completion action with Embark
 #+begin_src emacs-lisp
 (use-package embark
   :config
@@ -1667,25 +1656,8 @@ The consult wiki has a demo for the find file function with preview
   :after embark)
 #+end_src
 
-*** Completion in Regions with Corfu
-
-#+begin_src emacs-lisp
-(use-package corfu
-  :config
-  (setq corfu-cycle t
-        corfu-separator ?\s
-        corfu-preselect-first nil
-        corfu-preselect 'prompt
-        tab-always-indent 'complete)
-  :bind (:map corfu-map
-              ("C-j" . corfu-next)
-              ("C-k" . corfu-previous)
-              ("C-f" . corfu-insert))
-  :init
-  (global-corfu-mode))
-#+end_src
-
-*** Smex
+** Completion in Regions with Corfu
+** Smex
 
 Smex is a package that makes M-x remember out history
 
@@ -1695,7 +1667,7 @@ Smex is a package that makes M-x remember out history
   (smex-initialize))
 #+end_src
 
-*** Orderless
+** Orderless
 
 [[https://github.com/oantolin/orderless][Orderless]] improves candidate filtering create pattern by words
 separate with spaces and display any command which has the same words
@@ -1709,56 +1681,70 @@ in any order
         completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
 
-*** End of lem-vertico                                                  :END:
+** End of lem-vertico                                                     :END:
 #+begin_src emacs-lisp
-(provide 'lem-vertico)
+(provide 'lem-completion)
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
 (require 'lem-vertico)
 #+end_src
-* File browser with dired
+* File Management
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-dired.el
+:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-file-management.el
 :END:
-#+begin_src emacs-lisp
-<<header>>
-#+end_src
+** Files operations
+| Command              | Description          | shortcut |
+|----------------------+----------------------+----------|
+| View recent files    | Display recent files | r        |
+| lem/delete-this-file | Delete current file  | D        |
+| lem/rename-this-file | Rename current file  | R        |
+| find-file            | Find files in CW     | f        |
 
 #+begin_src emacs-lisp
-(use-package dired-single :defer t)
-(use-package dired-ranger :defer t)
-(use-package dired-collapse :defer t)
-(use-package dired
-  :ensure nil
-  :straight nil
-  :defer 1
-  :config
-  (setq dired-listing-swithces "--group-directories-first"
-        dired-omit-files "^\\.[^.].*"
-        delete-by-moving-to-trash t)
-  (autoload 'dired-omit-mode "dired-x")
-  (add-hook 'dired-load-hook
-            (lambda ()
-              (interactive)
-              (dired-collapse)))
-  (add-hook 'dired-mode-hook
-            (lambda () (interactive)
-              (dired-omit-mode 1)
-              (dired-hide-details-mode 1)
-              (hl-line-mode 1)))
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "h" 'dired-single-up-directory
-    "H" 'dired-omit-mode
-    "l" 'dired-single-buffer
-    "y" 'dired-ranger-copy
-    "X" 'dired-ranger-move
-    "p" 'dired-ranger-paste))
+(lem/leader-key-def
+  "f" '(:ignore t             :which-key "Files")
+  "fD" '(lem/delete-this-file :which-key "Delete current file")
+  "fd" '(find-grep-dired      :whick-key "Search for string in files in DIR")
+  "ff" '(find-file            :which-key "Find files")
+  "fr" '(recentf-open-files   :which-key "Recent files")
+  "fR" '(lem/rename-this-file :which-key "Rename current file"))
+#+end_src
+
+** Dired
+
+#+begin_src emacs-lisp
+  (use-package dired-single   :after dired)
+  (use-package dired-ranger   :after dired)
+  (use-package dired-collapse :after dired)
+  (use-package dired
+    :after evil-collection
+    :straight nil
+    :config
+    (setq dired-listing-swithces "--group-directories-first"
+          dired-omit-files "^\\.[^.].*"
+          delete-by-moving-to-trash t)
+    (autoload 'dired-omit-mode "dired-x")
+    (add-hook 'dired-load-hook
+              (lambda ()
+                (interactive)
+                (dired-collapse)))
+    (add-hook 'dired-mode-hook
+              (lambda () (interactive)
+                (dired-omit-mode 1)
+                (dired-hide-details-mode 1)
+                (hl-line-mode 1)))
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "h" 'dired-single-up-directory
+      "H" 'dired-omit-mode
+      "l" 'dired-single-buffer
+      "y" 'dired-ranger-copy
+      "X" 'dired-ranger-move
+      "p" 'dired-ranger-paste))
 #+end_src
 
 #+begin_src emacs-lisp
 (use-package dired-open
-  :straight t
   :config
   (setq dired-open-extensions '(("gif" . "sxiv")
                                 ("jpg" . "sxiv")
@@ -1767,151 +1753,36 @@ in any order
                                 ("pdf" . "firefox")
                                 ("mp4" . "mpv"))))
 #+end_src
+** Peep dired
+#+begin_src emacs-lisp
+(use-package peep-dired
+  :after t
+  :hook (evil-normalize-keymaps . peep-dired-hook)
+  :config
+    (evil-define-key 'normal peep-dired-mode-map (kbd "C-j") 'peep-dired-next-file)
+    (evil-define-key 'normal peep-dired-mode-map (kbd "C-k") 'peep-dired-prev-file))
+#+end_src
+** Defining some keys for dired
+
+#+begin_src emacs-lisp
+(lem/leader-key-def
+  "d"  '(:ignore t  :which-key "Dired")
+  "dd" '(dired      :which-key "Open dired")
+  "dj" '(dired-jump :which-key "Dired jump to current")
+  "dp" '((lambda ()
+           (interactive)
+           (dired lem/dotfiles))
+         :which-key "Go to dotfiles folder"))
+#+end_src
+
 ** End of lem-dired                                                     :END:
 #+begin_src emacs-lisp
-(provide 'lem-dired)
+(provide 'lem-file-management)
 ;;; lem-dired.el ends here
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'lem-dired)
-#+end_src
-
-* Writting
-** Flyspell
-Fly spell is a mode that allows you to see typing errors. By default it is disable, but can be configure to be used on different kinds of situations.
-
-#+begin_src emacs-lisp
-(use-package flyspell
-  :config
-   (when (file-exists-p "/usr/bin/hunspell") (setq ispell-program-name "hunspell"))
-   (setq ispell-default-dictionary "en_US"
-        ispell-current-dictionary ispell-default-dictionary)
-  :hook (text-mode . flyspell-mode)
-  :bind (("M-<f7>" . flyspell-buffer)
-         ("<f7>" . flyspell-word)
-         ("C-;" . flyspell-auto-correct-previous-word)))
-
-#+end_src
-
-We can configure multiples dictionaries and toggle between them
-
-#+begin_src emacs-lisp
-  (defun lem/switch-dictionary()
-    (interactive)
-    (let* ((dic ispell-current-dictionary)
-          (change (if (string= dic "en_US") "es_ES" "en_US")))
-      (ispell-change-dictionary change)
-      (message "Dictionary switched from %s to %s" dic change)))
-#+end_src
-
-*** Language tool
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
-
-Language tool is a software that check both, grammar and spelling in different
-languages.
-
-#+begin_src bash
-  curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
-  mkdir -p ~/.local/lib/
-  unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package langtool
-    :config
-    (setq langtool-language-tool-jar
-          "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
-          langtool-default-language "en-US"))
-#+end_src
-
-** Visual fill configuration
-
-#+begin_src emacs-lisp
-  ;; Wrap the text in a custom column size
-  (use-package visual-fill-column)
-#+end_src
-
-** Text mode
-
-Every time emacs enter in text-mode, call this function which set the fill-column to the customize-value, enable the ~variable-pitch-mode~ and active the autofill. Autofill is disable in ~org-mode~ because I use to have code
-snippets.
-
-#+begin_src emacs-lisp
-(defun lem/text-mode-setup ()
-  (setq evil-auto-indent nil)
-  (variable-pitch-mode 1)
-  (auto-fill-mode 1))
-(add-hook 'text-mode-hook 'lem/text-mode-setup)
-#+end_src
-
-** Markdown
-
-For some reason, emacs has not a  markdown mode enable by default
-
-#+begin_src emacs-lisp
-(use-package markdown-mode
-  :straight t
-  :mode "\\.mdx?\\'"
-  :config
-  (setq markdown-command "marked"))
-
-(defun markdown-html (buffer)
-  (princ (with-current-buffer buffer
-           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>"
-                   (buffer-substring-no-properties (point-min) (point-max))))
-         (current-buffer)))
-#+end_src
-
-** zen mode
-
-It's a good idea, but breaks a lot of custom config. Maybe I should try to create also a minor mode.
-
-#+begin_src emacs-lisp
-(defun zen-mode--activate ()
-  "Function to active a free distraction mode."
-  (setq visual-fill-column-width 80
-        fill-column 80
-        visual-fill-column-center-text t
-        visual-fill-column-fringes-outside-margins t
-        display-line-numbers nil)
-  (auto-fill-mode -1)
-  (git-gutter-mode -1)
-  (visual-fill-column-mode 1))
-
-(defun zen-mode--disable ()
-  "Dsable the zen mode and restore the variables to the previous state."
-  (visual-fill-column-mode -1)
-  (auto-fill-mode 1)
-  (kill-local-variable 'visual-fill-column-width)
-  (kill-local-variable 'visual-fill-column-center-text)
-  (kill-local-variable 'visual-fill-column-fringes-outside-margins)
-  (kill-local-variable 'visual-fill-column-extra-text-width)
-  (setq display-line-numbers t))
-
-(defgroup zen ()
-  "Some documentation."
-  :group 'lem
-  :version '0.0.1
-  :prefix 'zen)
-
-(define-minor-mode zen-mode
-  "Toggles local zen-mode"
-  :initial nil
-  :global nil
-  :group 'zen-mode
-  (if zen-mode
-      (zen-mode--activate)
-    (zen-mode--disable)))
-#+end_src
-
-** Latex
-
-#+begin_src emacs-lisp
-(use-package auctex)
-(use-package cdlatex)
+(require 'lem-file-management)
 #+end_src
 
 * Development
@@ -2145,7 +2016,7 @@ configure Emacs to cause ~lsp-mode~ to use virtual environment.
                'append))
 #+end_src
 
-**** lsp for python                                                :INACTIVE:
+**** lsp for python
 #+begin_src emacs-lisp
 (use-package lsp-pyright :ensure t)
 #+end_src
@@ -2292,10 +2163,15 @@ Another package that could be helpful
 #+end_src
 
 ** Terminals
-*** vterm
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp+: :tangle modules/lem-term.el
 :END:
+
+#+begin_src emacs-lisp
+<<header>>
+#+end_src
+
+*** vterm
 vterm enables the use of fully-fledged terminal applications within Emacs so
 that I don't need an external terminal emulator.
 
@@ -2411,6 +2287,155 @@ doom-snippets not.
 
 #+begin_src emacs-lisp :tangle init.el
 (require 'lem-dev)
+#+end_src
+
+* Writting
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-writting.el
+:END:
+
+#+begin_src emacs-lisp
+<<header>>
+#+end_src
+
+** Flyspell
+Fly spell is a mode that allows you to see typing errors. By default it is
+disable, but can be configure to be used on different kinds of situations.
+
+#+begin_src emacs-lisp
+(use-package flyspell
+  :config
+  (when
+      (file-exists-p "/usr/bin/hunspell")
+    (setq ispell-program-name "hunspell"))
+  (setq ispell-current-dictionary "en_US")
+
+  :hook (text-mode . flyspell-mode)
+  :bind (("M-<f7>" . flyspell-buffer)
+         ("<f7>"   . flyspell-word)
+         ("C-;"    . flyspell-auto-correct-previous-word)))
+#+end_src
+
+We can configure multiples dictionaries and toggle between them
+
+#+begin_src emacs-lisp
+(defun lem/switch-dictionary()
+  (interactive)
+  (let* ((dic ispell-current-dictionary)
+         (change (if (string= dic "en_US") "es_ES" "en_US")))
+    (ispell-change-dictionary change)
+    (message "Dictionary switched from %s to %s" dic change)))
+#+end_src
+
+*** Language tool
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+Language tool is a software that check both, grammar and spelling in different
+languages.
+
+#+begin_src bash
+  curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
+  mkdir -p ~/.local/lib/
+  unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package langtool
+  :config
+  (setq langtool-language-tool-jar
+        "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
+        langtool-default-language "en-US"))
+#+end_src
+
+** Visual fill configuration
+
+#+begin_src emacs-lisp
+  ;; Wrap the text in a custom column size
+  (use-package visual-fill-column)
+#+end_src
+
+** Text mode
+
+Every time emacs enter in text-mode, call this function which set the
+fill-column to the customize-value, enable the ~variable-pitch-mode~ and active
+the autofill. Autofill is disable in ~org-mode~ because I use to have code
+snippets.
+
+#+begin_src emacs-lisp
+(defun lem/text-mode-setup ()
+  (setq evil-auto-indent nil)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 1))
+(add-hook 'text-mode-hook 'lem/text-mode-setup)
+#+end_src
+
+** Markdown
+
+For some reason, emacs has not a  markdown mode enable by default
+
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :straight t
+  :mode "\\.mdx?\\'"
+  :config
+  (setq markdown-command "marked"))
+
+(defun markdown-html (buffer)
+  (princ (with-current-buffer buffer
+           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>"
+                   (buffer-substring-no-properties (point-min) (point-max))))
+         (current-buffer)))
+#+end_src
+
+** zen mode
+
+It's a good idea, but breaks a lot of custom config. Maybe I should try to create also a minor mode.
+
+#+begin_src emacs-lisp
+(defun zen-mode--activate ()
+  "Function to active a free distraction mode."
+  (setq visual-fill-column-width 80
+        fill-column 80
+        visual-fill-column-center-text t
+        visual-fill-column-fringes-outside-margins t
+        display-line-numbers nil)
+  (auto-fill-mode -1)
+  (git-gutter-mode -1)
+  (visual-fill-column-mode 1))
+
+(defun zen-mode--disable ()
+  "Dsable the zen mode and restore the variables to the previous state."
+  (visual-fill-column-mode -1)
+  (auto-fill-mode 1)
+  (kill-local-variable 'visual-fill-column-width)
+  (kill-local-variable 'visual-fill-column-center-text)
+  (kill-local-variable 'visual-fill-column-fringes-outside-margins)
+  (kill-local-variable 'visual-fill-column-extra-text-width)
+  (setq display-line-numbers t))
+
+(defgroup zen ()
+  "Some documentation."
+  :group 'lem
+  :version '0.0.1
+  :prefix 'zen)
+
+(define-minor-mode zen-mode
+  "Toggles local zen-mode"
+  :initial nil
+  :global nil
+  :group 'zen-mode
+  (if zen-mode
+      (zen-mode--activate)
+    (zen-mode--disable)))
+#+end_src
+
+** Latex
+
+#+begin_src emacs-lisp
+(use-package auctex)
+(use-package cdlatex)
 #+end_src
 
 * Org mode
@@ -3370,6 +3395,10 @@ Index notes are these notes used to group connected notes. Can be a TOC, a sort 
 #+end_src
 
 * Denote
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp: :tangle no
+:END:
+
 #+begin_src emacs-lisp
 (use-package denote
   :config
