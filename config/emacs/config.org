@@ -9,99 +9,100 @@
 #+auto_tangle: t
 
 * Table of Content                                                      :TOC:
-- [[#some-hints][Some hints]]
-  - [[#enable-literature-configuration][Enable literature configuration]]
-  - [[#lexical-binding][Lexical binding]]
-- [[#early-init][Early init]]
-  - [[#startup-performance][Startup performance]]
-- [[#init-file][Init file]]
-  - [[#profile-emacs-start-up][Profile emacs start up]]
-  - [[#update-load-path][Update load path]]
-- [[#package-system][Package system]]
-  - [[#end-of-package][End of package]]
-- [[#dashboard][Dashboard]]
-- [[#general-configuration][General configuration]]
-  - [[#standard-settings][Standard settings]]
-- [[#lem-module][lem module]]
-  - [[#define-transparency][Define transparency]]
-  - [[#sync-files][Sync files]]
-  - [[#file-operations][File operations]]
-  - [[#reload-emacs][Reload emacs]]
-  - [[#end-of-lem-module][End of lem module]]
-- [[#theming][Theming]]
-  - [[#fonts][Fonts]]
-  - [[#reduce-distractions][Reduce distractions]]
-  - [[#configure-lines][Configure lines]]
-  - [[#setup-icons][Setup icons]]
-  - [[#modeline][modeline]]
-  - [[#create-frame-hook][create frame hook]]
-  - [[#global-theme][Global theme]]
-  - [[#end-of-lem-ui][End of lem-ui]]
-- [[#highlight-current-line][Highlight current line]]
-- [[#rainbow-delimeters][Rainbow delimeters]]
-- [[#keyboard-binding][Keyboard binding]]
-  - [[#setup-evil-mode][Setup evil mode]]
-  - [[#which-key][Which Key]]
-  - [[#custom-shortcut-with-general][Custom shortcut with general]]
-- [[#work-spaces][Work Spaces]]
-  - [[#end-of-lem-workspace][End of lem-workspace]]
-- [[#completion-system][Completion system]]
-  - [[#completion-at-point][Completion at point]]
-  - [[#vertico][Vertico]]
-  - [[#consult][Consult]]
-  - [[#marginalia][Marginalia]]
-  - [[#completion-action-with-embark][Completion action with Embark]]
-  - [[#completion-in-regions-with-corfu][Completion in Regions with Corfu]]
-  - [[#smex][Smex]]
-  - [[#orderless][Orderless]]
-  - [[#end-of-lem-vertico][End of lem-vertico]]
-- [[#file-management][File Management]]
-  - [[#files-operations][Files operations]]
-  - [[#dired][Dired]]
-  - [[#peep-dired][Peep dired]]
-  - [[#defining-some-keys-for-dired][Defining some keys for dired]]
-  - [[#end-of-lem-dired][End of lem-dired]]
-- [[#development][Development]]
-  - [[#project-management][Project management]]
-  - [[#linters][Linters]]
-  - [[#compilation][Compilation]]
-  - [[#language-server-protocol][Language server protocol]]
-  - [[#language-support][Language support]]
-  - [[#terminals][Terminals]]
-  - [[#snippets][Snippets]]
-  - [[#end-of-lem-dev][End of lem-dev]]
-- [[#writting][Writting]]
-  - [[#flyspell][Flyspell]]
-  - [[#visual-fill-configuration][Visual fill configuration]]
-  - [[#text-mode][Text mode]]
-  - [[#markdown][Markdown]]
-  - [[#zen-mode][zen mode]]
-  - [[#latex][Latex]]
-- [[#org-mode][Org mode]]
-  - [[#enable-table-of-content][Enable table of content]]
-  - [[#define-all-the-variables][Define all the variables]]
-  - [[#gtd][GTD]]
-  - [[#configure-babel-languages][Configure Babel languages]]
-  - [[#structure-templates][Structure templates]]
-  - [[#fonts-and-bullets][Fonts and bullets]]
-  - [[#org-templates][Org templates]]
-  - [[#close-org-mode-configuration][Close org mode configuration]]
-  - [[#pomodoro][Pomodoro]]
-  - [[#org-auto-tangle][Org-auto-tangle]]
-  - [[#auto-show-markup-symbols][Auto show markup symbols]]
-  - [[#org-evil][org evil]]
-  - [[#install-org-ref-and-gnuplot-support][Install org ref and gnuplot support]]
-  - [[#search-function][Search function]]
-  - [[#org-wild-notifier][org wild notifier]]
-  - [[#org-present][Org present]]
-  - [[#org-present-ii][Org present II]]
-  - [[#org-journal][Org Journal]]
-- [[#org-roam][Org roam]]
-  - [[#installation][Installation]]
-  - [[#configure-org-roam-templates][Configure org roam templates]]
-  - [[#zettelkasten][Zettelkasten]]
-  - [[#org-roam-ui][Org-roam-ui]]
-- [[#denote][Denote]]
+- [[Some hints][Some hints]]
+  - [[Enable literature configuration][Enable literature configuration]]
+  - [[Lexical binding][Lexical binding]]
+- [[Early init][Early init]]
+  - [[Startup performance][Startup performance]]
+- [[Init file][Init file]]
+  - [[Profile emacs start up][Profile emacs start up]]
+  - [[Update load path][Update load path]]
+- [[Package system][Package system]]
+  - [[End of package][End of package]]
+- [[Dashboard][Dashboard]]
+- [[General configuration][General configuration]]
+  - [[Standard settings][Standard settings]]
+- [[Lem module][Lem module]]
+  - [[Define transparency][Define transparency]]
+  - [[Sync files][Sync files]]
+  - [[File operations][File operations]]
+  - [[Reload emacs][Reload emacs]]
+  - [[End of lem module][End of lem module]]
+- [[Theming][Theming]]
+  - [[Fonts][Fonts]]
+  - [[Reduce distractions][Reduce distractions]]
+  - [[Configure lines][Configure lines]]
+  - [[Setup icons][Setup icons]]
+  - [[modeline][modeline]]
+  - [[create frame hook][create frame hook]]
+  - [[Global theme][Global theme]]
+  - [[End of lem-ui][End of lem-ui]]
+- [[Highlight current line][Highlight current line]]
+- [[Rainbow delimeters][Rainbow delimeters]]
+- [[Keyboard binding][Keyboard binding]]
+  - [[Setup evil mode][Setup evil mode]]
+  - [[Which Key][Which Key]]
+  - [[Custom shortcut with general][Custom shortcut with general]]
+- [[Work Spaces][Work Spaces]]
+  - [[End of lem-workspace][End of lem-workspace]]
+- [[Completion system][Completion system]]
+  - [[Completion at point][Completion at point]]
+  - [[Vertico][Vertico]]
+  - [[Consult][Consult]]
+  - [[Marginalia][Marginalia]]
+  - [[Completion action with Embark][Completion action with Embark]]
+  - [[Completion in Regions with Corfu][Completion in Regions with Corfu]]
+  - [[Smex][Smex]]
+  - [[Orderless][Orderless]]
+  - [[End of lem-vertico][End of lem-vertico]]
+- [[File Management][File Management]]
+  - [[Files operations][Files operations]]
+  - [[Dired][Dired]]
+  - [[Peep dired][Peep dired]]
+  - [[Defining some keys for dired][Defining some keys for dired]]
+  - [[End of lem-dired][End of lem-dired]]
+- [[Development][Development]]
+  - [[Project management][Project management]]
+  - [[Linters][Linters]]
+  - [[Compilation][Compilation]]
+  - [[Language server protocol][Language server protocol]]
+  - [[Language support][Language support]]
+  - [[Terminals][Terminals]]
+  - [[Snippets][Snippets]]
+  - [[End of lem-dev][End of lem-dev]]
+- [[Write-mode][Write-mode]]
+- [[Org workflow][Org workflow]]
+- [[writing][writing]]
+  - [[Flyspell][Flyspell]]
+  - [[Visual fill configuration][Visual fill configuration]]
+  - [[Text mode][Text mode]]
+  - [[Markdown][Markdown]]
+  - [[zen mode][zen mode]]
+  - [[Latex][Latex]]
+- [[Org mode][Org mode]]
+  - [[Org templates][Org templates]]
+  - [[org evil][org evil]]
+  - [[Install org ref and gnuplot support][Install org ref and gnuplot support]]
+  - [[Search function][Search function]]
+  - [[org wild notifier][org wild notifier]]
+  - [[Org present][Org present]]
+  - [[Org Journal][Org Journal]]
+  - [[Org-auto-tangle][Org-auto-tangle]]
+  - [[Configure Babel languages][Configure Babel languages]]
+  - [[Structure templates][Structure templates]]
+  - [[Pomodoro][Pomodoro]]
+  - [[GTD][GTD]]
+  - [[Enable table of content][Enable table of content]]
+  - [[Define all the variables][Define all the variables]]
+  - [[Fonts and bullets][Fonts and bullets]]
+  - [[Auto show markup symbols][Auto show markup symbols]]
+  - [[Close org mode configuration][Close org mode configuration]]
+- [[Org roam][Org roam]]
+  - [[Installation][Installation]]
+  - [[Configure org roam templates][Configure org roam templates]]
+  - [[Zettelkasten][Zettelkasten]]
+  - [[Org-roam-ui][Org-roam-ui]]
+- [[Denote][Denote]]
 
 * Some hints                                                       :INACTIVE:
 ** Enable literature configuration
@@ -164,7 +165,9 @@ This will generate a header at the top of the tangled file to indicate it is gen
 :HEADER-ARGS:emacs-lisp+: :shebang ;;; early-init.el --- early init file -*- lexical-binding: t -*-
 :END:
 
-The early-init file is loaded before any process of emacs, either the package system. I use straight as package manager, so I need to disable the default behavior before the ~package.el~ is loaded
+The early-init file is loaded before any process of emacs, either the package
+system. I use straight as package manager, so I need to disable the default
+behavior before the ~package.el~ is loaded
 
 #+begin_src emacs-lisp
 <<header>>
@@ -192,7 +195,6 @@ a hook to measure Emacs startup time.
       gc-cons-percentage 0.2
       native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
 #+end_src
-
 
 * Init file
 :PROPERTIES:
@@ -582,7 +584,7 @@ function have been moved to the lisp library
 (require 'lem-core)
 #+end_src
 
-* lem module
+* Lem module
 :PROPERTIES:
 :HEADER-ARGS:emacs-lisp+: :tangle modules/lem-module.el
 :END:
@@ -1351,6 +1353,7 @@ We can set a sortcut to open the config file from the emacs directory
 (lem/leader-key-def
   "t"  '(:ignore t                 :which-key "toggles")
   "tw" '(whitespace-mode           :which-key "whitespace")
+  "tz" '(zen-mode                  :which-key "Toggle zen mode")
   "td" '(lem/switch-dictionary     :which-key "Toggle between dictionaries")
   "tt" '(lem/toggle-transparency   :which-key "Toggle between transparency states")
   "tl" '(org-toggle-link-display   :which-key "Toggle org link display")
@@ -1687,7 +1690,7 @@ in any order
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'lem-vertico)
+(require 'lem-completion)
 #+end_src
 * File Management
 :PROPERTIES:
@@ -2289,14 +2292,49 @@ doom-snippets not.
 (require 'lem-dev)
 #+end_src
 
-* Writting
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-writting.el
-:END:
+* Write-mode
+
+See [[https://codeberg.org/luelvira/write-mode][write-mode]]
+
+Language tool is a software that check both, grammar and spelling in different
+languages.
+
+#+begin_src bash
+  curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
+  mkdir -p ~/.local/lib/
+  unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
+#+end_src
 
 #+begin_src emacs-lisp
-<<header>>
+(use-package write-mode
+  :straight (write-mode :local-repo "~/Documents/git/write-mode" :type git)
+  :custom
+  (write-ispell-checker "hunspell")
+  (write-dicts-alist '("en_US" "es_ES"))
+  (langtool-bin  "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar")
+  ;;(write-org-directory "~/Documents/Org")
+  :hook (text-mode . write-mode)
+        (text-mode . flyspell-mode))
 #+end_src
+
+* Org workflow
+
+See [[https://codeberg.org/luelvira/org-workflow][org-workflow]]
+
+#+begin_src emacs-lisp
+(use-package org-workflow
+  :straight (org-workflow :local-repo "~/Documents/git/org-workflow" :type git)
+  :custom
+  (orgworkflow-directory "~/Documents/Org/")
+  (orgworkflow-inbox-file "Inbox.org")
+  (orgworkflow-agenda-files '("Tasks.org" "Habits.org" "Projects.org")))
+#+end_src
+
+* writing 
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp: :tangle no
+:VISIBILITY: folded
+:END:
 
 ** Flyspell
 Fly spell is a mode that allows you to see typing errors. By default it is
@@ -2332,16 +2370,7 @@ We can configure multiples dictionaries and toggle between them
 :VISIBILITY: folded
 :END:
 
-Language tool is a software that check both, grammar and spelling in different
-languages.
-
-#+begin_src bash
-  curl https://languagetool.org/download/LanguageTool-stable.zip -o /tmp/LanguageTool-stable.zip
-  mkdir -p ~/.local/lib/
-  unzip /tmp/LanguageTool-stable.zip -d ~/.local/lib/languageTool
-#+end_src
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package langtool
   :config
   (setq langtool-language-tool-jar
@@ -2375,7 +2404,7 @@ snippets.
 
 For some reason, emacs has not a  markdown mode enable by default
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
 (use-package markdown-mode
   :straight t
   :mode "\\.mdx?\\'"
@@ -2439,308 +2468,15 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
 #+end_src
 
 * Org mode
-** Enable table of content
 
 #+begin_src emacs-lisp
-(use-package toc-org
-  :commands toc-org-enable
-  :hook (org-mode . toc-org-enable))
-#+end_src
-
-** Define all the variables
-
-#+begin_src emacs-lisp
-(defconst lem/org-directory
-  (if (not is-termux)
-      "~/Documents/Org/" "~/storage/shared/Documents/Org/"))
-#+end_src
-
-#+begin_src emacs-lisp
-(defun lem/org-mode-hook ()
-  (variable-pitch-mode)
-  (visual-line-mode 1)
-  (auto-fill-mode 1)
-  (setq evil-auto-indent nil)
-  (diminish org-indent-mode))
-
 (use-package org
-  :defer t
-  :hook ((org-mode . lem/org-mode-hook)
-         (org-mode . org-indent-mode))
-  :custom
-    (org-archive-save-context-info '(time category itags))
-  :config
-  (setq org-directory lem/org-directory
-        org-default-notes-file (concat org-directory "Inbox.org")
-        org-log-done 'time
-        org-hide-emphasis-markers t
-        org-table-convert-region-max-lines 20000
-        org-src-fontify-natively t
-        org-fontify-quote-and-verse-blocks t
-        org-src-tab-acts-natively t
-        org-edit-src-content-indentation 0
-        org-hide-block-startup nil
-        org-src-preserve-indentation nil
-        org-cycle-separator-lines 2
-        org-refile-targets '((nil :maxlevel . 2)
-                             (org-agenda-files :maxlevel . 1))
-        org-outline-path-complete-in-steps nil
-        org-refile-use-outline-path t
-        org-latex-create-formula-image-program 'dvisvgm
-        org-link-frame-setup '((file . find-file)) ;; open file in the same window
-        org-startup-folded 'showall ;; when emacs set as default the value showeverithing, overwrite custom visibilities
-        )
+:config
 #+end_src
+** TODO Org templates
 
-*Note* the variable org-startup-folded should be different to ~showeverithing~ because, this value overwrite other visibility properties for local blocks like ~visibility: hidden~ or ~org-hide-block-startup~
-
-Add some vars borrow from doom-emacs
-
-#+begin_src emacs-lisp
-(setq 
-  org-indirect-buffer-display 'current-window
-  org-enforce-todo-dependencies t
-  org-fontify-done-headline t
-  org-fontify-quote-and-verse-blocks t
-  org-fontify-whole-heading-line t
-  org-tags-columns 0)
-#+end_src
-
-The org mode is not close
-
-** GTD
-*** Multiple  keyword sets in one file
-From [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]], sometimes you want to use different sets of TODO keywords in parallel. For example a set for task that could be =DONE= or =TODO=, other task that could depends on other and include the keyword =WAITING= and so on.
-
-IMPORTANT* You can only use set at time, so you need first to select the correct workflow. The shortcut to select them is: =C-u C-u C-c C-t=; =C-s-RIGHT=; =C-s-LEFT=
-
-*** Workflow states
-- *TODO*: A task workflow which should be done, but is not processed
-- *IN PROGRESS*: A task that start by it is not finished
-- *NEXT*: With the GTD flow, the next task to be done
-- *WAIT*: This task depends on other person, so it's not actionable
-- *DONE*: Need explication?
-
-#+begin_src emacs-lisp
-(setq org-todo-keywords '((sequence "TODO(t)" "STRT(s)" "BACK(b)" "|" "DONE(d!)")
-                          (sequence "|" "HOLD(h)" "CANCELED(c!")))
-
-#+end_src
-
-Also, we can make a hook to start clock in when a task state changes to *IN PROGRESS*
-
-#+begin_src emacs-lisp
-  (defun lem/start-task () 
-  "Start a clock when a task change the state from TOOD to IN PROGRESS."
-    (when (string= (org-get-todo-state) "STRT")
-           (org-clock-in))
-    (when (and (string= (org-get-todo-state) "NEXT")
-               (not (org-entry-get nil "ACTIVATED")))
-    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
-(add-hook 'org-after-todo-state-change-hook #'lem/start-task)
-#+end_src
-
-*** Tags
-Tags helps to filter over all task. This task are mutually exclusive, allowing
-to determinate its context.
-
-#+begin_src emacs-lisp
-(setq org-tag-alist
-  '((:startgroup)
-  ;Put mutually exclusive tags here
-  ("@college" . ?C)
-  ("@home" . ?H)
-  ("@PHD" . ?P)
-  ("@UI" . ?U)
-  (:endgroup)
-  (:startgroup)
-  ("INACTIVE" . ?I)
-  ("TOC" . ?T)
-  ("HIDDEN" . ?F)
-  (:endgroup)))
-#+end_src
-
-*** Agendas
-Configure the agenda views
-
-#+begin_src emacs-lisp
-(setq org-agenda-files
-      (mapcar (lambda (file)
-                (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects.org"))
-      org-agenda-window-setup 'current-window
-      org-agenda-span 'week
-      org-agenda-start-with-log-mode t
-      org-agenda-time-in-grid t
-      org-agenda-show-current-time-in-grid t
-      ;;        org-agenda-start-on-weekday 1
-      org-agenda-skip-deadline-if-done t
-      org-agenda-skip-scheduled-if-done t
-      org-log-into-drawer t
-      org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %20SCHEDULED %20DEADLINE %6CLOCKSUM(Clock) %TAGS")
-#+end_src
-
-Org agenda is a mode of emacs that allows you to view the task for the week
-
-*Note 1* You can shcedule the todos with org-shedule command or due time with org-deadline. To move around the date use ~Shift+arrows~
-
-*Note 2*: We can get a repeat item ading to the deadline the period of time to be repeat, for example a birthday that is repeat each year (see the agenda file)
-
-*** Control time per task
-
-Emacs give you a way to capture the time you spends on each task. You only need go over the task and execute the command =org-clock-in= and when you stop or finish go again over the task and run =org-clock-out=
-
-#+begin_src emacs-lisp
-  (setq org-clock-persist t)
-  (org-clock-persistence-insinuate)
-#+end_src
-
-*** Capture template for task
-
-The following templates should be used to customize the behavior of the capture process for new tasks.
-
-#+begin_src emacs-lisp
-(setq org-capture-templates
-      `(("t" "Task" entry
-         (file+headline ,(concat org-directory "Tasks.org") "Inbox")
-         "* TODO %?\nAdded at: %U" :empty-lines 1)))
-#+end_src
-
-*** Habit
-
-#+begin_src emacs-lisp
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60
-        org-habit-show-all-today nil
-        org-habit-show-habits-only-for-today nil)
-#+end_src
-
-*** Define the agenda view
-We can customize who the agenda display the elements with the command ~org-agenda-custom-commands~
-
-#+begin_src emacs-lisp
-  (setq org-agenda-custom-commands
-        `(("d" "Dashboard" 
-           ((agenda ""
-                    ((org-deadline-warning-days 7)
-                     (org-agenda-span 10)
-                     (org-agenda-overriding-header "Agenda")
-                     ))
-            (alltodo ""
-                     ((org-agenda-overriding-header "Sort by priority")
-                      (org-agenda-sorting-strategy '(priority-down)))
-                     (org-agenda-todo-ignore-scheduled 'all)
-                     (org-agenda-todo-ignore-scheduled 'all)
-                     org-agenda-skip-function '(org-agenda-skip-entry-if 'timestamp))
-           (todo "ACTIVATED"
-                 ((org-agenda-overriding-header "Next Actions")
-                  (org-agenda-max-todos nil)))
-           (todo "TODO"
-                 ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
-                  (org-agenda-files '(,(concat org-directory "Tasks.org")))
-                  (org-agenda-text-search-extra-files nil)))
-           ))))
-#+end_src
-
-** Configure Babel languages
-
-To execute or export code in org-mode code blocks, you’ll need to set up
-org-babel-load-languages for each language you’d like to use.
-[[https:orgmode.org/worg/org-contrib/babel/languages/index.html][This page]] documents all of the languages that you can use with org-babel.
-
-#+begin_src emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (python . t)
-   (js . t)
-   (shell . t)
-   (eshell . t)
-   (gnuplot . t)))
-
-(push '("conf-unix" . conf-unix) org-src-lang-modes)
-(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
-#+end_src
-
-** Structure templates
-
-Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files in combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and then press =TAB=.  For example, to insert an empty =emacs-lisp= block below, you can type =<el= and press =TAB= to expand into such a block.
-
-You can add more =src= block templates below by copying one of the lines and changing the two strings at the end, the first to be the template name and the second to contain the name of the language [[https://orgmode.org/worg/org-contrib/babel/languages.html][as it is known by Org Babel]].
-
-#+begin_src emacs-lisp
-  ;; This is needed as of Org 9.2
-  (require 'org-tempo)
-
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("js" . "src js"))
-  (add-to-list 'org-structure-template-alist '("ex" . "export"))
-#+end_src
-
-** Fonts and bullets
-*** Bullets with org-superstar
-
-Use bullet characters instead of asterisks, plus set the header font sizes to something more palatable. A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
-
-#+begin_src emacs-lisp
-(use-package org-superstar
-  :after org
-  :hook (org-mode . (lambda () (org-superstar-mode 1)))
-  :config
-  (setq org-superstar-remove-leading-stars t
-        org-superstar-leading-bullet ?\s
-        org-superstar-leading-fallback ?\s
-        org-hide-leading-stars nil
-        org-superstar-special-todo-items nil
-;;        org-superstar-todo-bullet-alist
-;;        '(("TODO" . 9744)
-;;          ("[ ]"  . 9744)
-;;          ("DONE" . 9745)
-;;          ("[X]"  . 9745))
-        org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")
-))
-#+end_src
-*** Increase the size of various heading                             :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
-
-#+begin_src emacs-lisp
-  ;; (set-face-attribute 'org-document-title nil :font lem/variable-font :weight 'bold)
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-;                  (org-level-4 . 1.15)
-;                  (org-level-5 . 1.1)
-;                  (org-level-6 . 1.05)
-;                  (org-level-7 . 1)
-                  (org-level-8 . 1.0)))
-    (set-face-attribute
-     (car face) nil
-     :font lem/variable-font :weight 'medium :height (cdr face)))
-#+end_src
-
-*** Setting monospace fonts for required text
-
-#+begin_src emacs-lisp
-(require 'org-indent)
-(set-face-attribute 'org-block           nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-table           nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-formula         nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code            nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-date            nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-indent          nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim        nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line       nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox        nil :inherit 'fixed-pitch)
-#+end_src
-
-** Org templates
-
-In this subsection, I will add some capture to the capture list, that are not related with any workflow
+In this subsection, I will add some capture to the capture list, that are not
+related with any workflow
 
 #+begin_src emacs-lisp
 (setq org-capture-templates
@@ -2761,74 +2497,7 @@ In this subsection, I will add some capture to the capture list, that are not re
                 )))
 #+end_src
 
-** Close org mode configuration
-#+begin_src emacs-lisp
-)
-#+end_src
-
-** Pomodoro
-#+begin_src emacs-lisp
-(defun set-pomodoro-timer (minutes rest)
-  (interactive "nMinutes: \nnRest time: ")
-  (setq org-pomodoro-length minutes
-        org-pomodoro-short-break-length rest))
-
-(defun lem/set-short-pomodoro ()
-  "This function set the default values from the pomodoro method"
-  (interactive)
-  (setq org-pomodoro-length 25
-        org-pomodoro-long-break-frequency 4
-        org-pomodoro-short-break-length 5
-        org-pomodoro-long-break-length 10))
-
-(defun lem/set-custom-timmers-pomodo ()
-  "Function to customize the timmers for the pomodoro clock"
-  (interactive)
-  (setq org-pomodoro-length 90
-        org-pomodoro-long-break-frequency 2
-        org-pomodoro-short-break-length 10
-        org-pomodoro-long-break-length 20))
-
-(use-package org-pomodoro
-  :config
-  (setq
-   alert-user-configuration
-   (quote ((((:category . "org-pomodoro")) libnotify nil)))
-   org-pomodoro-clock-break t
-   org-pomodoro-manual-break t)
-  (lem/set-custom-timmers-pomodo))
-#+end_src
-
-** Org-auto-tangle
-Org  auto-tangle enable tangle the content of a document each time, you save the
-org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
-
-#+begin_src emacs-lisp
-(use-package org-auto-tangle
-  :defer t
-  :hook (org-mode . org-auto-tangle-mode)
-  :config
-  (setq org-auto-tangle-default nil))
-
-(defun lem/insert-auto-tangle-tag ()
-  "Insert auto-tangle tag in literature config."
-  (interactive)
-  (evil-org-open-below 1)
-  (insert "#+auto_tangle: t ")
-  (evil-force-normal-state))
-#+end_src
-
-** Auto show markup symbols
-
-This package show the markup symbols when the cursors is between the symbols
-
-#+begin_src emacs-lisp
-(use-package org-appear
-  :hook (org-mode . org-appear-mode))
-#+end_src
-
-** org evil
-
+** TODO org evil
 #+begin_src emacs-lisp
 (use-package evil-org
   :after org
@@ -2841,7 +2510,7 @@ This package show the markup symbols when the cursors is between the symbols
   (evil-org-agenda-set-keys))
 #+end_src
 
-** Install org ref and gnuplot support
+** TODO Install org ref and gnuplot support
 
 gnuplot is a declarative language that allows you to print graphics in a easy way.
 
@@ -2850,7 +2519,7 @@ gnuplot is a declarative language that allows you to print graphics in a easy wa
 (use-package gnuplot)
 #+end_src
 
-** Search function
+** TODO Search function
 
 This functions allows to search across the org roam note in any directory. To
 call them, you should use the ~SPC-o-s~ shortcuts
@@ -2863,7 +2532,7 @@ call them, you should use the ~SPC-o-s~ shortcuts
     (consult-ripgrep org-directory)))
 #+end_src
 
-** org wild notifier
+** TODO org wild notifier
 
 [[https://github.com/akhramov/org-wild-notifier.el][org wild notifier]] displays notifications based on the org agenda items
 
@@ -2875,161 +2544,7 @@ call them, you should use the ~SPC-o-s~ shortcuts
   (org-wild-notifier-notification-title "Agenda Reminder")
   :config (org-wild-notifier-mode))
 #+end_src
-** Org present                                                    :INACTIVE:
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
-[[https://github.com/rlister/org-present][Org present]] is a minimalist package to make presentation with org-mode
-
-*Note* This package is very slow or I don't know how to setup it
-
-*** Keep it order
-
-To keep an order, I will try to use [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Group-Definitions.html][groups]] to this kind of customization
-
-#+begin_src emacs-lisp
-(defgroup lem/org-present ()
-  "group for all the definitions needed to customize the org-present package."
-  :version 0.01
-  :prefix 'lem)
-#+end_src
-
-Also, I can customize if the presentation will be center or not
-
-#+begin_src emacs-lisp
-(defcustom lem/is-center 1
- "1 to center; 0 to align at the left"
- :type '(integer)
- :group 'lem/org-present)
-#+end_src
-
-*** Increase font size
-
-By default, org-present has a very small font size. I will increase it a little.
-*Note* I can use a relative or absolute font size
-
-#+begin_src emacs-lisp
-(defcustom lem/default-face-height 1.5
- "The height of the default font face. Ot could be a relative value or a fixed value.
-  By default will be 1.5 times the current font size."
-  :type '(number)
-  :group 'lem/org-present)
-
- (defcustom lem/header-face-height 4.0
- "The height of the header line font face. Ot could be a relative value or a fixed value."
-  :type '(number)
-  :group 'lem/org-present) 
-
- (defcustom lem/document-title-face-height 1.75
- "The height of the document title font face. Ot could be a relative value or a fixed value."
-  :type '(number)
-  :group 'lem/org-present) 
-
- (defcustom lem/code-face-height 1.5
- "The height of the code font face. Ot could be a relative value or a fixed value."
-  :type '(number)
-  :group 'lem/org-present) 
-
- (defcustom lem/verbatim-face-height 1.5
- "The height of the verbatim font face. Ot could be a relative value or a fixed value."
-  :type '(number)
-  :group 'lem/org-present) 
-
-
- (defcustom lem/block-face-height 1.25
- "The height of the block font face. Ot could be a relative value or a fixed value."
-  :type '(number)
-  :group 'lem/org-present) 
-#+end_src
-
-*** Define faces
-Also, I can customize the fonts for the presentation
-
-#+begin_src emacs-lisp :tangle no
-(defcustom lem/variable-font "Iosevka Aile"
-"The font used to display the text without a fixed pitch."
-:type '(face)
-:group 'lem/org-present)
-
-
-(defcustom lem/fixed-font "Fira code"
-"The font used to display the text without a fixed pitch."
-:type '(face)
-:group 'lem/org-present)
-#+end_src
-
-**** Setting faces
-
-#+begin_src emacs-lisp :tangle no
-;; Tweak font sizes
-(defun lem/setq-local-faces ()
-  "Change the faces for the presentation"
-  (setq-local face-remapping-alist '((default (:height lem/default-face-height) variable-pitch)
-                                      (header-line (:height lem/header-face-height) variable-pitch)
-                                      (org-document-title (:height lem/document-title-face-height) org-document-title)
-                                      (org-code (:height lem/code-face-height) org-code)
-                                      (org-verbatim (:height lem/verbatim-face-height) org-verbatim)
-                                      (org-block (:height lem/block-face-height) org-block)
-                                      (org-block-begin-line (:height 0.7) org-block))))
-#+end_src
-
-When the present end, I need to reset the font size
-
-#+begin_src emacs-lisp :tangle no
-(defun lem/reset-faces ()
-  (setq-local face-remapping-alist '((default variable-pitch default))))
-#+end_src
-
-*** Define the hook of the presentation mode
-
-#+begin_src emacs-lisp
-(defun lem/org-present-start ()
-  (setq-local face-remapping-alist '((default (:height lem/default-face-height) variable-pitch)
-                                      (header-line (:height lem/header-face-height) variable-pitch)
-                                      (org-document-title (:height lem/document-title-face-height) org-document-title)
-                                      (org-code (:height lem/code-face-height) org-code)
-                                      (org-verbatim (:height lem/verbatim-face-height) org-verbatim)
-                                      (org-block (:height lem/block-face-height) org-block)
-                                      (org-block-begin-line (:height 0.7) org-block)))
-  (setq header-line-format " "
-        visual-fill-column-center-text lem/is-center
-  (org-appear-mode -1)
-  (org-display-inline-images)
-  (visual-line-mode lem/is-center)
-  (display-line-numbers-mode 0)))
-#+end_src
-
-
-#+begin_src emacs-lisp
-(defun lem/org-present-end ()
-  (setq-local face-remapping-alist '((default variable-pitch default)))
-  (setq header-line-format nil)
-  (org-present-small)
-  (org-remove-inline-images)
-  (visual-fill-column-mode 0)
-  (visual-line-mode 0)
-  (org-appear-mode 1))
-#+end_src
-
-#+begin_src emacs-lisp
-
-(defun lem/org-present-prepare-slide (buffer-name heading)
-(org-overview)
-(org-show-entry)
-(org-show-children))
-#+end_src
-
-
-Now register the hooks and install the package (if it already is not installed)
-
-#+begin_src emacs-lisp
-(use-package org-present
-  :hook ((org-present-mode . lem/org-present-start)
-          (org-present-mode-quit . lem/org-present-end)
-          (org-present-after-navigate . lem/org-present-prepare-slide)))
-#+end_src
-
-** Org present II
+** TODO Org present 
 
 #+begin_src emacs-lisp
 ;; Load org-faces to make sure we can set appropriate faces
@@ -3109,7 +2624,7 @@ Now register the hooks and install the package (if it already is not installed)
   (add-hook 'org-present-after-navigate-functions 'lem/org-present-prepare-slide))
 #+end_src
 
-** Org Journal
+** TODO Org Journal
 #+begin_src emacs-lisp
 (use-package org-journal
   :straight t
@@ -3121,6 +2636,387 @@ Now register the hooks and install the package (if it already is not installed)
   (org-journal-encrypt-journal t)
 )
 #+end_src
+
+** Org-auto-tangle                                                 :INACTIVE:
+Org  auto-tangle enable tangle the content of a document each time, you save the
+org file. You need to add the option ~#+auto_tangle: t~ in the header of the file
+
+#+begin_src emacs-lisp
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default nil))
+
+(defun lem/insert-auto-tangle-tag ()
+  "Insert auto-tangle tag in literature config."
+  (interactive)
+  (evil-org-open-below 1)
+  (insert "#+auto_tangle: t ")
+  (evil-force-normal-state))
+#+end_src
+
+** Configure Babel languages                                       :INACTIVE:
+To execute or export code in org-mode code blocks, you’ll need to set up
+org-babel-load-languages for each language you’d like to use.
+[[https:orgmode.org/worg/org-contrib/babel/languages/index.html][This page]] documents all of the languages that you can use with org-babel.
+
+#+begin_src emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)
+   (js . t)
+   (shell . t)
+   (eshell . t)
+   (gnuplot . t)))
+
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
+(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+#+end_src
+
+** Structure templates                                             :INACTIVE:
+Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks
+into your Org files in combination with =org-tempo= by typing =<= followed by the
+template name like =el= or =py= and then press =TAB=. For example, to insert an empty
+=emacs-lisp= block below, you can type =<el= and press =TAB= to expand into such a
+block.
+
+You can add more =src= block templates below by copying one of the lines and
+changing the two strings at the end, the first to be the template name and the
+second to contain the name of the language [[https://orgmode.org/worg/org-contrib/babel/languages.html][as it is known by Org Babel]].
+
+#+begin_src emacs-lisp
+  ;; This is needed as of Org 9.2
+  (require 'org-tempo)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("js" . "src js"))
+  (add-to-list 'org-structure-template-alist '("ex" . "export"))
+#+end_src
+
+** Pomodoro                                                        :INACTIVE:
+
+#+begin_src emacs-lisp
+(defun set-pomodoro-timer (minutes rest)
+  (interactive "nMinutes: \nnRest time: ")
+  (setq org-pomodoro-length minutes
+        org-pomodoro-short-break-length rest))
+
+(defun lem/set-short-pomodoro ()
+  "This function set the default values from the pomodoro method"
+  (interactive)
+  (setq org-pomodoro-length 25
+        org-pomodoro-long-break-frequency 4
+        org-pomodoro-short-break-length 5
+        org-pomodoro-long-break-length 10))
+
+(defun lem/set-custom-timmers-pomodo ()
+  "Function to customize the timmers for the pomodoro clock"
+  (interactive)
+  (setq org-pomodoro-length 90
+        org-pomodoro-long-break-frequency 2
+        org-pomodoro-short-break-length 10
+        org-pomodoro-long-break-length 20))
+
+(use-package org-pomodoro
+  :config
+  (setq
+   alert-user-configuration
+   (quote ((((:category . "org-pomodoro")) libnotify nil)))
+   org-pomodoro-clock-break t
+   org-pomodoro-manual-break t)
+  (lem/set-custom-timmers-pomodo))
+#+end_src
+
+** GTD                                                             :INACTIVE:
+*** Multiple  keyword sets in one file
+From [[https://orgmode.org/manual/Multiple-sets-in-one-file.html][org manual]], sometimes you want to use different sets of TODO keywords in
+parallel. For example a set for task that could be =DONE= or =TODO=, other task that
+could depends on other and include the keyword =WAITING= and so on.
+
+*IMPORTANT* You can only use set at time, so you need first to select the correct
+workflow. The shortcut to select them is: =C-u C-u C-c C-t=; =C-s-RIGHT=; =C-s-LEFT=
+
+*** Workflow states
+- *TODO*: A task workflow which should be done, but is not processed
+- *IN PROGRESS*: A task that start by it is not finished
+- *NEXT*: With the GTD flow, the next task to be done
+- *WAIT*: This task depends on other person, so it's not actionable
+- *DONE*: Need explication?
+
+#+begin_src emacs-lisp
+(setq org-todo-keywords '((sequence "TODO(t)" "STRT(s)" "BACK(b)" "|" "DONE(d!)")
+                          (sequence "|" "HOLD(h)" "CANCELED(c!")))
+
+#+end_src
+
+Also, we can make a hook to start clock in when a task state changes to *IN PROGRESS*
+
+#+begin_src emacs-lisp
+  (defun lem/start-task () 
+  "Start a clock when a task change the state from TOOD to IN PROGRESS."
+    (when (string= (org-get-todo-state) "STRT")
+           (org-clock-in))
+    (when (and (string= (org-get-todo-state) "NEXT")
+               (not (org-entry-get nil "ACTIVATED")))
+    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+(add-hook 'org-after-todo-state-change-hook #'lem/start-task)
+#+end_src
+
+*** Tags
+Tags helps to filter over all task. This task are mutually exclusive, allowing
+to determinate its context.
+
+#+begin_src emacs-lisp
+(setq org-tag-alist
+  '((:startgroup)
+  ;Put mutually exclusive tags here
+  ("@college" . ?C)
+  ("@home" . ?H)
+  ("@PHD" . ?P)
+  ("@UI" . ?U)
+  (:endgroup)
+  (:startgroup)
+  ("INACTIVE" . ?I)
+  ("TOC" . ?T)
+  ("HIDDEN" . ?F)
+  (:endgroup)))
+#+end_src
+
+*** Agendas
+Configure the agenda views
+
+#+begin_src emacs-lisp
+(setq org-agenda-files
+      (mapcar (lambda (file)
+                (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects.org"))
+      org-agenda-window-setup 'current-window
+      org-agenda-span 'week
+      org-agenda-start-with-log-mode t
+      org-agenda-time-in-grid t
+      org-agenda-show-current-time-in-grid t
+      ;;        org-agenda-start-on-weekday 1
+      org-agenda-skip-deadline-if-done t
+      org-agenda-skip-scheduled-if-done t
+      org-log-into-drawer t
+      org-columns-default-format "%20CATEGORY(Category) %30ITEM(Task) %4TODO %6Effort(Estim){:} %20SCHEDULED %20DEADLINE %6CLOCKSUM(Clock) %TAGS")
+#+end_src
+
+Org agenda is a mode of emacs that allows you to view the task for the week
+
+*Note 1* You can shcedule the todos with org-shedule command or due time with org-deadline. To move around the date use ~Shift+arrows~
+
+*Note 2*: We can get a repeat item ading to the deadline the period of time to be repeat, for example a birthday that is repeat each year (see the agenda file)
+
+*** Control time per task
+
+Emacs give you a way to capture the time you spends on each task. You only need
+go over the task and execute the command =org-clock-in= and when you stop or
+finish go again over the task and run =org-clock-out=
+
+#+begin_src emacs-lisp
+  (setq org-clock-persist t)
+  (org-clock-persistence-insinuate)
+#+end_src
+
+*** Capture template for task
+
+The following templates should be used to customize the behavior of the capture
+process for new tasks.
+
+#+begin_src emacs-lisp
+(setq org-capture-templates
+      `(("t" "Task" entry
+         (file+headline ,(concat org-directory "Tasks.org") "Inbox")
+         "* TODO %?\nAdded at: %U" :empty-lines 1)))
+#+end_src
+
+*** Habit
+
+#+begin_src emacs-lisp
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60
+        org-habit-show-all-today nil
+        org-habit-show-habits-only-for-today nil)
+#+end_src
+
+*** Define the agenda view
+We can customize who the agenda display the elements with the command
+~org-agenda-custom-commands~
+
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands
+        `(("d" "Dashboard" 
+           ((agenda ""
+                    ((org-deadline-warning-days 7)
+                     (org-agenda-span 10)
+                     (org-agenda-overriding-header "Agenda")
+                     ))
+            (alltodo ""
+                     ((org-agenda-overriding-header "Sort by priority")
+                      (org-agenda-sorting-strategy '(priority-down)))
+                     (org-agenda-todo-ignore-scheduled 'all)
+                     (org-agenda-todo-ignore-scheduled 'all)
+                     org-agenda-skip-function '(org-agenda-skip-entry-if 'timestamp))
+           (todo "ACTIVATED"
+                 ((org-agenda-overriding-header "Next Actions")
+                  (org-agenda-max-todos nil)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
+                  (org-agenda-files '(,(concat org-directory "Tasks.org")))
+                  (org-agenda-text-search-extra-files nil)))
+           ))))
+#+end_src
+
+** Enable table of content                                         :INACTIVE:
+
+#+begin_src emacs-lisp :tangle no
+(use-package toc-org
+  :commands toc-org-enable
+  :hook (org-mode . toc-org-enable))
+#+end_src
+
+** Define all the variables                                        :INACTIVE:
+
+#+begin_src emacs-lisp
+(defconst lem/org-directory
+  (if (not is-termux)
+      "~/Documents/Org/" "~/storage/shared/Documents/Org/"))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun lem/org-mode-hook ()
+  (variable-pitch-mode)
+  (visual-line-mode 1)
+  (auto-fill-mode 1)
+  (setq evil-auto-indent nil)
+  (diminish org-indent-mode))
+
+(use-package org
+  :defer t
+  :hook ((org-mode . lem/org-mode-hook)
+         (org-mode . org-indent-mode))
+  :custom
+    (org-archive-save-context-info '(time category itags))
+  :config
+  (setq org-directory lem/org-directory
+        org-default-notes-file (concat org-directory "Inbox.org")
+        org-log-done 'time
+        org-hide-emphasis-markers t
+        org-table-convert-region-max-lines 20000
+        org-src-fontify-natively t
+        org-fontify-quote-and-verse-blocks t
+        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 0
+        org-hide-block-startup nil
+        org-src-preserve-indentation nil
+        org-cycle-separator-lines 2
+        org-refile-targets '((nil :maxlevel . 2)
+                             (org-agenda-files :maxlevel . 1))
+        org-outline-path-complete-in-steps nil
+        org-refile-use-outline-path t
+        org-latex-create-formula-image-program 'dvisvgm
+        org-link-frame-setup '((file . find-file)) ;; open file in the same window
+        org-startup-folded 'showall ;; when emacs set as default the value showeverithing, overwrite custom visibilities
+        )
+#+end_src
+
+*Note* the variable org-startup-folded should be different to ~showeverithing~
+because, this value overwrite other visibility properties for local blocks like
+~visibility: hidden~ or ~org-hide-block-startup~
+
+Add some vars borrow from doom-emacs
+
+#+begin_src emacs-lisp
+(setq 
+  org-indirect-buffer-display 'current-window
+  org-enforce-todo-dependencies t
+  org-fontify-done-headline t
+  org-fontify-quote-and-verse-blocks t
+  org-fontify-whole-heading-line t
+  org-tags-columns 0)
+#+end_src
+
+The org mode is not close
+
+** Fonts and bullets                                               :INACTIVE:
+*** Bullets with org-superstar
+
+Use bullet characters instead of asterisks, plus set the header font sizes to something more palatable. A fair amount of inspiration has been taken from [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][this blog post]].
+
+#+begin_src emacs-lisp
+(use-package org-superstar
+  :after org
+  :hook (org-mode . (lambda () (org-superstar-mode 1)))
+  :config
+  (setq org-superstar-remove-leading-stars t
+        org-superstar-leading-bullet ?\s
+        org-superstar-leading-fallback ?\s
+        org-hide-leading-stars nil
+        org-superstar-special-todo-items nil
+;;        org-superstar-todo-bullet-alist
+;;        '(("TODO" . 9744)
+;;          ("[ ]"  . 9744)
+;;          ("DONE" . 9745)
+;;          ("[X]"  . 9745))
+        org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")
+))
+#+end_src
+*** Increase the size of various heading                             :INACTIVE:
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+#+begin_src emacs-lisp
+  ;; (set-face-attribute 'org-document-title nil :font lem/variable-font :weight 'bold)
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+;                  (org-level-4 . 1.15)
+;                  (org-level-5 . 1.1)
+;                  (org-level-6 . 1.05)
+;                  (org-level-7 . 1)
+                  (org-level-8 . 1.0)))
+    (set-face-attribute
+     (car face) nil
+     :font lem/variable-font :weight 'medium :height (cdr face)))
+#+end_src
+
+*** Setting monospace fonts for required text
+
+#+begin_src emacs-lisp
+(require 'org-indent)
+(set-face-attribute 'org-block           nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table           nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula         nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code            nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-date            nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-indent          nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim        nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line       nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox        nil :inherit 'fixed-pitch)
+#+end_src
+
+** Auto show markup symbols                                        :INACTIVE:
+
+This package show the markup symbols when the cursors is between the symbols
+
+#+begin_src emacs-lisp
+(use-package org-appear
+  :hook (org-mode . org-appear-mode))
+#+end_src
+
+** Close org mode configuration
+#+begin_src emacs-lisp
+;; close org mode
+)
+#+end_src
+
 * Org roam
 
 Org-roam is a tool for networked thought. It reproduces some of the Roam
@@ -3159,7 +3055,9 @@ The instalation process use the melpa or melpa stable package manager from emacs
 
 *** Configure org roam completion find function
 
-If you’re using a vertical completion framework, such as Ivy, Org-roam supports the generation of an aligned, tabular completion interface. For example, to include a column for tags, one can set org-roam-node-display-template as such:
+If you’re using a vertical completion framework, such as Ivy, Org-roam supports
+the generation of an aligned, tabular completion interface. For example, to
+include a column for tags, one can set org-roam-node-display-template as such:
 
 #+begin_src emacs-lisp
 (cl-defmethod org-roam-node-date ((node org-roam-node)) (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node)))
@@ -3245,7 +3143,6 @@ If you’re using a vertical completion framework, such as Ivy, Org-roam support
                                         ; initialize the functions
 (lem/org-roam-refresh-agenda-list)
 #+end_src
-
 
 ** Zettelkasten
 :PROPERTIES:
@@ -3395,9 +3292,6 @@ Index notes are these notes used to group connected notes. Can be a TOC, a sort 
 #+end_src
 
 * Denote
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp: :tangle no
-:END:
 
 #+begin_src emacs-lisp
 (use-package denote
