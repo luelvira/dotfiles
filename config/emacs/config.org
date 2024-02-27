@@ -1687,7 +1687,7 @@ in any order
 #+end_src
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'lem-vertico)
+(require 'lem-completion)
 #+end_src
 * File Management
 :PROPERTIES:
