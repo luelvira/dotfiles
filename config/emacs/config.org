@@ -70,13 +70,14 @@
   - [[#terminals][Terminals]]
   - [[#snippets][Snippets]]
   - [[#end-of-lem-dev][End of lem-dev]]
-- [[#writting][Writting]]
+- [[#writing][Writing]]
   - [[#flyspell][Flyspell]]
   - [[#visual-fill-configuration][Visual fill configuration]]
   - [[#text-mode][Text mode]]
   - [[#markdown][Markdown]]
   - [[#zen-mode][zen mode]]
   - [[#latex][Latex]]
+  - [[#end-of-writing-mode][End of writing mode]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-content][Enable table of content]]
   - [[#define-all-the-variables][Define all the variables]]
@@ -2289,9 +2290,9 @@ doom-snippets not.
 (require 'lem-dev)
 #+end_src
 
-* Writting
+* Writing
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-writting.el
+:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-writing.el
 :END:
 
 #+begin_src emacs-lisp
@@ -2438,6 +2439,15 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
 (use-package cdlatex)
 #+end_src
 
+** End of writing mode                                                  :END:
+#+begin_src emacs-lisp
+(provide 'lem-writing)
+;;; lem-writing.el ends here
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+(require 'lem-writing)
+#+end_src
 * Org mode
 ** Enable table of content
 
