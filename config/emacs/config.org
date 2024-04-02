@@ -41,11 +41,6 @@
   - [[#bookmarks-and-buffers][Bookmarks and buffers]]
   - [[#custom-functions][Custom functions]]
   - [[#end-of-core][END OF CORE]]
-- [[#need-attention][NEED ATTENTION]]
-  - [[#no-littering][No littering]]
-  - [[#highlight-matching-braces][Highlight Matching Braces]]
-  - [[#diminish][diminish]]
-  - [[#minions][Minions]]
 - [[#lem-module][lem module]]
   - [[#define-transparency][Define transparency]]
   - [[#sync-files][Sync files]]
@@ -57,10 +52,13 @@
   - [[#reduce-distractions][Reduce distractions]]
   - [[#configure-lines][Configure lines]]
   - [[#modeline][modeline]]
+  - [[#diminish][diminish]]
+  - [[#minions][Minions]]
   - [[#create-frame-hook][create frame hook]]
   - [[#fonts][Fonts]]
   - [[#global-theme][Global theme]]
   - [[#highlights][Highlights]]
+  - [[#highlight-matching-braces][Highlight Matching Braces]]
   - [[#end-of-theming][END OF THEMING]]
 - [[#keyboard-binding][Keyboard binding]]
   - [[#setup-evil-mode][Setup evil mode]]
@@ -370,6 +368,19 @@ Also I will change the location of the ~custom-file.el~, setting it in the confi
   (load custom-file 'noerror 'nomessage))
 #+end_src
 
+*** No littering
+#+begin_src emacs-lisp
+(use-package no-littering
+  :demand t
+  :config
+  (let ((backup-dir (no-littering-expand-var-file-name "backup/")))
+    (make-directory backup-dir t)
+    (setq backup-directory-alist
+          `(("\\`/tmp/" . nil)
+            ("\\`/dev/shm/" . nil)
+            ("." . ,backup-dir)))))
+#+end_src
+
 ** Startup screen
 
 #+begin_src emacs-lisp
@@ -617,49 +628,6 @@ We can set a shortcut to open the config file from the emacs directory
 (require 'lem-core)
 #+end_src
 
-* TODO NEED ATTENTION
-** TODO No littering
-#+begin_src emacs-lisp
-(use-package no-littering
-  :demand t
-  :config
-  (let ((backup-dir (no-littering-expand-var-file-name "backup/")))
-    (make-directory backup-dir t)
-    (setq backup-directory-alist
-          `(("\\`/tmp/" . nil)
-            ("\\`/dev/shm/" . nil)
-            ("." . ,backup-dir)))))
-#+end_src
-
-** TODO Highlight Matching Braces
-
-#+begin_src emacs-lisp
-(use-package paren
-  :config
-  (setq show-paren-delay 0.1
-        show-paren-highlight-openparen t
-        show-paren-when-point-inside-paren t
-        show-paren-when-point-in-periphery t)
-  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
-  (show-paren-mode 1))
-#+end_src
-
-** TODO diminish
-
-The diminish package hides pesky minor modes from the modeline
-#+begin_src emacs-lisp
-(use-package diminish)
-#+end_src
-
-** TODO Minions
-
-Minions is a package that implements a nested menu which gives access to all known minor modes
-
-#+begin_src emacs-lisp
-(use-package minions
-  :hook ((doom-modeline-mode mood-line-mode) . minions-mode))
-#+end_src
-
 * lem module
 
 This module contains some custom functions
@@ -879,6 +847,22 @@ Above there is the config for the doom-modeline
   (mood-line-mode))
 #+end_src
 
+** diminish
+
+The diminish package hides pesky minor modes from the modeline
+#+begin_src emacs-lisp
+(use-package diminish)
+#+end_src
+
+** Minions
+
+Minions is a package that implements a nested menu which gives access to all known minor modes
+
+#+begin_src emacs-lisp
+(use-package minions
+  :hook ((doom-modeline-mode mood-line-mode) . minions-mode))
+#+end_src
+
 ** create frame hook
 
 Emacs in daemon mode has a problem loading the fonts. By default, the init file
@@ -1046,6 +1030,19 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 (use-package rainbow-delimiters
   :init (setq rainbow-delimiters-max-face-count 4)
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
+#+end_src
+
+** Highlight Matching Braces
+
+#+begin_src emacs-lisp
+(use-package paren
+  :config
+  (setq show-paren-delay 0.1
+        show-paren-highlight-openparen t
+        show-paren-when-point-inside-paren t
+        show-paren-when-point-in-periphery t)
+  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
+  (show-paren-mode 1))
 #+end_src
 
 ** END OF THEMING                                                       :END:
@@ -1920,7 +1917,6 @@ on language support for flycheck, [[https://www.flycheck.org/en/latest/languages
 #+end_src
 
 ** Language support
-
 *** Python
 #+begin_src emacs-lisp
 (use-package python-mode
@@ -2173,6 +2169,10 @@ doom-snippets not.
     (yas-global-mode 1))
 
   (use-package yasnippet-snippets)
+
+(use-package doom-snippets
+  :after yasnippet
+  :straight (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*")))
 #+end_src
 
 * Writing
@@ -2497,8 +2497,7 @@ Also, we can make a hook to start clock in when a task state changes to *IN PROG
 #+end_src
 
 *** Tags
-Tags helps to filter over all task. This task are mutually exclusive, allowing
-to determinate its context.
+Tags helps to filter over all task. This task are mutually exclusive, allowing to determinate its context.
 
 #+begin_src emacs-lisp
 (setq org-tag-alist
@@ -2514,6 +2513,13 @@ to determinate its context.
   ("TOC" . ?T)
   ("HIDDEN" . ?F)
   (:endgroup)))
+#+end_src
+
+You can prevent tags inheritance with
+
+#+begin_src emacs-lisp
+(setq org-use-tag-inheritance t ; I want to keep it active
+      org-tags-exclude-from-inheritance '("PROJECT"))
 #+end_src
 
 *** Agendas
@@ -2668,18 +2674,18 @@ Use bullet characters instead of asterisks, plus set the header font sizes to so
 :END:
 
 #+begin_src emacs-lisp
-  ;; (set-face-attribute 'org-document-title nil :font lem/variable-font :weight 'bold)
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-;                  (org-level-4 . 1.15)
-;                  (org-level-5 . 1.1)
-;                  (org-level-6 . 1.05)
-;                  (org-level-7 . 1)
-                  (org-level-8 . 1.0)))
-    (set-face-attribute
-     (car face) nil
-     :font lem/variable-font :weight 'medium :height (cdr face)))
+(set-face-attribute 'org-document-title nil :font lem-variable :weight 'bold)
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.15)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.05)
+                (org-level-7 . 1)
+                (org-level-8 . 1.0)))
+  (set-face-attribute
+   (car face) nil
+   :font lem-variable :weight 'medium :height (cdr face)))
 #+end_src
 
 *** Setting monospace fonts for required text
@@ -2959,8 +2965,8 @@ The instalation process use the melpa or melpa stable package manager from emacs
                     "#+TITLE: ${title}\n#+DATE: %U\n#+AUTHOR: %n\n#+filetags: :fleeting:")
          :unnarrowed nil)
         ("P" "Permanent" palin "%?"
-        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-"#+TITLE: ${title}\n#+DATE: %U\n#+filetags: :PERMANENT:\n* ${title}\n\n%?")
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+TITLE: ${title}\n#+DATE: %U\n#+filetags: :PERMANENT:\n* ${title}\n\n")
          :unnarrowed t)
         ("d" "default" plain "%?"
          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
