@@ -4,3 +4,9 @@ export PYENV_ROOT="$HOME/Documents/git/dotfiles/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+export PATH=$PATH:/opt/dart-sass
+export PATH=$PATH:$HOME/.local/bin/
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+

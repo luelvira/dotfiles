@@ -3,6 +3,20 @@
 #+DATE: [2023-11-26 Sun]
 #+PROPERTY: header-args :tangle config.ini
 #+auto_tangle: t 
+
+#+begin_src conf
+; /==============================================================\
+; ||             _       _                                   __ ||
+; || _ __   ___ | |_   _| |__   __ _ _ __    ___ ___  _ __  / _|||
+; ||| '_ \ / _ \| | | | | '_ \ / _` | '__|  / __/ _ \| '_ \| |_ ||
+; ||| |_) | (_) | | |_| | |_) | (_| | |    | (_| (_) | | | |  _|||
+; ||| .__/ \___/|_|\__, |_.__/ \__,_|_|     \___\___/|_| |_|_|  ||
+; |||_|            |___/                                        ||
+; \==============================================================/
+
+; This file is autogerenate. Do not edit
+#+end_src
+
 * Polybar
 To learn more about how to configure Polybar go to: [[https://github.com/jaagr/polybar][jaagr/polybar]]
 ** Global settings
@@ -141,6 +155,7 @@ tray-scale = 1.0
 inherit = bar/main
 monitor = HDMI-0
 modules-left = i3 uptime
+modules-center = date
 modules-right = fs-root fs-home memory cpu wired-network
 #+end_src
 

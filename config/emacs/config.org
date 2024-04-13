@@ -1,5 +1,5 @@
 :PROPERTIES:
-:HEADER-ARGS:emacs-lisp:   :mkdirp yes
+:HEADER-ARGS:emacs-lisp:  :mkdirp yes
 :HEADER-ARGS:emacs-lisp+: :tangle (let ((org-use-tag-inheritance t)) (if (or (member "KEYS" (org-get-tags)) (member "INACTIVE" (org-get-tags)))  "no" "init.el")))
 :HEADER-ARGS:emacs-lisp+: :noweb tangle :shebang ;; -*- lexical-binding: t -*-
 :HEADER-ARGS:emacs-lisp+: :padline    (let ((org-use-tag-inheritance t)) (if (member "END" (org-get-tags)) "no" "yes"))
@@ -11,115 +11,6 @@
 #+STARTUP: overview
 #+TAGS: INACTIVE(i) TOC(t)
 #+auto_tangle: t
-
-* Table of Content                                                      :TOC:
-- [[#some-hints][Some hints]]
-  - [[#enable-literature-configuration][Enable literature configuration]]
-  - [[#lexical-binding][Lexical binding]]
-- [[#early-init][Early init]]
-  - [[#startup-performance][Startup performance]]
-- [[#init-file][Init file]]
-  - [[#profile-emacs-start-up][Profile emacs start up]]
-  - [[#update-load-path][Update load path]]
-- [[#package-system][Package system]]
-- [[#dashboard][Dashboard]]
-- [[#general-configuration][General configuration]]
-  - [[#system-settings][System settings]]
-  - [[#keep-it-clean][Keep it clean]]
-  - [[#startup-screen][Startup screen]]
-  - [[#default-encoding][Default encoding]]
-  - [[#disable-warnings-when-native-compilation][Disable warnings when native compilation]]
-  - [[#recovery][Recovery]]
-  - [[#history][History]]
-  - [[#confirmation-prompts][Confirmation prompts]]
-  - [[#defaults][Defaults]]
-  - [[#set-up-tramp][Set up tramp]]
-  - [[#emacs-as-server][Emacs as server]]
-  - [[#auto-revert-buffers][Auto revert buffers]]
-  - [[#maximize-windows-by-default-and-setup-transparency][Maximize windows by default and setup transparency]]
-  - [[#enable-scape-instead-of-c-g][Enable scape instead of C-g]]
-  - [[#bookmarks-and-buffers][Bookmarks and buffers]]
-  - [[#custom-functions][Custom functions]]
-  - [[#end-of-core][END OF CORE]]
-- [[#lem-module][lem module]]
-  - [[#define-transparency][Define transparency]]
-  - [[#sync-files][Sync files]]
-  - [[#file-operations][File operations]]
-  - [[#define-the-key-bindings][Define the key bindings]]
-  - [[#reload-emacs][Reload emacs]]
-  - [[#define-the-key-bindings-1][Define the key bindings]]
-- [[#theming][Theming]]
-  - [[#reduce-distractions][Reduce distractions]]
-  - [[#configure-lines][Configure lines]]
-  - [[#modeline][modeline]]
-  - [[#diminish][diminish]]
-  - [[#minions][Minions]]
-  - [[#create-frame-hook][create frame hook]]
-  - [[#fonts][Fonts]]
-  - [[#global-theme][Global theme]]
-  - [[#highlights][Highlights]]
-  - [[#highlight-matching-braces][Highlight Matching Braces]]
-  - [[#end-of-theming][END OF THEMING]]
-- [[#keyboard-binding][Keyboard binding]]
-  - [[#setup-evil-mode][Setup evil mode]]
-  - [[#which-key][Which Key]]
-  - [[#custom-shortcut-with-general][Custom shortcut with general]]
-- [[#work-spaces][Work Spaces]]
-- [[#completion-system][Completion system]]
-  - [[#completion-at-point][Completion at point]]
-  - [[#vertico][Vertico]]
-  - [[#consult][Consult]]
-  - [[#marginalia][Marginalia]]
-  - [[#completion-action-with-embark][Completion action with Embark]]
-  - [[#completion-in-regions-with-corfu][Completion in Regions with Corfu]]
-  - [[#smex][Smex]]
-  - [[#orderless][Orderless]]
-- [[#file-management][File Management]]
-  - [[#dired][Dired]]
-  - [[#peep-dired][Peep dired]]
-- [[#development][Development]]
-  - [[#project-management][Project management]]
-  - [[#linters][Linters]]
-  - [[#compilation][Compilation]]
-  - [[#language-server-protocol][Language server protocol]]
-  - [[#language-support][Language support]]
-  - [[#terminals][Terminals]]
-  - [[#snippets][Snippets]]
-- [[#writing][Writing]]
-  - [[#install-dependencies][Install dependencies]]
-  - [[#functions][Functions]]
-  - [[#flyspell][Flyspell]]
-  - [[#language-tool][Language tool]]
-  - [[#visual-fill-configuration][Visual fill configuration]]
-  - [[#markdown][Markdown]]
-  - [[#zen-mode][zen mode]]
-  - [[#latex][Latex]]
-  - [[#end-of-write-module][End of Write module]]
-- [[#org-mode][Org mode]]
-  - [[#enable-table-of-content][Enable table of content]]
-  - [[#define-all-the-variables][Define all the variables]]
-  - [[#gtd][GTD]]
-  - [[#configure-babel-languages][Configure Babel languages]]
-  - [[#structure-templates][Structure templates]]
-  - [[#fonts-and-bullets][Fonts and bullets]]
-  - [[#org-templates][Org templates]]
-  - [[#close-org-mode-configuration][Close org mode configuration]]
-  - [[#pomodoro][Pomodoro]]
-  - [[#org-auto-tangle][Org-auto-tangle]]
-  - [[#auto-show-markup-symbols][Auto show markup symbols]]
-  - [[#org-evil][org evil]]
-  - [[#install-org-ref-and-gnuplot-support][Install org ref and gnuplot support]]
-  - [[#search-function][Search function]]
-  - [[#org-wild-notifier][org wild notifier]]
-  - [[#org-present][Org present]]
-  - [[#org-journal][Org Journal]]
-- [[#org-roam][Org roam]]
-  - [[#installation][Installation]]
-  - [[#configure-org-roam-templates][Configure org roam templates]]
-  - [[#zettelkasten][Zettelkasten]]
-  - [[#org-roam-ui][Org-roam-ui]]
-  - [[#combining-org-roam-with-markdown-syntax][Combining org roam with markdown syntax!]]
-- [[#denote][Denote]]
 
 * Some hints                                                       :INACTIVE:
 ** Enable literature configuration
@@ -1381,13 +1272,13 @@ emacs
 *** Toggle options
 
 #+begin_src emacs-lisp
-  "t"  '(:ignore t                 :which-key "toggles")
-  "tw" '(whitespace-mode           :which-key "whitespace")
-  "td" '(lem/switch-dictionary     :which-key "Toggle between dictionaries")
-  "tt" '(lem/toggle-transparency   :which-key "Toggle between transparency states")
-  "tl" '(org-toggle-link-display   :which-key "Toggle org link display")
-  "tL" '(display-line-numbers-mode :which-key "Toggle display line numbers")
-  "tf" '(auto-fill-mode            :which-key "Toggle autofill mode")
+  "t"  '(:ignore t                   :which-key "toggles")
+  "tw" '(whitespace-mode             :which-key "whitespace")
+  "td" '(lem-write-switch-dictionary :which-key "Toggle between dictionaries")
+  "tt" '(lem/toggle-transparency     :which-key "Toggle between transparency states")
+  "tl" '(org-toggle-link-display     :which-key "Toggle org link display")
+  "tL" '(display-line-numbers-mode   :which-key "Toggle display line numbers")
+  "tf" '(auto-fill-mode              :which-key "Toggle autofill mode")
 #+end_src
 
 *** root privileges.
@@ -1877,6 +1768,20 @@ on language support for flycheck, [[https://www.flycheck.org/en/latest/languages
   :init (global-flycheck-mode))
 #+end_src
 
+Origami is a module that allows you to fold the code
+
+#+begin_src emacs-lisp
+(use-package origami
+  :hook (prog-mode . origami-mode))
+#+end_src
+
+Subwords allows you to interact with camelCase words as separate words
+
+#+begin_src emacs-lisp
+(use-package subword
+  :config (global-subword-mode 1))
+#+end_src
+
 ** Compilation
 #+begin_src emacs-lisp
 (use-package compile
@@ -1955,8 +1860,7 @@ This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
 
 *** WEB
 
-****** JavaScript/TypeScript
-
+***** JavaScript/TypeScript
 
 There are a lot of package aimed to work with js/ts code. Some of
 theme are ~js-mode~, ~js2-mode~, ~web-mode~... For javascript files I will
@@ -1964,7 +1868,6 @@ use js2-mode because this is the one used by other frameworks such
 doom emacs. And, for editing html and css related files, ~web-mode~
 
 #+begin_src emacs-lisp
-
 (defun lem/js-indentation ()
   "setup the default indent for javascript files."
   (setq js-chain-indent t
@@ -1974,6 +1877,7 @@ doom emacs. And, for editing html and css related files, ~web-mode~
         typescript-indent-level js-indent-level
         evil-shift-width js-indent-level
         tab-width js-indent-level))
+
 (defcustom lem/js-indentation-value 2
   "The default value for indent javascript and typescript files."
   :set (lambda (k v) (set-default k v) (lem/js-indentation))
@@ -2003,7 +1907,7 @@ For formatting the js code, I think the best tool is [[https://prettier.io/][pre
 
 #+begin_src emacs-lisp
 (use-package prettier-js
-:custom (prettier-js-args '("--print-width" "100"
+  :custom (prettier-js-args '("--print-width" "100"
                               "--single-quote" "true"
                               "--trailing-comma" "all"))
   :config
@@ -2028,23 +1932,40 @@ Sometimes I need to work with typescript...
   ;; TSLint is depreciated in favor of ESLint.
   (flycheck-disable-checker 'typescript-tslint)
   (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr"))
-  (typescript-indent-level 2)
+  (typescript-indent-level lem/js-indentation-value)
   :config
   (flycheck-add-mode 'javascript-eslint 'typescript-mode))
+#+end_src
+
+And with react
+
+#+begin_src emacs-lisp
+(use-package rjsx-mode)
 #+end_src
 
 **** HTML and CSS
 
 #+begin_src emacs-lisp
+(defun lem/web-indentation ()
+  "Setup the indentation for the web mode."
+  (setq web-mode-markup-indent-offset lem/web-indentation-value ;; for html
+        web-mode-css-indent-offset    lem/web-indentation-value ;; for css
+        web-mode-code-indent-offset   lem/js-indentation-value  ;; for script/code
+        web-mode-enable-auto-pairing  t
+        web-mode-style-padding        lem/web-indentation-value
+        web-mode-script-padding       lem/js-indentation-value))
+
+(defcustom lem/web-indentation-value 2
+  "Default value of indentation for web mode.
+Default value is 2 following the standards."
+  :set (lambda (k v) (set-default k v) (lem/web-indentation))
+  :group 'lem
+  :type 'number)
+
 (use-package web-mode
   :mode "(\\.html?"
   :config
-  (setq web-mode-markup-indent-offset 2 ;; for html
-        web-mode-css-indent-offset    2 ;; for css
-        web-mode-code-indent-offset   2 ;; for script/code
-        web-mode-enable-auto-pairing  t
-        web-mode-style-padding        2
-        web-mode-script-padding       2))
+  (lem/web-indentation))
 #+end_src
 
 Also we can enable [[https://github.com/skeeto/emacs-web-server/tree/master][simple-http]] to create a server in the current path
@@ -2174,6 +2095,25 @@ doom-snippets not.
   :after yasnippet
   :straight (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*")))
 #+end_src
+** Time tracking with WakaTime and ActivityWatch
+
+Wakatime is an opensource software aims at provide you metrics about the time
+you spend codding in the different projects you have.
+
+#+begin_src emacs-lisp
+(use-package wakatime-mode
+  :straight t
+  :config
+  (global-wakatime-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package activity-watch-mode
+:disabled
+:straight t
+:config
+(global-activity-watch-mode))
+#+end_src
 
 * Writing
 :PROPERTIES:
@@ -2181,80 +2121,63 @@ doom-snippets not.
 :HEADER-ARGS:emacs-lisp+: :shebang ;;; lem-write.el --- module for improve the writing prcess -*- lexical-binding -*-
 :END:
 #+begin_src emacs-lisp
-;; This file is not part of GNU Emacs
-
-;; This program is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-;; author: Lucas Elvira <lucaselvira96@gmail.com>
-;; Version: 0.0.1
-;; Package-Requires: ((flyspell) (langtool) (visual-fill-column) (auctex) (cdlatex))
-
-;;; Commentary:
-
-;;; Code:
+<<header>>
 #+end_src
 
 ** Install dependencies
 
+*** Center text view
+
 #+begin_src emacs-lisp
-  (use-package flyspell)
-  (use-package langtool)
-  (use-package visual-fill-column)
-  (use-package auctex)
-  (use-package cdlatex)
+(use-package visual-fill-column)
 #+end_src
+*** Latex
+
+#+begin_src emacs-lisp
+(use-package auctex)
+(use-package cdlatex)
+#+end_src
+
 ** Functions
 We can configure multiples dictionaries and toggle between them
 
 #+begin_src emacs-lisp
-  (defgroup lem-write ()
-    "Lem group contains the default vars and function used in this module."
-    :group 'lem
-    :prefix "lem-write/")
+(defgroup lem-write ()
+  "Lem group contains the default vars and function used in this module."
+  :group 'lem
+  :prefix "lem-write-")
 
-  (defcustom lem-write/dictionaries-list '("en_US" "es_ES")
-    "List of dictionaries used for spell checking."
-    :type 'list
-    :group 'lem-write)
+(defcustom lem-write-dictionaries-list '("en_US" "es_ES")
+  "List of dictionaries used for spell checking."
+  :type 'list
+  :group 'lem-write)
 
-  (defcustom lem-write/langtool-p t
-    "Whether langtool should be used or not."
-    :type 'bool
-    :group 'lem-write)
+(defcustom lem-write-langtool-p t
+  "Whether langtool should be used or not."
+  :type 'bool
+  :group 'lem-write)
 
-  (defcustom lem-write/langtool-path "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
-    "Path where the langtool jar is stored."
-    :type 'string
-    :group 'lem-write
-    :set (lambda (k v)
-            (set-default k v)
-            (when (fboundp 'langtool-language-tool-jar) (setq langtool-language-tool-jar v))))
+(defcustom lem-write-langtool-path "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
+  "Path where the langtool jar is stored."
+  :type 'string
+  :group 'lem-write
+  :set (lambda (k v)
+         (set-default k v)
+         (when (fboundp 'langtool-language-tool-jar) (setq langtool-language-tool-jar v))))
 
-  (defvar lem-write/dictionaries-pos 0)
+(defvar lem-write-dictionaries-pos 0)
 
-  (defmacro inc (var)
-    "Macro to increment VAR using modular arithmetic."
-    `(setq ,var (mod (+ 1 ,var) (length lem/dictionaries-list))))
+(defmacro inc (var)
+  "Macro to increment VAR using modular arithmetic."
+  `(setq ,var (mod (+ 1 ,var) (length lem-write-dictionaries-list))))
 
-  ;;;###autoload
-  (defun lem-write/switch-dictionary ()
-    "Function to iterate over `lem-write/dictionaries-list'."
-    (interactive)
-    (let* ((dic ispell-current-dictionary)
-            (change (nth (inc lem/dictionaries-pos) lem/dictionaries-list)))
-      (ispell-change-dictionary change)
-      (message "Dictionary switched from %s to %s" dic change)))
+(defun lem-write-switch-dictionary ()
+  "Function to iterate over `lem-write-dictionaries-list'."
+  (interactive)
+  (let* ((dic ispell-current-dictionary)
+         (change (nth (inc lem-write-dictionaries-pos) lem-write-dictionaries-list)))
+    (ispell-change-dictionary change)
+    (message "Dictionary switched from %s to %s" dic change)))
 #+end_src
 
 Every time emacs enter in text-mode, call this function which set the
@@ -2263,13 +2186,13 @@ the autofill. Autofill is disable in ~org-mode~ because I use to have code
 snippets.
 
 #+begin_src emacs-lisp
-(defun lem-write/text-mode-setup ()
+(defun lem-write-text-mode-setup ()
   (interactive)
   (setq evil-auto-indent nil)
   (variable-pitch-mode 1)
   (auto-fill-mode 1))
 
-(add-hook 'text-mode-hook 'lem-write/text-mode-setup)
+(add-hook 'text-mode-hook 'lem-write-text-mode-setup)
 #+end_src
 
 ** Flyspell
@@ -2282,12 +2205,12 @@ disable, but can be configure to be used on different kinds of situations.
   (when
       (file-exists-p "/usr/bin/hunspell")
     (setq ispell-program-name "hunspell"))
-  (setq ispell-current-dictionary (nth lem-write/dictionaries-pos lem-write/dictionaries-list))
+  (setq ispell-current-dictionary (nth lem-write-dictionaries-pos lem-write-dictionaries-list))
   :hook (text-mode . flyspell-mode)
   :bind (("M-<f7>" . flyspell-buffer)
          ("<f7>"   . flyspell-word)
          ("C-;"    . flyspell-auto-correct-previous-word))
-  ("C-c n d" . lem-write/switch-dictionary))
+  ("C-c n d" . lem-write-switch-dictionary))
 #+end_src
 
 ** Language tool
@@ -2305,17 +2228,11 @@ languages.
 #+end_src
 
 #+begin_src emacs-lisp
-(when lem-write/langtool-p
-  (require 'langtool)
-  (setq langtool-language-tool-jar lem-write/langtool-path
-        langtool-default-language (nth lem-write/dictionaries-pos lem-write/dictionaries-list)))
-#+end_src
-
-** Visual fill configuration
-
-#+begin_src emacs-lisp
-;; Wrap the text in a custom column size
-(require 'visual-fill-column)
+(when lem-write-langtool-p
+  (use-package langtool
+  :config
+  (setq langtool-language-tool-jar lem-write-langtool-path
+        langtool-default-language (nth lem-write-dictionaries-pos lem-write-dictionaries-list))))
 #+end_src
 
 ** Markdown
@@ -2377,13 +2294,39 @@ It's a good idea, but breaks a lot of custom config. Maybe I should try to creat
     (zen-mode--disable)))
 #+end_src
 
-** Latex
+** Configure the latex export
+
+There are a very extensive API which allows you to configure the local and
+global parameters of the resulting file.
 
 #+begin_src emacs-lisp
-(require 'auctex)
-(require 'cdlatex)
-#+end_src
+(with-eval-after-load 'ox-latex
+  (setq org-cite-biblatex-options 
+        "backend=biber,style=ieee, isbn=false,sortcites, maxbibnames=5, minbibnames=1")
 
+  (add-to-list 'org-latex-classes '("org-plain-latex"
+                                    "\\documentclass[11pt]{article}
+[NO-DEFAULT-PACKAGES]
+[NO-PACKAGES]
+\\renewcommand{\\baselinestretch}{1.15}
+\\parskip=6pt
+\\renewcommand{\\familydefault}{\\sfdefault}"
+                                    ("\\section{%s}" . "\\section*{%s}")
+                                    ("\\subsection{%s}" . "\\subsection*{%s}")
+                                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (defun my-latex-filter-removeOrgAutoLabels (text backend info)
+    "Org-mode automatically generates labels for headings despite explicit use of `#+LABEL`. This filter forcibly removes all automatically generated org-labels in headings."
+    (when (org-export-derived-backend-p backend 'latex)
+      (replace-regexp-in-string "\\\\label{sec:org[a-f0-9]+}\n" "" text)))
+
+  (add-to-list 'org-export-filter-headline-functions
+               'my-latex-filter-removeOrgAutoLabels))
+
+
+#+end_src
 ** End of Write module
 #+begin_src emacs-lisp
 (provide 'lem-write)
