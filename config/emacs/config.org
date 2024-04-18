@@ -2302,7 +2302,7 @@ global parameters of the resulting file.
 #+begin_src emacs-lisp
 (with-eval-after-load 'ox-latex
   (setq org-cite-biblatex-options 
-        "backend=biber,style=ieee, isbn=false,sortcites, maxbibnames=5, minbibnames=1")
+        "backend=biber, style=ieee, isbn=false,sortcites, maxbibnames=5, minbibnames=1")
 
   (add-to-list 'org-latex-classes '("org-plain-latex"
                                     "\\documentclass[11pt]{article}
