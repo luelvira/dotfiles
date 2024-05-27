@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 #/home/lucas/.local/bin/sync.sh
-killall -9 emacs
+pkill emacs
+while pkill -x emacs >/dev/null; do sleep 1; done
 /usr/bin/emacs --daemon && notify-send "Emacs ready"

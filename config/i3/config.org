@@ -271,7 +271,6 @@ bindsym $mod+a focus parent
 bindsym $mod+Shift+q kill
 #+end_src
 
-
 ** Windows Manager tools
 
 ***  Use pactl to adjust volume in PulseAudio.
@@ -433,6 +432,7 @@ exec --no-startup-id redshift -l 40.59:-3.712
 exec --no-startup-id i3-sensible-terminal
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id dex ~/.config/autostart/emacs-server.desktop
+exec --no-startup-id ~/wakapi
 #+end_src
 
 * How to exit

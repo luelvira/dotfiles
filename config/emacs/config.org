@@ -82,13 +82,13 @@ behavior before the ~package.el~ is loaded
 #+end_src
 
 #+begin_src emacs-lisp
-(defvar private-emacs-directory nil
-"The folder where the emacs configuration is stored")
-(setq ;; package-enable-at-startup nil
-      private-emacs-directory user-emacs-directory
-    ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
-      user-emacs-directory (expand-file-name "~/.cache/emacs/"))
-(setq url-history-file (expand-file-name "url/history" user-emacs-directory))
+  (defvar private-emacs-directory nil
+  "The folder where the emacs configuration is stored")
+  (setq package-enable-at-startup nil
+	private-emacs-directory user-emacs-directory
+      ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
+	user-emacs-directory (expand-file-name "~/.cache/emacs/")
+  url-history-file (expand-file-name "url/history" user-emacs-directory))
 #+end_src
 
 ** Startup performance
@@ -102,6 +102,22 @@ a hook to measure Emacs startup time.
       gc-cons-threshold (* 50 1024 1024) ; The default is 800 kilobytes. Measured in bytes.
       gc-cons-percentage 0.2
       native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
+#+end_src
+
+*** Disable ~package-enable-at-startup~
+Package initialize occurs automatically, before user-init-file is loaded, but after early-init-file. We handle package initialization, so we must prevent Emacs from doing it early!
+#+begin_src emacs-lisp
+(defvar file-name-handler-alist-original file-name-handler-alist)
+(setq file-name-handler-alist nil)
+#+end_src
+
+*** Disable unnecessary interface
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(unless (and (display-graphic-p) (eq system-type 'darwin))
+  (push '(menu-bar-lines . 0) default-frame-alist))
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
 #+end_src
 
 * Init file
@@ -119,17 +135,30 @@ setting and import the rest of the modules.
 ;; Profile emacs startup
 (add-hook 'emacs-startup-hook
           (lambda ()
+            (setq gc-cons-threshold (* 2 1024 1024)
+                  file-name-handler-alist file-name-handler-alist-original)
+            (makunbound 'file-name-handler-alist-original)
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f") gcs-done)))
-
-(add-hook 'after-init-hook (lambda ()
-            (setq gs-cons-threshold (* 2 1024 1024))))
 #+end_src
 ** Update load path
 
 Add the lisp script to the path
 #+begin_src emacs-lisp
-(add-to-list 'load-path (expand-file-name "modules" private-emacs-directory))
+(defun update-to-load-path (folder)
+  "Update FOLDER and its subdirectories to `load-path'."
+  (let ((base folder))
+    (unless (member base load-path)
+      (add-to-list 'load-path base))
+    (dolist (f (directory-files base))
+      (let ((name (concat base "/" f)))
+        (when (and (file-directory-p name)
+                   (not (equal f ".."))
+                   (not (equal f ".")))
+          (unless (member base load-path)
+            (add-to-list 'load-path name)))))))
+
+(update-to-load-path (expand-file-name "modules" private-emacs-directory))
 #+end_src
 
 * Package system
@@ -159,12 +188,13 @@ Using [[https://github.com/radian-software/straight.el][straight]] for package m
 (setq straight-use-package-by-default t)
 #+end_src
 
-* Dashboard                                                        :INACTIVE:
+* Dashboard
 
 Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
 
 #+begin_src emacs-lisp
 (use-package dashboard
+  :disabled
   :diminish (dashboard-mode)
   :init      ;; tweak dashboard config before loading it
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
@@ -187,10 +217,7 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
 #+end_src
 
 * General configuration
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-core.el
-:END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 <<header>>
 #+end_src
 
@@ -510,12 +537,12 @@ We can set a shortcut to open the config file from the emacs directory
 #+end_src
 
 ** END OF CORE                                                         :END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (provide 'lem-core)
 ;;; lem-core.el ends here
 #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp :tangle no
 (require 'lem-core)
 #+end_src
 
@@ -635,10 +662,7 @@ PATH: is the dir where the git repo is"
 #+end_src
 
 * Theming
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-theme.el
-:END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 <<header>>
 #+end_src
 
@@ -937,10 +961,11 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 #+end_src
 
 ** END OF THEMING                                                       :END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (provide 'lem-theme)
 #+end_src
-#+begin_src emacs-lisp :tangle init.el
+
+#+begin_src emacs-lisp :tangle no
 (require 'lem-theme)
 #+end_src
 
@@ -1128,10 +1153,13 @@ key bindings in the mode of your current buffer.
 #+end_src
 
 ** Custom shortcut with general
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle no
+:END:
 
 General is a package that provides a more convenient method for binding keys in
 emacs
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp  :tangle init.el
 (use-package general
   :config
   (general-evil-setup t)
@@ -1141,7 +1169,7 @@ emacs
     :global-prefix "C-SPC"))
 
 (lem/leader-key-def
-  <<keybinding>>
+  <<keybinding>>)
  #+end_src
 
 *** Eval expressions
@@ -1173,16 +1201,16 @@ emacs
 "fem" '(lem/go-emacs-modules :which-key "Custom libraries")
 #+end_src
 
-*** Dired keybinding                                                   :KEYS:
+*** Dired keybinding
 
 #+begin_src emacs-lisp      :noweb-ref keybinding
-  "d"  '(:ignore t          :which-key "Dired")
-  "dd" '(dired              :which-key "Open dired")
-  "dj" '(dired-jump         :which-key "Dired jump to current")
-  "dp" '(lem/jump-dotfiles  :which-key "Go to dotfiles folder")
+"d"  '(:ignore t          :which-key "Dired")
+"dd" '(dired              :which-key "Open dired")
+"dj" '(dired-jump         :which-key "Dired jump to current")
+"dp" '(lem/jump-dotfiles  :which-key "Go to dotfiles folder")
 #+end_src
 
-*** File management                                                    :KEYS:
+*** File management
 | Command              | Description          | shortcut |
 |----------------------+----------------------+----------|
 | View recent files    | Display recent files | r        |
@@ -1191,42 +1219,42 @@ emacs
 | find-file            | Find files in CW     | f        |
 
 #+begin_src emacs-lisp :noweb-ref keybinding
-  "f" '(:ignore t             :which-key "Files")
-  "fD" '(lem/delete-this-file :which-key "Delete current file")
-  "fd" '(find-grep-dired      :whick-key "Search for string in files in DIR")
-  "ff" '(find-file            :which-key "Find files")
-  "fr" '(recentf-open-files   :which-key "Recent files")
-  "fR" '(lem/rename-this-file :which-key "Rename current file")
+"f" '(:ignore t             :which-key "Files")
+"fD" '(lem/delete-this-file :which-key "Delete current file")
+"fd" '(find-grep-dired      :whick-key "Search for string in files in DIR")
+"ff" '(find-file            :which-key "Find files")
+"fr" '(recentf-open-files   :which-key "Recent files")
+"fR" '(lem/rename-this-file :which-key "Rename current file")
 #+end_src
 
 *** Org shortcuts
-#+begin_src emacs-lisp
-  "o"   '(:ignore t                                           :which-key "org mode")
-  "ol"  '(:ignore t                                           :which-key "Link")
-  "oli" '(org-insert-link                                     :which-key "insert link")
-  "ols" '(org-store-link                                      :which-key "store link")
-  "oN"  '(org-toggle-narrow-to-subtree                        :which-key "toggle narrow")
-  "os"  '(lem/org-search                                      :which-key "search notes")
-  "oa"  '(org-agenda                                          :which-key "Status")
-  "oc"  '(org-capture t                                       :which-key "Capture")
-  "oC"  '(:ignore t                                           :which-key "Org clock")
-  "oCe" '(org-set-effort                                      :which-key "Org set effort")
-  "oCg" '(org-clock-goto                                      :which-key "Go ot the last clock active")
-  "oCi" '(org-clock-in                                        :which-key "Clock in in the current task")
-  "oCI" '(org-clock-in-last                                   :which-key "Clock-in the last task")
-  "oCo" '(org-clock-out                                       :which-key "Clock-out current clock")
-  "on"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
-  "op"  '(:ignore t                                           :which-key "Pomodoro")
-  "ops" '(org-pomodoro                                        :whick-key "Start org pomodoro")
-  "opt" '(set-pomodoro-timer                                  :which-key "Set pomodoro timer")
-  "ot"  '(:ignore t                                           :which-key "Insert time stamp")
-  "ots" '(org-time-stamp                                      :which-key "Insert active time stamp")
-  "oti" '(org-time-stamp-inactive                             :which-key "Insert inactive stamp")
+#+begin_src emacs-lisp :noweb-ref keybinding 
+"o"   '(:ignore t                                           :which-key "org mode")
+"ol"  '(:ignore t                                           :which-key "Link")
+"oli" '(org-insert-link                                     :which-key "insert link")
+"ols" '(org-store-link                                      :which-key "store link")
+"oN"  '(org-toggle-narrow-to-subtree                        :which-key "toggle narrow")
+"os"  '(lem/org-search                                      :which-key "search notes")
+"oa"  '(org-agenda                                          :which-key "Status")
+"oc"  '(org-capture t                                       :which-key "Capture")
+"oC"  '(:ignore t                                           :which-key "Org clock")
+"oCe" '(org-set-effort                                      :which-key "Org set effort")
+"oCg" '(org-clock-goto                                      :which-key "Go ot the last clock active")
+"oCi" '(org-clock-in                                        :which-key "Clock in in the current task")
+"oCI" '(org-clock-in-last                                   :which-key "Clock-in the last task")
+"oCo" '(org-clock-out                                       :which-key "Clock-out current clock")
+"on"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
+"op"  '(:ignore t                                           :which-key "Pomodoro")
+"ops" '(org-pomodoro                                        :whick-key "Start org pomodoro")
+"opt" '(set-pomodoro-timer                                  :which-key "Set pomodoro timer")
+"ot"  '(:ignore t                                           :which-key "Insert time stamp")
+"ots" '(org-time-stamp                                      :which-key "Insert active time stamp")
+"oti" '(org-time-stamp-inactive                             :which-key "Insert inactive stamp")
 #+end_src
 
 *** Org roam shortcut
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref keybinding
 "or"  '(:ignore t                       :which-key "Org roam")
 "orI" '(org-roam-node-insert-immediate  :which-key "Roam insert immediately")
 "orc" '(lem/org-roam-capture-task       :which-key "Roam capture tast")
@@ -1251,16 +1279,16 @@ emacs
 | projectile-compile-project | compile current project       | pc         |
 | projectile-dired           | open dired in project root    | pd         |
 
-#+begin_src emacs-lisp
-  "p"  '(:ignore t                  :which-key "Projectile")
-  "pf" '(projectile-find-file       :which-key "Projectile find file")
-  "ps" '(projectile-switch-project  :which-key "Projectile switch project")
-  "pF" '(consult-ripgrep            :which-key "Rip grep")
-  "pc" '(projectile-compile-project :which-key "Compile Project")
-  "pd" '(projectile-dired           :which-key "Projectile dired")
+#+begin_src emacs-lisp :noweb-ref keybinding
+"p"  '(:ignore t                  :which-key "Projectile")
+"pf" '(projectile-find-file       :which-key "Projectile find file")
+"ps" '(projectile-switch-project  :which-key "Projectile switch project")
+"pF" '(consult-ripgrep            :which-key "Rip grep")
+"pc" '(projectile-compile-project :which-key "Compile Project")
+"pd" '(projectile-dired           :which-key "Projectile dired")
 #+end_src
 
-*** Sync scripts                                                       :KEYS:
+*** Sync scripts
 
 #+begin_src emacs-lisp :noweb-ref keybinding
 "s" '(:ignore t      :which-key "sync")
@@ -1271,22 +1299,22 @@ emacs
 
 *** Toggle options
 
-#+begin_src emacs-lisp
-  "t"  '(:ignore t                   :which-key "toggles")
-  "tw" '(whitespace-mode             :which-key "whitespace")
-  "td" '(lem-write-switch-dictionary :which-key "Toggle between dictionaries")
-  "tt" '(lem/toggle-transparency     :which-key "Toggle between transparency states")
-  "tl" '(org-toggle-link-display     :which-key "Toggle org link display")
-  "tL" '(display-line-numbers-mode   :which-key "Toggle display line numbers")
-  "tf" '(auto-fill-mode              :which-key "Toggle autofill mode")
+#+begin_src emacs-lisp :noweb-ref keybinding
+"t"  '(:ignore t                   :which-key "toggles")
+"tw" '(whitespace-mode             :which-key "whitespace")
+"td" '(lem-write-switch-dictionary :which-key "Toggle between dictionaries")
+"tt" '(lem/toggle-transparency     :which-key "Toggle between transparency states")
+"tl" '(org-toggle-link-display     :which-key "Toggle org link display")
+"tL" '(display-line-numbers-mode   :which-key "Toggle display line numbers")
+"tf" '(auto-fill-mode              :which-key "Toggle autofill mode")
 #+end_src
 
 *** root privileges.
 
-#+begin_src emacs-lisp
-  "r" '(:ignore t :which-key "sudo edit")
-  "rf" '(sudo-edit-find-file :which-key "Sudo find file")
-  "rF" '(sudo=edit :which-key "sudo edit current file")
+#+begin_src emacs-lisp :noweb-ref keybinding
+"r" '(:ignore t :which-key "sudo edit")
+"rf" '(sudo-edit-find-file :which-key "Sudo find file")
+"rF" '(sudo=edit :which-key "sudo edit current file")
 #+end_src
 
 *** Rebind C-u
@@ -1294,40 +1322,36 @@ emacs
 Emacs by default use C-u for the universal-argument command, so if I want to
 keep the default behavior of vi, I need to rebind it.
 
-#+begin_src emacs-lisp
-     "u" '(universal-argument :which-key "Universal argument")
+#+begin_src emacs-lisp :noweb-ref keybinding
+"u" '(universal-argument :which-key "Universal argument")
 #+end_src
 
 *** vterm commands
-#+begin_src emacs-lisp
-  "v" '(:ignore t            :which-key "Vterminal")
-  "vt" '(multi-vterm         :which-key "Open vterm in same window")
-  "vT" '(vterm-other-window  :which-key "Open vterm in other window"))
+#+begin_src emacs-lisp :noweb-ref keybinding
+"v" '(:ignore t            :which-key "Vterminal")
+"vt" '(multi-vterm         :which-key "Open vterm in same window")
+"vT" '(vterm-other-window  :which-key "Open vterm in other window")
 #+end_src
 
 * Work Spaces
 
 #+begin_src emacs-lisp
-  (use-package perspective
-    :custom
-    (persp-mode-prefix-key (kbd "C-x x"))
-    :init (persp-mode)
-    :config
-    (setq persp-state-default-file (expand-file-name "sessions" user-emacs-directory)))
-  ;; Use ibuffer with perspective
+(use-package perspective
+  :custom
+  (persp-mode-prefix-key (kbd "C-x x"))
+  :init (persp-mode)
+  :config
+  (setq persp-state-default-file (expand-file-name "sessions" user-emacs-directory)))
+;; Use ibuffer with perspective
 
-  (add-hook
-   'ibuffer-hook (lambda ()
-                   (persp-ibuffer-set-filter-groups)
-                   (unless (eq ibuffer-sorting-mode 'alphabetic)
-                     (ibuffer-do-sort-by-alphabetic))))
+(add-hook
+ 'ibuffer-hook (lambda ()
+                 (persp-ibuffer-set-filter-groups)
+                 (unless (eq ibuffer-sorting-mode 'alphabetic)
+                   (ibuffer-do-sort-by-alphabetic))))
 
 ;; Automatically save perspective states to file when Emacs exits.
 (add-hook 'kill-emacs-hook #'persp-state-save)
-#+end_src
-
-#+begin_src emacs-lisp :noweb-ref keybinding :tangle no
-"TAB" '(perspective-map :which-key "map")
 #+end_src
 
 * Completion system
@@ -1822,7 +1846,10 @@ Subwords allows you to interact with camelCase words as separate words
 #+end_src
 
 ** Language support
-*** Python
+
+I want to group each languages by its paradigm
+*** Imperative programming
+**** Python
 #+begin_src emacs-lisp
 (use-package python-mode
   :init
@@ -1845,21 +1872,12 @@ configure Emacs to cause ~lsp-mode~ to use virtual environment.
                'append))
 #+end_src
 
-**** lsp for python
+***** lsp for python
 #+begin_src emacs-lisp
 (use-package lsp-pyright :ensure t)
 #+end_src
 
-*** elisp mode
-
-This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
-
-#+begin_src emacs-lisp
-(add-hook 'emacs-lisp-mode-hook  #'(lambda () (setq evil-shift-width 2)))
-#+end_src
-
-*** WEB
-
+**** WEB
 ***** JavaScript/TypeScript
 
 There are a lot of package aimed to work with js/ts code. Some of
@@ -1943,7 +1961,7 @@ And with react
 (use-package rjsx-mode)
 #+end_src
 
-**** HTML and CSS
+***** HTML and CSS
 
 #+begin_src emacs-lisp
 (defun lem/web-indentation ()
@@ -1989,6 +2007,29 @@ Another package that could be helpful
 (use-package rainbow-mode
   :hook ((css-mode sass-mode) . rainbow-mode))
 (use-package sass-mode)
+#+end_src
+
+*** Functional programming
+**** elisp mode
+
+This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
+
+#+begin_src emacs-lisp
+(add-hook 'emacs-lisp-mode-hook  #'(lambda () (setq evil-shift-width 2)))
+#+end_src
+
+**** Clojure
+#+begin_src emacs-lisp
+(use-package clojure-mode)
+(use-package cider
+  :after clojure-mode)
+(use-package inf-clojure
+  :after cider)
+#+end_src
+
+**** Haskell
+#+begin_src emacs-lisp
+(use-package haskell-mode)
 #+end_src
 
 ** Terminals
@@ -2116,11 +2157,7 @@ you spend codding in the different projects you have.
 #+end_src
 
 * Writing
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle modules/lem-write.el
-:HEADER-ARGS:emacs-lisp+: :shebang ;;; lem-write.el --- module for improve the writing prcess -*- lexical-binding -*-
-:END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 <<header>>
 #+end_src
 
@@ -2302,7 +2339,11 @@ global parameters of the resulting file.
 #+begin_src emacs-lisp
 (with-eval-after-load 'ox-latex
   (setq org-cite-biblatex-options 
-        "backend=biber, style=ieee, isbn=false,sortcites, maxbibnames=5, minbibnames=1")
+        "backend=biber, style=ieee, isbn=false,sortcites, maxbibnames=5, minbibnames=1"
+        ;; delete unwanted file extensions after latexMK
+        org-latex-logfiles-extensions
+        (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf" "acn" "acr" "alg" "glg" "gls" "ist")))
+
 
   (add-to-list 'org-latex-classes '("org-plain-latex"
                                     "\\documentclass[11pt]{article}
@@ -2316,6 +2357,54 @@ global parameters of the resulting file.
                                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                                     ("\\paragraph{%s}" . "\\paragraph*{%s}")
                                     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes '("altacv" "\\documentclass[10pt,a4paper,ragged2e,withhyper]{altacv}
+% Change the page layout if you need to
+\\geometry{left=1.25cm,right=1.25cm,top=1.5cm,bottom=1.5cm,columnsep=1.2cm}
+
+% Use roboto and lato for fonts
+\\renewcommand{\\familydefault}{\\sfdefault}
+
+% Change the colours if you want to
+\\definecolor{SlateGrey}{HTML}{2E2E2E}
+\\definecolor{LightGrey}{HTML}{666666}
+\\definecolor{DarkPastelRed}{HTML}{450808}
+\\definecolor{PastelRed}{HTML}{8F0D0D}
+\\definecolor{GoldenEarth}{HTML}{E7D192}
+\\colorlet{name}{black}
+\\colorlet{tagline}{PastelRed}
+\\colorlet{heading}{DarkPastelRed}
+\\colorlet{headingrule}{GoldenEarth}
+\\colorlet{subheading}{PastelRed}
+\\colorlet{accent}{PastelRed}
+\\colorlet{emphasis}{SlateGrey}
+\\colorlet{body}{LightGrey}
+
+% Change some fonts, if necessary
+\\renewcommand{\\namefont}{\\Huge\\rmfamily\\bfseries}
+\\renewcommand{\\personalinfofont}{\\footnotesize}
+\\renewcommand{\\cvsectionfont}{\\LARGE\\rmfamily\\bfseries}
+\\renewcommand{\\cvsubsectionfont}{\\large\\bfseries}
+
+% Change the bullets for itemize and rating marker
+% for \cvskill if you want to
+\\renewcommand{\\itemmarker}{{\\small\\textbullet}}
+\\renewcommand{\\ratingmarker}{\\faCircle}
+"
+
+                                    ("\\cvsection{%s}" . "\\cvsection*{%s}")))
+
+(add-to-list 'org-latex-classes '("moderncv"
+"\\documentclass{moderncv}
+\\usepackage[spanish]{babel}
+\\moderncvstyle{classic}
+\\moderncvcolor{green}
+\\renewcommand{\\familydefault}{\\sfdefault}
+\\usepackage[utf8]{inputenc}
+
+% Social icons
+\\social[linkedin]{lucas-elvira-martin}
+\\social[github]{luelvira}
+"))
 
   (defun my-latex-filter-removeOrgAutoLabels (text backend info)
     "Org-mode automatically generates labels for headings despite explicit use of `#+LABEL`. This filter forcibly removes all automatically generated org-labels in headings."
@@ -2328,12 +2417,12 @@ global parameters of the resulting file.
 
 #+end_src
 ** End of Write module
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (provide 'lem-write)
 ;;; lem-write.el ends here
 #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp :tangle no
 (require 'lem-write)
 #+end_src
 
