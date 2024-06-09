@@ -2032,6 +2032,21 @@ This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
 (use-package haskell-mode)
 #+end_src
 
+**** PureScript
+
+#+begin_src emacs-lisp
+(use-package purescript-mode
+  :config
+  (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
+  (add-hook 'purescript-mode-hook 'flycheck-mode))
+
+(use-package psc-ide
+  :hook (purescript-mode . psc-ide-mode)
+  :config
+  (remove-hook 'company-backends 'company-psc-ide-backend)
+  (psc-ide-flycheck-setup))
+#+end_src
+
 ** Terminals
 
 *** vterm
@@ -2439,8 +2454,9 @@ global parameters of the resulting file.
 
 #+begin_src emacs-lisp
 (defconst lem/org-directory
-  (if (not is-termux)
-      "~/Documents/Org/" "~/storage/shared/Documents/Org/"))
+  (concat (cond (is-debian "~/Sync/")
+                (is-fedora "~/Documents/")
+                (is-termux "~/storage/shared/Documents/")) "Org/"))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2675,6 +2691,7 @@ You can add more =src= block templates below by copying one of the lines and cha
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("js" . "src js"))
   (add-to-list 'org-structure-template-alist '("ex" . "export"))
+  (add-to-list 'org-structure-template-alist '("html" . "src html"))
 #+end_src
 
 ** Fonts and bullets
@@ -2968,6 +2985,8 @@ call them, you should use the ~SPC-o-s~ shortcuts
   (org-journal-enable-encryption nil)
   (org-journal-encrypt-journal nil))
 #+end_src
+
+** Org export to html
 
 * Org roam
 
