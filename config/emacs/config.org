@@ -1832,10 +1832,16 @@ Subwords allows you to interact with camelCase words as separate words
   :config
   (setq eglot-autoshutdown t
         eglot-confirm-server-initiated-edits nil)
+  (setq-default eglot-workspace-configuration
+                '((haskell
+                   (plugin
+                    (stan
+                     (globalOn . :json-false))))))
   :hook((python-mode . eglot-ensure)
         (web-mode . eglot-ensure)
         (typescript-mode . eglot-ensure)
-        (js2-mode . eglot-ensure))
+        (js2-mode . eglot-ensure)
+        (haskell-mode . eglot-ensure))
   :commands (eglot eglot-ensure))
 
 (use-package consult-eglot
@@ -2029,7 +2035,13 @@ This is a small configuration to make evil-shift-width to 2 in ~emacs lisp mode~
 
 **** Haskell
 #+begin_src emacs-lisp
-(use-package haskell-mode)
+(use-package haskell-mode
+  :config
+  (setq haskell-process-suggest-remove-import-lines t
+        haskell-process-auto-import-loaded-modules t
+        haskell-process-show-overlays nil
+        haskell-process-type 'cabal-repl
+))
 #+end_src
 
 **** PureScript
