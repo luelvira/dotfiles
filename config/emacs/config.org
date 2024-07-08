@@ -12,6 +12,13 @@
 #+TAGS: INACTIVE(i) TOC(t)
 #+auto_tangle: t
 
+* G-EMACS
+
+** About
+
+** About this README
+
+
 * Some hints                                                       :INACTIVE:
 ** Enable literature configuration
 
@@ -40,6 +47,7 @@ It options tell the configuration that works as a program more than just a
 simple configuration
 
 This will generate a header at the top of the tangled file to indicate it is generated and is not meant to be modified directly.
+
 #+name: header
 #+begin_src emacs-lisp
 ;; This file is not part of GNU Emacs
@@ -73,22 +81,34 @@ This will generate a header at the top of the tangled file to indicate it is gen
 :HEADER-ARGS:emacs-lisp+: :shebang ;;; early-init.el --- early init file -*- lexical-binding: t -*-
 :END:
 
-The early-init file is loaded before any process of emacs, either the package
-system. I use straight as package manager, so I need to disable the default
-behavior before the ~package.el~ is loaded
-
 #+begin_src emacs-lisp
 <<header>>
 #+end_src
 
+The /early-init/ file is loaded before any process of emacs, either the package
+system. So I will configure the directories used by Emacs to prevent the default
+behavior which get dirty the configuration folder.
+
 #+begin_src emacs-lisp
-  (defvar private-emacs-directory nil
-  "The folder where the emacs configuration is stored")
-  (setq package-enable-at-startup nil
-	private-emacs-directory user-emacs-directory
+;; SetupFolder
+(defvar private-emacs-directory nil
+  "The folder where the Emacs configuration is stored.")
+(setq private-emacs-directory user-emacs-directory
       ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
-	user-emacs-directory (expand-file-name "~/.cache/emacs/")
-  url-history-file (expand-file-name "url/history" user-emacs-directory))
+      user-emacs-directory (expand-file-name "~/.cache/emacs/")
+      url-history-file (expand-file-name "url/history" user-emacs-directory))
+;; -SetupFolder
+#+end_src
+
+Package initialize occurs automatically, before user-init-file is loaded, but
+after early-init file. We handle package initialization, so we must prevent
+Emacs from doing it early! I use straight as package manager, so I need to
+disable the default behavior before the ~package.el~ is loaded.
+
+#+begin_src emacs-lisp
+;; DisablePackage
+(setq package-enable-at-startup nil)
+;; -DisablePackage
 #+end_src
 
 ** Startup performance
@@ -104,21 +124,38 @@ a hook to measure Emacs startup time.
       native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
 #+end_src
 
-*** Disable ~package-enable-at-startup~
-Package initialize occurs automatically, before user-init-file is loaded, but after early-init-file. We handle package initialization, so we must prevent Emacs from doing it early!
+Also, we can prevent launch the hook associated with some files modification in
+startup and reenable it after all the process is completed. From [[https://github.com/MatthewZMD/.emacs.d][MatthewZMD]]
+
+#+begin_quote
+Every file opened and loaded by Emacs will run through this list to check for a
+proper handler for the file, but during startup, it won’t need any of them.
+#+end_quote
+
+
 #+begin_src emacs-lisp
+;; FilenameHandler
 (defvar file-name-handler-alist-original file-name-handler-alist)
 (setq file-name-handler-alist nil)
+;; -FilenameHandler
 #+end_src
 
 *** Disable unnecessary interface
 #+begin_src emacs-lisp
+;; DefaultUI
 (menu-bar-mode -1)
 (unless (and (display-graphic-p) (eq system-type 'darwin))
   (push '(menu-bar-lines . 0) default-frame-alist))
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+;; -DefaultUI
 #+end_src
+
+#+begin_src emacs-lisp
+(provide 'early-init)
+;;; early-init.el ends here
+#+end_src
+
 
 * Init file
 
@@ -133,6 +170,7 @@ setting and import the rest of the modules.
 
 #+begin_src emacs-lisp
 ;; Profile emacs startup
+;; BetterGC
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold (* 2 1024 1024)
@@ -140,11 +178,13 @@ setting and import the rest of the modules.
             (makunbound 'file-name-handler-alist-original)
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f") gcs-done)))
+;; -BetterGC
 #+end_src
 ** Update load path
 
 Add the lisp script to the path
 #+begin_src emacs-lisp
+;; UpdatePath
 (defun update-to-load-path (folder)
   "Update FOLDER and its subdirectories to `load-path'."
   (let ((base folder))
@@ -159,13 +199,29 @@ Add the lisp script to the path
             (add-to-list 'load-path name)))))))
 
 (update-to-load-path (expand-file-name "modules" private-emacs-directory))
+;; UpdatePath
+#+end_src
+** Load our modules
+#+begin_src emacs-lisp
+<<init-require>>
 #+end_src
 
 * Package system
-
-Using [[https://github.com/radian-software/straight.el][straight]] for package management and disable checking (for speedup).
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle "modules/init-package.el"
+:HEADER-ARGS:emacs-lisp+: :shebang ;;; init-package.el --- setup package -*- lexical-binding: t -*-
+:END:
 
 #+begin_src emacs-lisp
+<<header>>
+#+end_src
+
+For package management I combine ~use-package~ with [[https://github.com/radian-software/straight.el][straight]]. To boot the process,
+I will disable the checking step that ensure the system has the newest version
+of each package.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref straight
+;; Straight
 (setq straight-check-for-modifications nil)
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -186,6 +242,58 @@ Using [[https://github.com/radian-software/straight.el][straight]] for package m
 ;; Use straight by default
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
+;; -Straight
+#+end_src
+
+In systems different to Linux, I don't use straight, I prefer to use the default
+one system.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref DefaultPackageManagement
+;; DefaultPackageManagement
+(setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
+      package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; -DefaultPackageManagement
+#+end_src
+
+When Emacs uses the default package manager, it is needed to install ~use-package~
+
+#+begin_src emacs-lisp :tangle no :noweb-ref UsePackage
+;; UsePackage
+;; Install use-package if not installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-and-compile
+  (setq use-package-always-ensure t)
+  (setq use-package-expand-minimally t)
+  (setq use-package-compute-statistics t)
+  (setq use-package-enable-imenu-support t))
+
+(eval-when-compile
+  (require 'use-package)
+  (require 'bind-key))
+;; -UsePackage
+
+#+end_src
+
+Gutter all and export the package
+
+#+begin_src emacs-lisp
+(if (eq system-type 'gnu/linux)
+    (progn
+      <<straight>>)
+  (progn
+    <<DefaultPackageManagement>>
+    <<UsePackage>>))
+(provide 'init-package)
+;;; init-package.el ends here
+#+end_src
+
+#+begin_src emacs-lisp :tangle no :noweb-ref init-require
+(require 'init-package)
 #+end_src
 
 * Dashboard
