@@ -1654,8 +1654,7 @@ The consult wiki has a demo for the find file function with preview
   (setq-default marginalia--ellipsis "…"    ; Nicer ellipsis
                 marginalia-align 'right     ; right alignment
                 marginalia-align-offset -1) ; one space on the right
-  :init
-  (marginalia-mode))
+)
 #+end_src
 
 ** Completion action with Embark
