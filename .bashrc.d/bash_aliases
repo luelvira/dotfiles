@@ -12,22 +12,50 @@ fi
 	#alias vi=nvim
 #fi
 
-if [ -f /usr/bin/lsd ]; then
-	alias ls='lsd --group-dirs=first -F'
-	alias ll='ls -al'
-	alias la='ls -A'
-	alias lha='ls -lhA'
-elif [ -f /usr/bin/exa ]; then
-	alias ls='exa --group-directories-first -F'
+# Alias inteligentes para ls (eza > exa > lsd > ls)
+if command -v eza >/dev/null 2>&1; then
+    alias ls='eza --icons'
+    alias ll='eza -lh --icons'
+    alias la='eza -la --icons'
+    alias lla='eza -lha --icons'
+    alias lt='eza -T --icons'
+    alias lg='eza -l --git --icons'
+elif command -v exa >/dev/null 2>&1; then
+    alias ls='exa'
+    alias ll='exa -lh'
+    alias la='exa -la'
+    alias lla='exa -lha'
+    alias lt='exa -T'
+    alias lg='exa -l --git'
+elif command -v lsd >/dev/null 2>&1; then
+    alias ls='lsd'
+    alias ll='lsd -lh'
+    alias la='lsd -la'
+    alias lla='lsd -lha'
+    alias lt='lsd --tree'
 else
-    alias ll='ls -alF'
-    alias la='ls -A'
-    alias l='ls -CF'
-    alias lha='ls -lhA'
+    alias ll='ls -lh --color=auto'
+    alias la='ls -la --color=auto'
+    alias lla='ls -lah --color=auto'
+    alias lt='ls -R --color=auto'
 fi
 
-if [ -f /usr/bin/batcat ]; then
-    alias cat="batcat"
+if command -v batcat >/dev/null 2>&1; then
+    alias cat='batcat --paging=never --style=plain'
+elif command -v bat >/dev/null 2>&1; then
+    alias cat='bat --paging=never --style=plain'
+fi
+
+if command -v rg >/dev/null 2>&1; then
+    alias grep='rg'
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init bash)"
+fi
+
+if command -v tldr >/dev/null 2>&1; then
+    alias man='tldr'
 fi
 
 # alias for git common commands
