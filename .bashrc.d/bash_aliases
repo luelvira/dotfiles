@@ -83,3 +83,6 @@ alias emc="emacsclient -c -a 'emacs'"
 alias rem="killall emacs || echo 'Emacs server not running'; /usr/bin/emacs --daemon"
 
 alias vpnupm='sudo openfortivpn vpnssl.upm.es --username=lucas.elvira@alumnos.upm.es'
+
+alias nix-clean='nix-collect-garbage -d && nix-store --optimise'
+alias nix-update='nix-env --upgrade'
