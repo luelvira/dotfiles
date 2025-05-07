@@ -4,3 +4,6 @@
 [submodule ".pyenv"]
 	path = .pyenv
 	url = https://github.com/pyenv/pyenv.git
+[submodule "emacs.d"]
+	path = emacs.d
+	url = git@codeberg.org:luelvira/clayemacs.git
