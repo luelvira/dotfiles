@@ -123,6 +123,3 @@ if [ -d ~/.bashrc.d ]; then
         [-r "$f" ] && [-f "$f" ] && source "$f";
     done
 fi
-
-export PATH="$HOME/.nodenv/bin:$PATH"
-eval "$(nodenv init - bash)"

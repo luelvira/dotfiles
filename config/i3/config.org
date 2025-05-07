@@ -266,11 +266,10 @@ bindsym $mod+space focus mode_toggle
 # focus the parent container
 bindsym $mod+a focus parent
 # focus the child container
-# bindsym $mod+d focus child
+bindsym $mod+Shift+a focus child
 # kill focused window
 bindsym $mod+Shift+q kill
 #+end_src
-
 
 ** Windows Manager tools
 
@@ -353,7 +352,7 @@ set $ws11  scratchpad
 Most of the programs can be referenced by its class and sent to custom workspace. In this case, I will set firefox on ws2, spotify on ws3 and message service on 4
 
 #+begin_src sh
-assign [class="firefox"]         $ws2
+# assign [class="firefox"]         $ws2
 assign [class="TelegramDesktop"] $ws4
 assign [class="slack"]           $ws4
 assign [class="obsidian"]        $ws5
@@ -363,6 +362,12 @@ There are also programs that don't follow this rule, so it is necessary another 
 
 #+begin_src sh
 for_window [class="Spotify"] move to workspace $ws3
+#+end_src
+
+I want to have a calendar as  floating view in each view
+
+#+begin_src sh
+for_window [class="Yad" title="yad-calendar"] floating enable
 #+end_src
 
 ** I3 bar
@@ -398,6 +403,8 @@ Launch polybar on each restart. The configuration file is [[file:../polybar/conf
 exec_always --no-startup-id /home/lucas/.config/polybar/launch.sh
 #+end_src
 
+
+
 ** Binding workspace to monitors
 
 #+begin_src sh
@@ -419,25 +426,29 @@ Run some command on login. With *exec~always~* the command will be
 execute always that the config file is reload. If you only want that it
 will be execute once use *exec*
 
-1.  Set background image
-2.  launch picom
-3.  Run xrand
-4.  Run Redshift
-5.  Launch always dunst
+1. Set background image
+2. launch picom
+3. Run xrand
+4. Run Redshift
+5. Launch always dunst
+6. Launch emacs in daemon mode
+7. Start wakapi daemon
+
 
 #+begin_src sh
 exec --no-startup-id feh --bg-fill /home/lucas/Pictures/Wallpapers/tux.jpg
 exec --no-startup-id picom -b -f --experimental-backends
 exec --no-startup-id xrandr --output HDMI-0 --auto --right-of DP-1
 exec --no-startup-id redshift -l 40.59:-3.712
-exec --no-startup-id i3-sensible-terminal
+# exec --no-startup-id i3-sensible-terminal
 exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec --no-startup-id dex ~/.config/autostart/emacs-server.desktop
+exec --no-startup-id ~/wakapi
 #+end_src
 
 * How to exit
 
-#+begin_src sh
+#+begin_src sh :tangle no
 bindsym $mod+0 mode "$mode_system"
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {

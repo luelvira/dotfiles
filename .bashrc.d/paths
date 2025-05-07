@@ -1,13 +1,39 @@
 # vim: set ft=bash
-# Load pyenv
-export PYENV_ROOT="$HOME/Documents/projects/git/dotfiles/.pyenv"
-if [[ -d $PYENV_ROOT/bin ]]; then
+
+# Detect PYENV_ROOT dynamically
+if [[ -d "$HOME/Documents/projects/git/dotfiles/.pyenv" ]]; then
+	export PYENV_ROOT="$HOME/Documents/projects/git/dotfiles/.pyenv"
+elif [[ -d "$HOME/Documents/git/dotfiles/.pyenv" ]]; then
+	export PYENV_ROOT="$HOME/Documents/git/dotfiles/.pyenv"
+fi
+
+if [[ -d "$HOME/Documents/projects/git/dotfiles/.nodenv" ]]; then
+	export NODENV_ROOT="$HOME/Documents/projects/git/dotfiles/.nodenv"
+elif [[ -d "$HOME/Documents/git/dotfiles/.nodenv" ]]; then
+	export NODENV_ROOT="$HOME/Documents/git/dotfiles/.nodenv"
+fi
+
+# Load pyenv if installed
+if [[ -d "$PYENV_ROOT/bin" ]]; then
 	export PATH="$PYENV_ROOT/bin:$PATH"
 	eval "$(pyenv init -)"
 	eval "$(pyenv virtualenv-init -)"
 fi
 
-if [ -d ~/.nodenv ]; then
-	export PATH="$HOME/.nodenv/bin:$PATH"
+# Load nodenv if installed
+if [[ -d "$NODENV_ROOT/bin" ]]; then
+	export PATH="$NODENV_ROOT/bin:$PATH"
 	eval "$(nodenv init - bash)"
 fi
+
+# Add optional tools to PATH if they exist
+[[ -d /opt/dart-sass ]] && export PATH="$PATH:/opt/dart-sass"
+[[ -d $HOME/.local/bin ]] && export PATH="$PATH:$HOME/.local/bin"
+
+# Android SDK
+if [[ -d "$HOME/Android/Sdk" ]]; then
+	export ANDROID_HOME="$HOME/Android/Sdk"
+	[[ -d "$ANDROID_HOME/emulator" ]] && export PATH="$PATH:$ANDROID_HOME/emulator"
+	[[ -d "$ANDROID_HOME/platform-tools" ]] && export PATH="$PATH:$ANDROID_HOME/platform-tools"
+fi
+

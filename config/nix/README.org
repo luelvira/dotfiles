@@ -1,0 +1,154 @@
+#+title:     NIX
+#+author:    Lucas Elvira Martín
+#+email:     lucaselvira96@gmail.com
+#+PROPERTY: header-args:nix :tangle flake.nix
+* Introduction to Nix
+
+[[https://nixos.org/][Nix]] is a powerful package manager for Linux and other Unix systems that makes package management reliable and reproducible. It provides:
+
+- Reproducible builds
+- Atomic upgrades and rollbacks
+- Multiple versions of packages coexisting
+
+Nix can be used on any Linux distribution to install software in isolated environments without interfering with system packages.
+
+** Installation in non-Nix systems and basic configuration
+
+To install the Nix package manager in systems other than NixOS or Guix, run:
+
+#+begin_src shell
+# Download the install script from nix.org and run it
+curl -L https://nixos.org/nix/install | sh
+# Reload the environment
+. ~/.nix-profile/etc/profile.d/nix.sh
+#+end_src
+
+Once nix is installed, it is time to configure it. By default Nix reads settings from:
+1. The system-wide configuration file (/etc/nix/nix.conf)
+2. ~$NIX_CONF_DIR/nix.conf~ if set.
+3. File listed in ~$NIX_USER_CONF_FILES~, if is set. Each path should be colon-separated
+4. ~$XDG_CONFIG_HOME/nix/nix.conf~, (usually =$HOME/.config/nix/nix.conf=
+
+We'll use the XDG path for user-specific configuration:
+
+#+begin_src shell
+NIX_CONF_DIR=$HOME/.config/nix
+mkdir -p $NIX_CONF_DIR
+#+end_src
+
+Then, create the following configuration file in $NIX_CONF_DIR/nix.conf
+
+#+begin_src conf :tangle nix.conf
+max-jobs = 2
+cores = 4
+auto-optimise-store = true
+#+end_src
+
+This configuration helps avoid overloading the system during builds.
+
+*** Allowing nix-daemon to work well (optional)
+
+~build-users-group~ specifies the Unix group containing the Nix build user
+account. If the build users group is empty, builds will be performed under the
+uid of the Nix process. *This should not be used with with a nix daemon
+accessible to un-trusted clients.
+
+#+begin_src shell
+sudo mkdir /etc/nix
+echo "build-users-group =" | sudo tee /etc/nix/nix.conf
+#+end_src
+
+*** Keep the system clean and update
+
+To make simplest update the system and remove outdate package, add the following
+alias to your ~$HOME/.bashrc~ or ~$HOME/.zshrc~ files
+
+#+begin_src shell :tangle ~/.bashrc.d/bash-aliases
+alias nix-clean='nix-collect-garbage -d && nix-store --optimise'
+alias nix-update='nix-env --upgrade'
+#+end_src
+
+The first alias clean old packages and optimize the store. The second one,
+update all user-installed packages
+
+
+*** TODO Add descriptions for the command line options
+
+* What are Flakes?
+
+*Flakes* are a newer feature in Nix that introduce a more structured and
+reproducible way of describing packages, configurations, and environments. They
+also standardize the use of Git repositories, inputs, and outputs.
+
+To use Flakes, you must enable the following in your Nix configuration:
+
+#+begin_src conf :tangle nix.conf
+experimental-features = nix-command flakes
+#+end_src
+
+* A Flake-based Development Shell
+
+Here’s an example of a `flake.nix` file that provides a development shell with several modern tools:
+
+- ripgrep
+- fd
+- zellij
+- helix
+- starship
+- git
+- neovim
+- emacs
+- qtile
+
+* The Flake
+
+#+begin_src nix
+{
+  description = "Entorno con herramientas modernas para desarrolladores, Emacs y Qtile";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = [
+          pkgs.ripgrep   # Fast file search
+          pkgs.fd        # Fast and user-friendly alternative to find
+          pkgs.zellij     # Terminal multiplexer
+          pkgs.helix      # Modern text editor
+          pkgs.starship   # Minimal, blazing-fast shell prompt
+          pkgs.git
+          pkgs.neovim
+          pkgs.emacs
+          pkgs.qtile
+        ];
+
+        shellHook = ''
+          export PATH="$HOME/.cargo/bin:$PATH"
+        '';
+      };
+    };
+}
+#+end_src
+
+* How to Use
+
+To enter the development environment:
+
+1. Save this Org file and run `org-babel-tangle` to create the `flake.nix` file.
+2. Run the following command in the terminal:
+
+#+begin_src shell
+nix develop
+#+end_src
+
+You will be dropped into a shell with all the tools listed above available, fully isolated from your system environment.
+
+* Final Notes
+
+You can keep modifying this flake to add or remove tools, or even split them into multiple environments. Flakes are great for reproducibility and sharing setups across machines.
+
+Happy hacking! 🚀

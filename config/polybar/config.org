@@ -3,6 +3,20 @@
 #+DATE: [2023-11-26 Sun]
 #+PROPERTY: header-args :tangle config.ini
 #+auto_tangle: t 
+
+#+begin_src conf
+; /==============================================================\
+; ||             _       _                                   __ ||
+; || _ __   ___ | |_   _| |__   __ _ _ __    ___ ___  _ __  / _|||
+; ||| '_ \ / _ \| | | | | '_ \ / _` | '__|  / __/ _ \| '_ \| |_ ||
+; ||| |_) | (_) | | |_| | |_) | (_| | |    | (_| (_) | | | |  _|||
+; ||| .__/ \___/|_|\__, |_.__/ \__,_|_|     \___\___/|_| |_|_|  ||
+; |||_|            |___/                                        ||
+; \==============================================================/
+
+; This file is autogerenate. Do not edit
+#+end_src
+
 * Polybar
 To learn more about how to configure Polybar go to: [[https://github.com/jaagr/polybar][jaagr/polybar]]
 ** Global settings
@@ -24,67 +38,76 @@ compositing-border = over
 ** Colors
 
 I borrowed the color setup from
-[[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/polybar/README.org
-]]
+[[https://gitlab.com/dwt1/dotfiles/-/blob/master/.config/polybar/README.org]]
+with a few modifications
+
 #+begin_src conf
 [colors]
-background = ${dracula.background}
-foreground = ${dracula.foreground}
-color0     = ${dracula.color0}
-color1     = ${dracula.color1}
-color2     = ${dracula.color2}
-color3     = ${dracula.color3}
-color4     = ${dracula.color4}
-color5     = ${dracula.color5}
-color6     = ${dracula.color6}
-color7     = ${dracula.color7}
-color8     = ${dracula.color8}
-color9     = ${dracula.color9}
-color10    = ${dracula.color10}
-color11    = ${dracula.color11}
-color12    = ${dracula.color12}
-color13    = ${dracula.color13}
-color14    = ${dracula.color14}
-color15    = ${dracula.color15}
-alert      = ${dracula.color1}
+background     = ${dracula.background}
+background-alt = ${dracula.background-alt}
+foreground     = ${dracula.foreground}
+alert          = ${dracula.alert}
+disabled       = ${dracula.disabled}
+primary        = ${dracula.primary}
+secondary      = ${dracula.secondary}
+color0         = ${dracula.color0}
+color1         = ${dracula.color1}
+color2         = ${dracula.color2}
+color3         = ${dracula.color3}
+color4         = ${dracula.color4}
+color5         = ${dracula.color5}
+color6         = ${dracula.color6}
+color7         = ${dracula.color7}
+color8         = ${dracula.color8}
+color9         = ${dracula.color9}
+color10        = ${dracula.color10}
+color11        = ${dracula.color11}
+color12        = ${dracula.color12}
+color13        = ${dracula.color13}
+color14        = ${dracula.color14}
+color15        = ${dracula.color15}
 
 [dracula]
-background = #282a36
-foreground = #f8f8f2
-color0     = #000000
-color1     = #ff5555
-color2     = #50fa7b
-color3     = #f1fa8c
-color4     = #bd93f9
-color5     = #ff79c6
-color6     = #8be9fd
-color7     = #bfbfbf
-color8     = #4d4d4d
-color9     = #ff6e67
-color10    = #5af78e
-color11    = #f4f99d
-color12    = #caa9fa
-color13    = #ff92d0
-color14    = #9aedfe
-color15    = #e6e6e6
+background     = #282a36
+background-alt = #44475a
+foreground     = #f8f8f2
+disabled       = #6272a4
+primary        = #bd93f9
+secondary      = #ffb86c
+alert          = #ff5555
+color1         = #000000
+color2         = #50fa7b
+color3         = #f1fa8c
+color4         = #bd93f9
+color5         = #ff79c6
+color6         = #8be9fd
+color7         = #bfbfbf
+color8         = #4d4d4d
+color9         = #ff6e67
+color10        = #5af78e
+color11        = #f4f99d
+color12        = #caa9fa
+color13        = #ff92d0
+color14        = #9aedfe
+color15        = #e6e6e6
 
 [nord]
-nord0 = #2E3440
-nord1 = #3B4252
-nord2 = #434C5E
-nord3 = #4C566A
-nord4 = #D8DEE9
-nord5 = #E5E9F0
-nord6 = #ECEFF4
-nord7 = #8FBCBB
-nord8 = #88C0D0
-nord9 = #81A1C1
-nord10 = #5E81AC
-nord11 = #BF616A
-nord12 = #D08770
-nord13 = #EBCB8B
-nord14 = #A3BE8C
-nord15 = #B48EAD
+nord0          = #2E3440
+nord1          = #3B4252
+nord2          = #434C5E
+nord3          = #4C566A
+nord4          = #D8DEE9
+nord5          = #E5E9F0
+nord6          = #ECEFF4
+nord7          = #8FBCBB
+nord8          = #88C0D0
+nord9          = #81A1C1
+nord10         = #5E81AC
+nord11         = #BF616A
+nord12         = #D08770
+nord13         = #EBCB8B
+nord14         = #A3BE8C
+nord15         = #B48EAD
 #+end_src
 
 * Bars
@@ -108,6 +131,7 @@ font-0 = "Fira Code Nerd Font:size=12;4"
 font-1 = Font Awesome:size=13;4
 font-2 = HackNerdFont:size=12;4
 font-3 = "Noto Sans:size=11;1"
+font-4 = CodeNewRomanNerdFont-Bold:weight=bold:size=14;2
 cursor-click = pointer
 background = ${dracula.background}
 foreground = ${dracula.foreground}
@@ -121,8 +145,8 @@ The bar for the first monitor ( the monitor on the left)
 inherit = bar/main
 monitor = DP-1
 modules-left = i3 xwindow
-modules-center = date
-modules-right = bluetooth pulseaudio xkeyboard
+modules-center = popup-calendar
+modules-right = fs-root fs-home bluetooth pulseaudio xkeyboard
 
 tray-position = right
 tray-detached = false
@@ -141,7 +165,8 @@ tray-scale = 1.0
 inherit = bar/main
 monitor = HDMI-0
 modules-left = i3 uptime
-modules-right = fs-root fs-home memory cpu wired-network
+modules-center = popup-calendar
+modules-right = memory cpu wired-network
 #+end_src
 
 * List of modules used
@@ -190,6 +215,18 @@ format-padding = 0
 format = 🕓 <label>
 #+end_src
 
+#+begin_src conf
+[module/popup-calendar]
+type = custom/script
+format-prefix = " "
+format-foreground = ${colors.foreground}
+format-prefix-foreground = ${colors.color6}
+format-background = ${colors.background}
+exec = ~/.local/bin/popup-calendar.sh
+interval = 5
+click-left = ~/.local/bin/popup-calendar.sh --popup &
+#+end_src
+
 ** Filesystem
 
 I create a base template for the file system module and then 2 instance of them,
@@ -213,7 +250,7 @@ For the root mount point
 inherit = filesystem
 mount-0 = /
 ;label-mounted = "%{F#8be9fd}󰨣%{F-} %percentage_used%%"
-label-mounted = "%{F#8be9fd}%{F-} %percentage_used%%"
+label-mounted = "%{F#8be9fd}%{F-} %used%/%total%||%percentage_used%%"
 #+end_src
 
 For the home mount point
@@ -221,7 +258,7 @@ For the home mount point
 [module/fs-home]
 inherit = filesystem
 mount-0 = /home
-label-mounted = "%{F#8be9fd}󱂶%{F-} %percentage_used%%"
+label-mounted = "%{F#8be9fd}󱂶%{F-} %used%/%total%||%percentage_used%%"
 #+end_src
 
 ** i3
@@ -240,25 +277,35 @@ strip-wsnumbers = true
 enable-click = true
 
 ;; setup the icosn
-ws-icon-default = 
+; ws-icon-default = 
 
 label-mode = %mode%
 label-mode-padding = 0
 
-label-focused = 
+;;label-focused = 
+label-focused = %{T5}%name%%{T-}
+label-active-font = 5
 label-focused-padding = 1
 label-focused-foreground = ${colors.color10}
-
-label-unfocused = 
+label-focused-background = ${colors.background-alt}
+;;
+;;label-unfocused = 
+label-unfocused = %{T5}%name%%{T-}
+label-unfocused-font = 5
 label-unfocused-padding = 1
 label-unfocused-foreground = ${colors.color4}
-
-label-visible = 
+label-unfocused-background = ${colors.background-alt}
+;;
+;;label-visible = 
+label-visible = %{T5}%name%%{T-}
 label-visible-padding = 1
 label-visible-foreground = ${colors.color4}
-
-label-urgent = %icon%
-label-urgent-foreground = ${colors.color9}
+label-visible-background = ${colors.background-alt}
+;;
+;;label-urgent = %icon%
+label-urget = %{T5}%name%%{T-}
+label-urgent-foreground = ${colors.foreground}
+label-urgent-background = ${colors.alert}
 label-urgent-padding = 1
 #+end_src
 
@@ -280,7 +327,7 @@ label = %used:2%
 format-background = ${colors.background}
 format-foreground = ${colors.color5}
 format-volume = <label-volume>
-format-volume-font = 5
+format-volume-font = 2
 format-volume-prefix = " VOL "
 format-volume-prefix-foreground = ${colors.color3}
 label-muted = "  󰝟  "
@@ -307,7 +354,6 @@ format-padding = 1
 
 ** uptime
 #+begin_src conf
-
 [module/uptime]
 type = custom/script
 exec = uptime | awk -F, '{sub(".*up ",x,$1);print $1}'
@@ -375,6 +421,7 @@ format-padding = 0
 #+end_src
 
 ** WiredNetwork
+
 #+begin_src sh
 [network-base]
 type = internal/network
@@ -385,7 +432,7 @@ format-disconnected = <label-disconnected>
 label-disconnected = %{F#F0C674}%ifname%%{F#707880} disconnected
 
 
-[module/wired-network]
+[module/wiredless-network]
 inherit = network-base
 interface = wlp6s0
 interface-type = wireless
@@ -408,4 +455,8 @@ ramp-signal-1 = 󰤟
 ramp-signal-2 = 󰤢
 ramp-signal-3 = 󰤥
 ramp-signal-4 = 󰤨
+
+[module/wired-network]
+inherit = network-base
+interface = enp3s0
 #+end_src
